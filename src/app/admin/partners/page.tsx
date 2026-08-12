@@ -181,18 +181,18 @@ export default function AdminPartnersPage() {
                       style={{
                         display: 'inline-flex',
                         alignItems: 'center',
-                        gap: '4px',
-                        padding: '0.25rem 0.65rem',
-                        borderRadius: 'var(--radius-full)',
-                        border: 'none',
+                        gap: '6px',
+                        padding: '0.2rem 0.65rem',
+                        borderRadius: '9999px',
+                        border: item.is_active ? '1px solid #DCFCE7' : '1px solid #E2E8F0',
                         fontSize: '0.75rem',
-                        fontWeight: 800,
+                        fontWeight: 700,
                         cursor: 'pointer',
-                        backgroundColor: item.is_active ? '#ECFDF5' : '#F1F5F9',
-                        color: item.is_active ? '#10B981' : '#64748B',
+                        backgroundColor: item.is_active ? '#F0FDF4' : '#F8FAFC',
+                        color: item.is_active ? '#15803D' : '#64748B',
                       }}
                     >
-                      {item.is_active ? <CheckCircle size={12} /> : <XCircle size={12} />}
+                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: item.is_active ? '#16A34A' : '#94A3B8' }} />
                       <span>{item.is_active ? 'Active' : 'Inactive'}</span>
                     </button>
                   </td>

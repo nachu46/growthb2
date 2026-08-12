@@ -222,10 +222,12 @@ export default function AdminProductsPage() {
                   </td>
                   <td style={{ padding: '0.85rem 1rem' }}>
                     {item.aramco_approved ? (
-                      <span style={{ fontSize: '0.725rem', fontWeight: 800, color: '#10B981', backgroundColor: '#ECFDF5', padding: '0.2rem 0.5rem', borderRadius: 'var(--radius-full)' }}>
-                        ✓ Yes
+                      <span style={{ fontSize: '0.725rem', fontWeight: 800, color: '#0284C7', backgroundColor: '#F0F9FF', border: '1px solid #BAE6FD', padding: '0.2rem 0.6rem', borderRadius: '6px' }}>
+                        Approved
                       </span>
-                    ) : '—'}
+                    ) : (
+                      <span style={{ fontSize: '0.75rem', color: 'var(--slate-400)' }}>—</span>
+                    )}
                   </td>
                   <td style={{ padding: '0.85rem 1rem' }}>
                     <button
@@ -233,18 +235,18 @@ export default function AdminProductsPage() {
                       style={{
                         display: 'inline-flex',
                         alignItems: 'center',
-                        gap: '4px',
-                        padding: '0.25rem 0.65rem',
-                        borderRadius: 'var(--radius-full)',
-                        border: 'none',
+                        gap: '6px',
+                        padding: '0.2rem 0.65rem',
+                        borderRadius: '9999px',
+                        border: item.is_active ? '1px solid #DCFCE7' : '1px solid #E2E8F0',
                         fontSize: '0.75rem',
-                        fontWeight: 800,
+                        fontWeight: 700,
                         cursor: 'pointer',
-                        backgroundColor: item.is_active ? '#ECFDF5' : '#F1F5F9',
-                        color: item.is_active ? '#10B981' : '#64748B',
+                        backgroundColor: item.is_active ? '#F0FDF4' : '#F8FAFC',
+                        color: item.is_active ? '#15803D' : '#64748B',
                       }}
                     >
-                      {item.is_active ? <CheckCircle size={12} /> : <XCircle size={12} />}
+                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: item.is_active ? '#16A34A' : '#94A3B8' }} />
                       <span>{item.is_active ? 'Active' : 'Inactive'}</span>
                     </button>
                   </td>

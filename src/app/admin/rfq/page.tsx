@@ -2,6 +2,16 @@
 
 import React, { useEffect, useState } from 'react';
 import { Mail, Phone, MapPin, CheckCircle, MessageCircle, Calendar } from 'lucide-react';
+import { CustomSelect } from '@/components/CustomSelect';
+
+const RFQ_STATUS_OPTIONS = [
+  { value: 'New', label: 'New', color: '#1D4ED8', bg: '#EFF6FF' },
+  { value: 'Pending', label: 'Pending', color: '#D97706', bg: '#FEF3C7' },
+  { value: 'Quoted', label: 'Quoted', color: '#16A34A', bg: '#F0FDF4' },
+  { value: 'Processing', label: 'Processing', color: '#9333EA', bg: '#F3E8FF' },
+  { value: 'Completed', label: 'Completed', color: '#059669', bg: '#ECFDF5' },
+  { value: 'Rejected', label: 'Rejected', color: '#DC2626', bg: '#FEF2F2' },
+];
 
 export default function AdminRfqPage() {
   const [rfqs, setRfqs] = useState<any[]>([]);
@@ -53,19 +63,16 @@ export default function AdminRfqPage() {
 
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
           <label style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--slate-600)' }}>Status Filter:</label>
-          <select
+          <CustomSelect
+            variant="badge"
+            options={[
+              { value: 'All', label: 'All Statuses' },
+              ...RFQ_STATUS_OPTIONS,
+            ]}
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            style={{ padding: '0.5rem 1rem', borderRadius: '10px', border: '1px solid var(--slate-300)', fontSize: '0.85rem', fontWeight: 700 }}
-          >
-            <option value="All">All Statuses</option>
-            <option value="New">New</option>
-            <option value="Pending">Pending</option>
-            <option value="Quoted">Quoted</option>
-            <option value="Processing">Processing</option>
-            <option value="Completed">Completed</option>
-            <option value="Rejected">Rejected</option>
-          </select>
+            onChange={(val) => setStatusFilter(val)}
+            accentColor="var(--primary-red)"
+          />
         </div>
       </div>
 
@@ -115,27 +122,13 @@ export default function AdminRfqPage() {
                     <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--slate-500)', textTransform: 'uppercase' }}>
                       STATUS:
                     </span>
-                    <select
+                    <CustomSelect
+                      variant="badge"
+                      options={RFQ_STATUS_OPTIONS}
                       value={rfq.status}
-                      onChange={(e) => handleStatusChange(rfq.id, e.target.value)}
-                      style={{
-                        padding: '0.4rem 0.85rem',
-                        borderRadius: 'var(--radius-full)',
-                        border: '1.5px solid var(--primary-red)',
-                        backgroundColor: '#FFFFFF',
-                        color: 'var(--slate-900)',
-                        fontWeight: 800,
-                        fontSize: '0.8rem',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      <option value="New">New</option>
-                      <option value="Pending">Pending</option>
-                      <option value="Quoted">Quoted</option>
-                      <option value="Processing">Processing</option>
-                      <option value="Completed">Completed</option>
-                      <option value="Rejected">Rejected</option>
-                    </select>
+                      onChange={(val) => handleStatusChange(rfq.id, val)}
+                      accentColor="var(--primary-red)"
+                    />
                   </div>
                 </div>
 

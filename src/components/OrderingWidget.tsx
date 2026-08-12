@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { MATERIAL_PILLARS, GCC_HUBS } from '@/data/mockData';
+import { CustomSelect } from './CustomSelect';
 import { ChevronDown, Award, MessageCircle } from 'lucide-react';
 
 export const OrderingWidget: React.FC = () => {
@@ -29,18 +30,6 @@ export const OrderingWidget: React.FC = () => {
       title: 'Transparent Mechanical Warranty',
       subtitle: 'Standardized warranty periods clearly displayed.',
     },
-    {
-      title: 'Whatsapp Support',
-      subtitle: 'Connect instantly with regional management.',
-    },
-    {
-      title: 'Direct Sales Management Bypass',
-      subtitle: 'Connect instantly with regional management.',
-    },
-    {
-      title: 'Direct Sales Management Bypass',
-      subtitle: 'Connect instantly with regional management.',
-    },
   ];
 
   return (
@@ -52,10 +41,10 @@ export const OrderingWidget: React.FC = () => {
       {/* Outer Card Container (Matches Desktop Screenshot) */}
       <div style={{
         backgroundColor: '#FFFFFF',
-        borderRadius: '24px',
-        border: '1px solid var(--slate-200)',
-        padding: '2.5rem 2rem',
-        boxShadow: '0 10px 30px -5px rgba(0,0,0,0.04)',
+        borderRadius: 'var(--radius-lg)',
+        padding: '2rem 2.5rem',
+        boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.04)',
+        marginBottom: '3rem',
       }}>
         {/* Header */}
         <div style={{ marginBottom: '2rem' }}>
@@ -73,15 +62,15 @@ export const OrderingWidget: React.FC = () => {
           </p>
         </div>
 
-        {/* Top Form Row (Horizontal on Desktop, Stacked on Mobile) */}
+        {/* 4-Step Action Grid (Matches Screenshot Layout) */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
           gap: '1.25rem',
           alignItems: 'center',
           marginBottom: '2.5rem',
         }}>
-          {/* Input 1: Material Pillar with Red Border (Matches Screenshot) */}
+          {/* Input 1: Material Pillar with Red Border */}
           <div style={{
             backgroundColor: '#FFFFFF',
             borderRadius: '16px',
@@ -92,30 +81,16 @@ export const OrderingWidget: React.FC = () => {
             <label style={{ display: 'block', fontSize: '0.675rem', fontWeight: 800, color: 'var(--primary-red)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '2px' }}>
               MATERIAL PILLAR
             </label>
-            <div style={{ position: 'relative' }}>
-              <select
-                value={selectedPillar}
-                onChange={(e) => setSelectedPillar(e.target.value)}
-                style={{
-                  width: '100%',
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  fontSize: '0.95rem',
-                  fontWeight: 800,
-                  color: 'var(--slate-900)',
-                  outline: 'none',
-                  appearance: 'none',
-                  cursor: 'pointer',
-                  paddingRight: '1.5rem',
-                }}
-              >
-                <option value="Select Material...">Select Material...</option>
-                {MATERIAL_PILLARS.map(p => (
-                  <option key={p.id} value={p.id}>{p.label}</option>
-                ))}
-              </select>
-              <ChevronDown size={18} style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', color: 'var(--primary-red)', pointerEvents: 'none' }} />
-            </div>
+            <CustomSelect
+              variant="hero"
+              options={[
+                { value: 'Select Material...', label: 'Select Material...' },
+                ...MATERIAL_PILLARS.map(p => ({ value: p.id, label: p.label }))
+              ]}
+              value={selectedPillar}
+              onChange={(val) => setSelectedPillar(val)}
+              accentColor="var(--primary-red)"
+            />
           </div>
 
           {/* Input 2: Estimated Volume */}
@@ -128,29 +103,17 @@ export const OrderingWidget: React.FC = () => {
             <label style={{ display: 'block', fontSize: '0.675rem', fontWeight: 800, color: 'var(--slate-500)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '2px' }}>
               ESTIMATED VOLUME
             </label>
-            <div style={{ position: 'relative' }}>
-              <select
-                value={selectedVolume}
-                onChange={(e) => setSelectedVolume(e.target.value)}
-                style={{
-                  width: '100%',
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  fontSize: '0.95rem',
-                  fontWeight: 800,
-                  color: 'var(--slate-900)',
-                  outline: 'none',
-                  appearance: 'none',
-                  cursor: 'pointer',
-                  paddingRight: '1.5rem',
-                }}
-              >
-                <option value="5,000+ Sq. Meters">5,000+ Sq. Meters</option>
-                <option value="1,000+ Sq. Meters">1,000+ Sq. Meters</option>
-                <option value="10,000+ Sq. Meters (Project Scale)">10,000+ Sq. Meters (Project Scale)</option>
-              </select>
-              <ChevronDown size={18} style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', color: 'var(--slate-400)', pointerEvents: 'none' }} />
-            </div>
+            <CustomSelect
+              variant="hero"
+              options={[
+                { value: '5,000+ Sq. Meters', label: '5,000+ Sq. Meters' },
+                { value: '1,000+ Sq. Meters', label: '1,000+ Sq. Meters' },
+                { value: '10,000+ Sq. Meters (Project Scale)', label: '10,000+ Sq. Meters (Project Scale)' }
+              ]}
+              value={selectedVolume}
+              onChange={(val) => setSelectedVolume(val)}
+              accentColor="var(--slate-700)"
+            />
           </div>
 
           {/* Input 3: Delivery Hub */}
@@ -163,29 +126,13 @@ export const OrderingWidget: React.FC = () => {
             <label style={{ display: 'block', fontSize: '0.675rem', fontWeight: 800, color: 'var(--slate-500)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '2px' }}>
               DELIVERY HUB
             </label>
-            <div style={{ position: 'relative' }}>
-              <select
-                value={selectedHub}
-                onChange={(e) => setSelectedHub(e.target.value)}
-                style={{
-                  width: '100%',
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  fontSize: '0.95rem',
-                  fontWeight: 800,
-                  color: 'var(--slate-900)',
-                  outline: 'none',
-                  appearance: 'none',
-                  cursor: 'pointer',
-                  paddingRight: '1.5rem',
-                }}
-              >
-                {GCC_HUBS.map(hub => (
-                  <option key={hub.id} value={hub.id}>{hub.name}</option>
-                ))}
-              </select>
-              <ChevronDown size={18} style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', color: 'var(--slate-400)', pointerEvents: 'none' }} />
-            </div>
+            <CustomSelect
+              variant="hero"
+              options={GCC_HUBS.map(hub => ({ value: hub.id, label: hub.name }))}
+              value={selectedHub}
+              onChange={(val) => setSelectedHub(val)}
+              accentColor="var(--slate-700)"
+            />
           </div>
 
           {/* Action Button: Whatsapp Live Quote → (Matches Screenshot) */}

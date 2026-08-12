@@ -2,6 +2,14 @@
 
 import React, { useEffect, useState } from 'react';
 import { FileSpreadsheet, Download, Mail, Phone, Calendar, CheckCircle } from 'lucide-react';
+import { CustomSelect } from '@/components/CustomSelect';
+
+const BOM_STATUS_OPTIONS = [
+  { value: 'Pending Review', label: 'Pending Review', color: '#0EA5E9', bg: '#E0F2FE' },
+  { value: 'Under Analysis', label: 'Under Analysis', color: '#D97706', bg: '#FEF3C7' },
+  { value: 'Quoted', label: 'Quoted', color: '#9333EA', bg: '#F3E8FF' },
+  { value: 'Completed', label: 'Completed', color: '#10B981', bg: '#ECFDF5' },
+];
 
 export default function AdminBomPage() {
   const [boms, setBoms] = useState<any[]>([]);
@@ -97,24 +105,12 @@ export default function AdminBomPage() {
                     {item.file_size}
                   </td>
                   <td style={{ padding: '0.85rem 1rem' }}>
-                    <select
+                    <CustomSelect
+                      variant="badge"
+                      options={BOM_STATUS_OPTIONS}
                       value={item.status}
-                      onChange={(e) => handleStatusChange(item.id, e.target.value)}
-                      style={{
-                        padding: '0.25rem 0.65rem',
-                        borderRadius: 'var(--radius-full)',
-                        border: '1px solid var(--slate-300)',
-                        fontSize: '0.75rem',
-                        fontWeight: 800,
-                        backgroundColor: item.status === 'Completed' ? '#ECFDF5' : '#E0F2FE',
-                        color: item.status === 'Completed' ? '#10B981' : '#0EA5E9',
-                      }}
-                    >
-                      <option value="Pending Review">Pending Review</option>
-                      <option value="Under Analysis">Under Analysis</option>
-                      <option value="Quoted">Quoted</option>
-                      <option value="Completed">Completed</option>
-                    </select>
+                      onChange={(val) => handleStatusChange(item.id, val)}
+                    />
                   </td>
                   <td style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>
                     <a

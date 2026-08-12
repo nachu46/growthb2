@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { X, Plus, Minus, MessageSquare, Building2, MapPin, ChevronDown } from 'lucide-react';
 import { ProductItem, GCC_HUBS } from '@/data/mockData';
+import { CustomSelect } from './CustomSelect';
 
 interface RfqQueueDrawerProps {
   isOpen: boolean;
@@ -282,32 +283,20 @@ export const RfqQueueDrawer: React.FC<RfqQueueDrawerProps> = ({
                   <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 800, color: 'var(--slate-500)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.5rem' }}>
                     PREFERRED DELIVERY HUB
                   </label>
-                  <div style={{ position: 'relative' }}>
-                    <select
-                      value={selectedHub}
-                      onChange={(e) => setSelectedHub(e.target.value)}
-                      style={{
-                        width: '100%',
-                        padding: '0.8rem 2.5rem 0.8rem 1rem',
-                        borderRadius: 'var(--radius-md)',
-                        border: '1px solid var(--slate-300)',
-                        backgroundColor: '#FFFFFF',
-                        fontSize: '0.875rem',
-                        fontWeight: 700,
-                        color: 'var(--slate-800)',
-                        appearance: 'none',
-                        outline: 'none',
-                      }}
-                    >
-                      <option value="UAE HQ (Ajman) - Stock Available">UAE HQ (Ajman) - Stock Available</option>
-                      <option value="KSA (Dammam) - Active Logistics">KSA (Dammam) - Active Logistics</option>
-                      <option value="Kuwait - Stock Available">Kuwait - Stock Available</option>
-                      <option value="Qatar (Ras Laffan) - Active Logistics">Qatar (Ras Laffan) - Active Logistics</option>
-                      <option value="Bahrain (BAPCO Hub) - Stock Available">Bahrain (BAPCO Hub) - Stock Available</option>
-                      <option value="Oman (Duqm Hub) - Stock Available">Oman (Duqm Hub) - Stock Available</option>
-                    </select>
-                    <ChevronDown size={18} style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--slate-400)', pointerEvents: 'none' }} />
-                  </div>
+                  <CustomSelect
+                    variant="standard"
+                    options={[
+                      'UAE HQ (Ajman) - Stock Available',
+                      'KSA (Dammam) - Active Logistics',
+                      'Kuwait - Stock Available',
+                      'Qatar (Ras Laffan) - Active Logistics',
+                      'Bahrain (BAPCO Hub) - Stock Available',
+                      'Oman (Duqm Hub) - Stock Available',
+                    ]}
+                    value={selectedHub}
+                    onChange={(val) => setSelectedHub(val)}
+                    accentColor="var(--primary-red)"
+                  />
                 </div>
               </div>
             </>

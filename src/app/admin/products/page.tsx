@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Plus, Edit, Trash2, CheckCircle, XCircle } from 'lucide-react';
+import { CustomSelect } from '@/components/CustomSelect';
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<any[]>([]);
@@ -319,34 +320,36 @@ export default function AdminProductsPage() {
                   <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: 'var(--slate-600)', textTransform: 'uppercase', marginBottom: '4px' }}>
                     Material Pillar *
                   </label>
-                  <select
+                  <CustomSelect
+                    variant="standard"
+                    options={[
+                      { value: 'Insulation', label: 'Insulation' },
+                      { value: 'Jacketing', label: 'Jacketing' },
+                      { value: 'Accessories', label: 'Accessories' },
+                      { value: 'Acoustic', label: 'Acoustic & Vapor' },
+                      { value: 'Valves', label: 'Valves & Refractory' },
+                    ]}
                     value={pillar}
-                    onChange={(e) => setPillar(e.target.value)}
-                    style={{ width: '100%', padding: '0.75rem', borderRadius: '10px', border: '1px solid var(--slate-300)', fontSize: '0.9rem' }}
-                  >
-                    <option value="Insulation">Insulation</option>
-                    <option value="Jacketing">Jacketing</option>
-                    <option value="Accessories">Accessories</option>
-                    <option value="Acoustic">Acoustic & Vapor</option>
-                    <option value="Valves">Valves & Refractory</option>
-                  </select>
+                    onChange={(val) => setPillar(val)}
+                  />
                 </div>
 
                 <div>
                   <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: 'var(--slate-600)', textTransform: 'uppercase', marginBottom: '4px' }}>
                     Industry Approval *
                   </label>
-                  <select
+                  <CustomSelect
+                    variant="standard"
+                    options={[
+                      'Oil & Gas',
+                      'HVAC',
+                      'Chemical',
+                      'Electro-Mechanical',
+                      'Industrial Commercial',
+                    ]}
                     value={industry}
-                    onChange={(e) => setIndustry(e.target.value)}
-                    style={{ width: '100%', padding: '0.75rem', borderRadius: '10px', border: '1px solid var(--slate-300)', fontSize: '0.9rem' }}
-                  >
-                    <option value="Oil & Gas">Oil & Gas</option>
-                    <option value="HVAC">HVAC</option>
-                    <option value="Chemical">Chemical</option>
-                    <option value="Electro-Mechanical">Electro-Mechanical</option>
-                    <option value="Industrial Commercial">Industrial Commercial</option>
-                  </select>
+                    onChange={(val) => setIndustry(val)}
+                  />
                 </div>
               </div>
 

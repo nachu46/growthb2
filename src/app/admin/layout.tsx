@@ -103,14 +103,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {/* Brand Logo Header */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', padding: '0.5rem 0.5rem 1.25rem 0.5rem', borderBottom: '1px solid #E1E3E5', marginBottom: '1rem' }}>
             <img
-              src="/growth-international-logo.png"
-              alt="Growth International L.L.C"
+              src="/emblem.png"
+              alt="Growth International L.L.C emblem"
               style={{
-                height: '36px',
-                maxWidth: '160px',
+                height: '34px',
+                width: '34px',
                 objectFit: 'contain',
               }}
             />
+            <div>
+              <div style={{ fontWeight: 800, fontSize: '1.05rem' }}>
+                <span style={{ color: 'var(--primary-red)' }}>Growth</span>{' '}
+                <span style={{ color: '#1A1A1A' }}>Admin</span>
+              </div>
+              <div style={{ fontSize: '0.7rem', color: '#616161', fontWeight: 600 }}>B2B Control Center</div>
+            </div>
           </div>
 
           {/* Navigation Links */}

@@ -50,14 +50,24 @@ export const Navbar: React.FC<NavbarProps> = ({ rfqCount, onOpenRfqQueue, onOpen
         {/* Brand Logo */}
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', textDecoration: 'none' }}>
           <img
-            src="/growth-international-logo.png"
-            alt="Growth International L.L.C"
+            src="/emblem.png"
+            alt="Growth International L.L.C emblem"
             style={{
-              height: '42px',
-              maxWidth: '180px',
+              height: '38px',
+              width: '38px',
               objectFit: 'contain',
             }}
           />
+          <span style={{
+            fontFamily: 'var(--font-heading)',
+            fontWeight: 800,
+            fontSize: '1.25rem',
+            letterSpacing: '-0.02em',
+            whiteSpace: 'nowrap',
+          }}>
+            <span style={{ color: 'var(--primary-red)' }}>Growth</span>{' '}
+            <span style={{ color: 'var(--slate-900)', fontWeight: 700 }}>International L.L.C</span>
+          </span>
         </Link>
 
         {/* Desktop Nav Items */}

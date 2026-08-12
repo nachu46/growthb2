@@ -27,14 +27,24 @@ export const Footer: React.FC<FooterProps> = ({ onOpenProfile }) => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', textDecoration: 'none' }}>
               <img
-                src="/growth-international-logo.png"
-                alt="Growth International L.L.C"
+                src="/emblem.png"
+                alt="Growth International L.L.C emblem"
                 style={{
-                  height: '46px',
-                  maxWidth: '200px',
+                  height: '42px',
+                  width: '42px',
                   objectFit: 'contain',
                 }}
               />
+              <span style={{
+                fontFamily: 'var(--font-heading)',
+                fontWeight: 800,
+                fontSize: '1.25rem',
+                letterSpacing: '-0.02em',
+                whiteSpace: 'nowrap',
+              }}>
+                <span style={{ color: 'var(--primary-red)' }}>Growth</span>{' '}
+                <span style={{ color: 'var(--slate-900)', fontWeight: 700 }}>International L.L.C</span>
+              </span>
             </Link>
 
             <p style={{ fontSize: '0.875rem', color: 'var(--slate-600)', lineHeight: 1.6, maxWidth: '300px' }}>

@@ -245,7 +245,7 @@ export const RfqQueueDrawer: React.FC<RfqQueueDrawerProps> = ({
                       textDecoration: 'none',
                     }}
                   >
-                    + Add Another Material
+                    Add Another Material
                   </Link>
                 </div>
               </div>

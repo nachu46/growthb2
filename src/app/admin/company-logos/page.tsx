@@ -164,11 +164,11 @@ export default function AdminCompanyLogosPage() {
             fontSize: '0.9rem',
             border: 'none',
             cursor: 'pointer',
-            boxShadow: '0 6px 16px rgba(225, 29, 72, 0.3)',
+            boxShadow: '0 4px 12px rgba(15, 23, 42, 0.08)',
           }}
         >
           <Plus size={18} />
-          <span>+ Add Company</span>
+          <span>Add Company</span>
         </button>
       </div>
 
@@ -262,7 +262,7 @@ export default function AdminCompanyLogosPage() {
                       </button>
                       <button
                         onClick={() => handleDelete(item.id, item.name)}
-                        style={{ padding: '0.4rem 0.6rem', borderRadius: '8px', border: '1px solid #FFE4E6', backgroundColor: '#FFF1F2', cursor: 'pointer' }}
+                        style={{ padding: '0.4rem 0.6rem', borderRadius: '8px', border: '1px solid var(--slate-200)', backgroundColor: '#F8FAFC', cursor: 'pointer' }}
                         title="Delete"
                       >
                         <Trash2 size={14} color="var(--primary-red)" />

@@ -76,7 +76,7 @@ export const OrderingWidget: React.FC = () => {
             borderRadius: '16px',
             border: '2px solid var(--primary-red)',
             padding: '0.75rem 1.15rem',
-            boxShadow: '0 2px 8px rgba(225, 29, 72, 0.08)',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
           }}>
             <label style={{ display: 'block', fontSize: '0.675rem', fontWeight: 800, color: 'var(--primary-red)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '2px' }}>
               MATERIAL PILLAR
@@ -150,7 +150,7 @@ export const OrderingWidget: React.FC = () => {
               fontWeight: 800,
               fontSize: '0.95rem',
               border: 'none',
-              boxShadow: '0 8px 20px rgba(225, 29, 72, 0.3)',
+              boxShadow: '0 4px 14px rgba(15, 23, 42, 0.12)',
               cursor: 'pointer',
               whiteSpace: 'nowrap',
             }}

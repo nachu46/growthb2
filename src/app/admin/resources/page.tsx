@@ -63,7 +63,7 @@ export default function AdminResourcesPage() {
                     {item.title}
                   </td>
                   <td style={{ padding: '0.85rem 1rem' }}>
-                    <span style={{ fontSize: '0.725rem', fontWeight: 800, color: 'var(--primary-red)', backgroundColor: '#FFE4E6', padding: '0.2rem 0.5rem', borderRadius: 'var(--radius-full)' }}>
+                    <span style={{ fontSize: '0.725rem', fontWeight: 800, color: 'var(--slate-700)', backgroundColor: '#F1F5F9', border: '1px solid var(--slate-200)', padding: '0.2rem 0.6rem', borderRadius: 'var(--radius-full)' }}>
                       {item.category}
                     </span>
                   </td>

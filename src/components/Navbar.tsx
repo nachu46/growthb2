@@ -66,7 +66,7 @@ export const Navbar: React.FC<NavbarProps> = ({ rfqCount, onOpenRfqQueue, onOpen
             whiteSpace: 'nowrap',
           }}>
             <span style={{ color: 'var(--primary-red)' }}>Growth</span>{' '}
-            <span style={{ color: 'var(--slate-900)', fontWeight: 700 }}>International L.L.C</span>
+            <span style={{ color: 'var(--slate-900)', fontWeight: 700 }} className="desktop-logo-subtext">International L.L.C</span>
           </span>
         </Link>
 
@@ -267,6 +267,11 @@ export const Navbar: React.FC<NavbarProps> = ({ rfqCount, onOpenRfqQueue, onOpen
       />
 
       <style jsx>{`
+        @media (max-width: 640px) {
+          :global(.desktop-logo-subtext) {
+            display: none !important;
+          }
+        }
         @media (min-width: 1024px) {
           :global(.desktop-nav) {
             display: flex !important;

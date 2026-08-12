@@ -129,16 +129,13 @@ export const IndustriesCatalogView: React.FC<IndustriesCatalogViewProps> = ({ on
           {/* Left Text Content */}
           <div>
             <span style={{
-              display: 'inline-block',
-              padding: '0.35rem 0.9rem',
-              borderRadius: 'var(--radius-full)',
-              backgroundColor: 'rgba(225, 29, 72, 0.15)',
-              color: '#FF6B81',
-              border: '1px solid rgba(225, 29, 72, 0.4)',
-              fontSize: '0.725rem',
+              fontSize: '0.825rem',
               fontWeight: 800,
-              letterSpacing: '0.06em',
-              marginBottom: '1rem',
+              color: '#FF6B81',
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              display: 'block',
+              marginBottom: '0.75rem',
             }}>
               Industries Application
             </span>

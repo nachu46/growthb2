@@ -97,8 +97,8 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ product, o
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              padding: '0.4rem 0.8rem',
-              borderRadius: 'var(--radius-full)',
+              padding: '0.35rem 0.65rem',
+              borderRadius: '6px',
               backgroundColor: '#ECFDF5',
               border: '1px solid #A7F3D0',
               color: '#047857',
@@ -106,7 +106,7 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ product, o
               fontWeight: 800,
             }}>
               <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#10B981' }} />
-              <span>ARAMCO APPR.</span>
+              <span>Aramco Approved</span>
             </div>
           )}
 

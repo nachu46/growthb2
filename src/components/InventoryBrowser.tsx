@@ -121,7 +121,7 @@ export const InventoryBrowser: React.FC<InventoryBrowserProps> = ({ onAddRfqItem
                       }}
                       style={{
                         padding: '0.55rem 1.35rem',
-                        borderRadius: 'var(--radius-full)',
+                        borderRadius: 'var(--radius-md)',
                         backgroundColor: isActive ? '#FFFFFF' : '#FFFFFF',
                         color: isActive ? '#0EA5E9' : 'var(--slate-800)',
                         border: isActive ? '2px solid #0EA5E9' : '1px solid var(--slate-300)',

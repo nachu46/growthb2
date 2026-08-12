@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
-import { Check, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { VendorModal } from './VendorModal';
 
 export const SaudiAramcoLogoSvg: React.FC<{ height?: number }> = ({ height = 26 }) => (
@@ -50,12 +50,12 @@ export const VendorCertifications: React.FC = () => {
 
   const handleScroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
-      const scrollAmount = direction === 'left' ? -320 : 320;
+      const scrollAmount = direction === 'left' ? -280 : 280;
       scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
 
-  // Triple the items to guarantee seamless 33.333% infinite continuous sliding marquee loop
+  // Triple the array to create a continuous, infinite marquee sliding loop
   const displayLogos = [...companyLogos, ...companyLogos, ...companyLogos];
 
   return (
@@ -191,49 +191,25 @@ export const VendorCertifications: React.FC = () => {
                 padding: '1.25rem 1.5rem',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'space-between',
+                gap: '1rem',
                 cursor: 'pointer',
                 boxShadow: '0 4px 14px rgba(0, 0, 0, 0.03)',
                 transition: 'transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease',
                 flexShrink: 0,
-                width: '300px',
+                width: '260px',
               }}
               className="vendor-card"
             >
-              <div style={{ flex: 1, minWidth: 0, paddingRight: '0.5rem' }}>
-                <div style={{ marginBottom: '0.65rem', overflow: 'hidden', height: '32px', display: 'flex', alignItems: 'center' }}>
-                  <img
-                    src={v.logo_url}
-                    alt={v.name}
-                    style={{ maxHeight: '28px', maxWidth: '110px', objectFit: 'contain' }}
-                  />
-                </div>
-
-                <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {v.name}
-                </div>
-
-                <div style={{ fontSize: '0.75rem', color: 'var(--slate-500)' }}>
-                  Vendor ID: <strong style={{ color: 'var(--slate-800)', fontFamily: 'monospace' }}>{v.vendor_id_code || '10114402'}</strong>
-                </div>
+              <div style={{ overflow: 'hidden', height: '36px', display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+                <img
+                  src={v.logo_url}
+                  alt={v.name}
+                  style={{ maxHeight: '30px', maxWidth: '95px', objectFit: 'contain' }}
+                />
               </div>
 
-              <div
-                title="Verified Vendor"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '28px',
-                  height: '28px',
-                  borderRadius: '50%',
-                  backgroundColor: '#ECFDF5',
-                  border: '1px solid #A7F3D0',
-                  color: '#10B981',
-                  flexShrink: 0,
-                }}
-              >
-                <Check size={16} strokeWidth={2.5} />
+              <div style={{ fontSize: '0.875rem', fontWeight: 800, color: 'var(--slate-900)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1 }}>
+                {v.name}
               </div>
             </div>
           ))}
@@ -253,10 +229,10 @@ export const VendorCertifications: React.FC = () => {
 
         .vendor-carousel-track {
           display: flex;
-          gap: 1.5rem;
+          gap: 1.25rem;
           width: max-content;
           padding-left: 1.5rem;
-          animation: marqueeSlide 30s linear infinite;
+          animation: marqueeSlide 28s linear infinite;
         }
 
         .vendor-carousel-container:hover .vendor-carousel-track {

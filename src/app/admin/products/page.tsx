@@ -235,18 +235,16 @@ export default function AdminProductsPage() {
                       style={{
                         display: 'inline-flex',
                         alignItems: 'center',
-                        gap: '6px',
                         padding: '0.2rem 0.65rem',
-                        borderRadius: '9999px',
-                        border: item.is_active ? '1px solid #DCFCE7' : '1px solid #E2E8F0',
+                        borderRadius: '6px',
+                        border: '1px solid var(--slate-200)',
                         fontSize: '0.75rem',
                         fontWeight: 700,
                         cursor: 'pointer',
-                        backgroundColor: item.is_active ? '#F0FDF4' : '#F8FAFC',
-                        color: item.is_active ? '#15803D' : '#64748B',
+                        backgroundColor: item.is_active ? '#F1F5F9' : '#F8FAFC',
+                        color: item.is_active ? 'var(--slate-800)' : 'var(--slate-400)',
                       }}
                     >
-                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: item.is_active ? '#16A34A' : '#94A3B8' }} />
                       <span>{item.is_active ? 'Active' : 'Inactive'}</span>
                     </button>
                   </td>

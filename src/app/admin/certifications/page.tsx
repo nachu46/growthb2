@@ -157,8 +157,7 @@ export default function AdminCertificationsPage() {
                     {item.cert_number}
                   </td>
                   <td style={{ padding: '0.85rem 1rem' }}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', fontWeight: 700, padding: '0.2rem 0.65rem', borderRadius: '9999px', backgroundColor: '#F0FDF4', color: '#15803D', border: '1px solid #DCFCE7' }}>
-                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#16A34A' }} />
+                    <span style={{ fontSize: '0.75rem', fontWeight: 700, padding: '0.2rem 0.65rem', borderRadius: '6px', backgroundColor: '#F1F5F9', color: 'var(--slate-800)', border: '1px solid var(--slate-200)' }}>
                       {item.status || 'Active'}
                     </span>
                   </td>

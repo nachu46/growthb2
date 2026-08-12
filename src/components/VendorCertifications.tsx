@@ -21,37 +21,57 @@ export const SaudiAramcoLogoSvg: React.FC<{ height?: number }> = ({ height = 26 
 );
 
 const CompanyLogoIcon: React.FC<{ name: string; logoUrl?: string }> = ({ name, logoUrl }) => {
-  const n = (name || '').toLowerCase();
+  const [imgError, setImgError] = useState(false);
 
-  let logoConfig = { src: '', filter: undefined as string | undefined };
+  // If custom logo URL is uploaded via Admin Panel or saved in DB, display it!
+  if (logoUrl && !imgError) {
+    const isAramcoWhite = logoUrl.includes('aramco-logo--white') || logoUrl.includes('aramco.webp');
+    return (
+      <img
+        src={logoUrl}
+        alt={name}
+        onError={() => setImgError(true)}
+        style={{
+          maxHeight: '30px',
+          maxWidth: '110px',
+          objectFit: 'contain',
+          filter: isAramcoWhite ? 'brightness(0) saturate(100%) invert(44%) sepia(85%) saturate(1915%) hue-rotate(164deg) brightness(96%) contrast(101%)' : 'none',
+        }}
+      />
+    );
+  }
+
+  // Fallback defaults if no custom admin URL is set or if URL load fails
+  const n = (name || '').toLowerCase();
+  let src = '/logos/aramco.webp';
+  let filter = 'none';
 
   if (n.includes('aramco')) {
-    logoConfig = { src: '/logos/aramco.webp', filter: 'brightness(0) saturate(100%) invert(44%) sepia(85%) saturate(1915%) hue-rotate(164deg) brightness(96%) contrast(101%)' };
+    src = '/logos/aramco.webp';
+    filter = 'brightness(0) saturate(100%) invert(44%) sepia(85%) saturate(1915%) hue-rotate(164deg) brightness(96%) contrast(101%)';
   } else if (n.includes('sabic')) {
-    logoConfig = { src: '/logos/sabic.svg', filter: undefined };
+    src = '/logos/sabic.svg';
   } else if (n.includes('adnoc')) {
-    logoConfig = { src: '/logos/adnoc.png', filter: undefined };
+    src = '/logos/adnoc.png';
   } else if (n.includes('sadara')) {
-    logoConfig = { src: '/logos/sadara.png', filter: undefined };
+    src = '/logos/sadara.png';
   } else if (n.includes('knpc')) {
-    logoConfig = { src: '/logos/knpc.svg', filter: undefined };
+    src = '/logos/knpc.svg';
   } else if (n.includes('total')) {
-    logoConfig = { src: '/logos/totalenergies.png', filter: undefined };
+    src = '/logos/totalenergies.png';
   } else if (n.includes('maaden') || n.includes("ma'aden")) {
-    logoConfig = { src: '/logos/maaden.svg', filter: undefined };
-  } else {
-    logoConfig = { src: logoUrl || '/logos/aramco.webp', filter: undefined };
+    src = '/logos/maaden.svg';
   }
 
   return (
     <img
-      src={logoConfig.src}
+      src={src}
       alt={name}
       style={{
         maxHeight: '30px',
         maxWidth: '110px',
         objectFit: 'contain',
-        filter: logoConfig.filter || 'none',
+        filter,
       }}
     />
   );

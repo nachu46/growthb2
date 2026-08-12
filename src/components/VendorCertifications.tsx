@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ShieldCheck, ArrowRight } from 'lucide-react';
+import { Check, ArrowRight } from 'lucide-react';
 import { VendorModal } from './VendorModal';
 
 export const SaudiAramcoLogoSvg: React.FC<{ height?: number }> = ({ height = 26 }) => (
@@ -142,21 +142,22 @@ export const VendorCertifications: React.FC = () => {
                 </div>
               </div>
 
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                fontSize: '0.75rem',
-                fontWeight: 800,
-                color: '#10B981',
-                backgroundColor: '#ECFDF5',
-                padding: '0.35rem 0.65rem',
-                borderRadius: 'var(--radius-full)',
-                border: '1px solid #A7F3D0',
-                flexShrink: 0,
-              }}>
-                <ShieldCheck size={14} />
-                <span>Verified</span>
+              <div
+                title="Verified Vendor"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '50%',
+                  backgroundColor: '#ECFDF5',
+                  border: '1px solid #A7F3D0',
+                  color: '#10B981',
+                  flexShrink: 0,
+                }}
+              >
+                <Check size={16} strokeWidth={2.5} />
               </div>
             </div>
           ))}

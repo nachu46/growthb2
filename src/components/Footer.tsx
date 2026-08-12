@@ -26,23 +26,15 @@ export const Footer: React.FC<FooterProps> = ({ onOpenProfile }) => {
           {/* Column 1: Brand Info (Matches Mobile Screenshot 5) */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', textDecoration: 'none' }}>
-              <div style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '50%',
-                backgroundColor: 'var(--primary-red)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#FFFFFF',
-                fontWeight: 900,
-                fontSize: '1.15rem',
-              }}>
-                G
-              </div>
-              <span style={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--slate-900)' }}>
-                Growth <span style={{ fontWeight: 600 }}>Int.</span>
-              </span>
+              <img
+                src="/growth-international-logo.png"
+                alt="Growth International L.L.C"
+                style={{
+                  height: '46px',
+                  maxWidth: '200px',
+                  objectFit: 'contain',
+                }}
+              />
             </Link>
 
             <p style={{ fontSize: '0.875rem', color: 'var(--slate-600)', lineHeight: 1.6, maxWidth: '300px' }}>

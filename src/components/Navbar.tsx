@@ -47,34 +47,17 @@ export const Navbar: React.FC<NavbarProps> = ({ rfqCount, onOpenRfqQueue, onOpen
         justifyContent: 'space-between',
         position: 'relative',
       }}>
-        {/* Brand Logo (Matches Mobile Screenshot 1: Growth Int.) */}
+        {/* Brand Logo */}
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', textDecoration: 'none' }}>
-          <div style={{
-            width: '36px',
-            height: '36px',
-            borderRadius: '50%',
-            backgroundColor: 'var(--primary-red)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#FFFFFF',
-            fontWeight: 900,
-            fontSize: '1.15rem',
-            boxShadow: '0 4px 12px rgba(225, 29, 72, 0.3)',
-          }}>
-            G
-          </div>
-          <div>
-            <span style={{
-              fontFamily: 'var(--font-heading)',
-              fontWeight: 800,
-              fontSize: '1.2rem',
-              color: 'var(--slate-900)',
-              letterSpacing: '-0.03em',
-            }}>
-              Growth <span style={{ fontWeight: 600, color: 'var(--slate-700)' }}>Int.</span>
-            </span>
-          </div>
+          <img
+            src="/growth-international-logo.png"
+            alt="Growth International L.L.C"
+            style={{
+              height: '42px',
+              maxWidth: '180px',
+              objectFit: 'contain',
+            }}
+          />
         </Link>
 
         {/* Desktop Nav Items */}

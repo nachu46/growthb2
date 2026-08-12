@@ -122,11 +122,23 @@ export const VendorCertifications: React.FC = () => {
       .then((res) => res.json())
       .then((data) => {
         if (data.success && data.data && data.data.length > 0) {
-          // Normalize names for clean display
-          const cleaned = data.data.map((item: any) => ({
-            ...item,
-            name: item.name === 'MA\'ADEN Saudi Mining' ? 'MA\'ADEN' : item.name === 'KNPC (Kuwait National Petroleum)' ? 'KNPC' : item.name
-          }));
+          // Normalize names and logo URLs for clean display
+          const cleaned = data.data.map((item: any) => {
+            let name = item.name;
+            if (name.includes("MA'ADEN") || name.includes("Maaden")) name = "MA'ADEN";
+            if (name.includes("KNPC")) name = "KNPC";
+            
+            let logo_url = item.logo_url;
+            if (!logo_url || logo_url.includes('oraclecloud') || logo_url.includes('adnoc.ae') || name === "MA'ADEN" || name === "ADNOC") {
+              logo_url = '';
+            }
+            
+            return {
+              ...item,
+              name,
+              logo_url,
+            };
+          });
           setCompanyLogos(cleaned);
         }
         setLoading(false);

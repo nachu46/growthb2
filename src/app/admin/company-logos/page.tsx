@@ -3,6 +3,19 @@
 import React, { useEffect, useState } from 'react';
 import { Plus, Edit, Trash2, CheckCircle, XCircle, ExternalLink, Upload, MoveUp, MoveDown } from 'lucide-react';
 
+const getLogoSrc = (item: any) => {
+  if (item.logo_url && item.logo_url.trim() !== '') return item.logo_url;
+  const n = (item.name || '').toLowerCase();
+  if (n.includes('aramco')) return '/logos/aramco.webp';
+  if (n.includes('sabic')) return '/logos/sabic.svg';
+  if (n.includes('adnoc')) return '/logos/adnoc.png';
+  if (n.includes('sadara')) return '/logos/sadara.png';
+  if (n.includes('knpc')) return '/logos/knpc.svg';
+  if (n.includes('total')) return '/logos/totalenergies.png';
+  if (n.includes('maaden') || n.includes("ma'aden")) return '/logos/maaden.svg';
+  return '/logos/aramco.webp';
+};
+
 export default function AdminCompanyLogosPage() {
   const [logos, setLogos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -197,7 +210,7 @@ export default function AdminCompanyLogosPage() {
                       justifyContent: 'center',
                       padding: '4px',
                     }}>
-                      <img src={item.logo_url} alt={item.name} style={{ maxHeight: '34px', maxWidth: '80px', objectFit: 'contain' }} />
+                      <img src={getLogoSrc(item)} alt={item.name} style={{ maxHeight: '34px', maxWidth: '80px', objectFit: 'contain' }} />
                     </div>
                   </td>
                   <td style={{ padding: '0.85rem 1rem', fontWeight: 800, color: 'var(--slate-900)' }}>

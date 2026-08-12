@@ -66,7 +66,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (loading) {
     return (
       <div style={{ minHeight: '100vh', backgroundColor: '#F6F6F7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#303030', fontWeight: 800 }}>
-        Loading Shopify Admin CMS...
+        Loading Admin Control Panel...
       </div>
     );
   }
@@ -87,7 +87,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#F6F6F7', color: '#303030' }}>
-      {/* Clean White Shopify Admin Sidebar Navigation */}
+      {/* Clean White Admin Sidebar Navigation */}
       <aside style={{
         width: '250px',
         backgroundColor: '#FFFFFF',
@@ -100,7 +100,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         flexShrink: 0,
       }}>
         <div>
-          {/* Brand Logo Header (Shopify Admin Style) */}
+          {/* Brand Logo Header */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', padding: '0.5rem 0.5rem 1.25rem 0.5rem', borderBottom: '1px solid #E1E3E5', marginBottom: '1rem' }}>
             <div style={{
               width: '32px',
@@ -118,7 +118,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
             <div>
               <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#1A1A1A' }}>Growth Admin</div>
-              <div style={{ fontSize: '0.7rem', color: '#616161', fontWeight: 600 }}>Shopify B2B CMS</div>
+              <div style={{ fontSize: '0.7rem', color: '#616161', fontWeight: 600 }}>B2B Control Center</div>
             </div>
           </div>
 
@@ -211,7 +211,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         }}>
           <div>
             <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--slate-600)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              SHOPIFY-STYLE ADMIN DASHBOARD
+              ADMIN CONTROL PANEL
             </span>
           </div>
 

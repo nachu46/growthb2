@@ -257,21 +257,13 @@ function seedDefaultData() {
   }
 
   // 4. Seed Company Logos (Saudi Aramco, SABIC, ADNOC, Sadara, KNPC, TotalEnergies, MA'ADEN)
-  try {
-    db.exec(`
-      UPDATE company_logos SET name = 'MA''ADEN', logo_url = '' WHERE id = 'comp_maaden' OR name LIKE 'MA''ADEN%';
-      UPDATE company_logos SET name = 'KNPC', logo_url = '' WHERE id = 'comp_knpc' OR name LIKE 'KNPC%';
-      UPDATE company_logos SET logo_url = '' WHERE id = 'comp_adnoc';
-    `);
-  } catch (e) { }
-
   const logoCount = (db.prepare(`SELECT count(*) as count FROM company_logos`).get() as any).count;
   if (logoCount === 0) {
     const companies = [
       {
         id: 'comp_aramco',
         name: 'Saudi Aramco',
-        logo_url: 'https://cdn.worldvectorlogo.com/logos/saudi-aramco.svg',
+        logo_url: '/logos/aramco.webp',
         website_url: 'https://www.aramco.com',
         description: 'Approved vendor registration 10114402 for Saudi Aramco major capital EPC projects.',
         vendor_id_code: '10114402',
@@ -280,7 +272,7 @@ function seedDefaultData() {
       {
         id: 'comp_sabic',
         name: 'SABIC',
-        logo_url: 'https://cdn.worldvectorlogo.com/logos/sabic.svg',
+        logo_url: '/logos/sabic.svg',
         website_url: 'https://www.sabic.com',
         description: 'SABIC Active Qualification vendor registration code 11047900.',
         vendor_id_code: '11047900',
@@ -289,7 +281,7 @@ function seedDefaultData() {
       {
         id: 'comp_adnoc',
         name: 'ADNOC',
-        logo_url: '',
+        logo_url: '/logos/adnoc.png',
         website_url: 'https://www.adnoc.ae',
         description: 'Abu Dhabi National Oil Company ICV Certified Partner.',
         vendor_id_code: 'ADNOC-88492',
@@ -298,7 +290,7 @@ function seedDefaultData() {
       {
         id: 'comp_sadara',
         name: 'Sadara Chemical',
-        logo_url: '',
+        logo_url: '/logos/sadara.png',
         website_url: 'https://www.sadara.com',
         description: 'Sadara Chemical Company approved thermal jacketing provider.',
         vendor_id_code: 'SAD-90112',
@@ -307,7 +299,7 @@ function seedDefaultData() {
       {
         id: 'comp_knpc',
         name: 'KNPC',
-        logo_url: '',
+        logo_url: '/logos/knpc.svg',
         website_url: 'https://www.knpc.com',
         description: 'Kuwait National Petroleum Company verified insulation contractor supplier.',
         vendor_id_code: 'KNPC-7492',
@@ -316,7 +308,7 @@ function seedDefaultData() {
       {
         id: 'comp_totalenergies',
         name: 'TotalEnergies',
-        logo_url: '',
+        logo_url: '/logos/totalenergies.png',
         website_url: 'https://totalenergies.com',
         description: 'TotalEnergies international EPC approved insulation brand.',
         vendor_id_code: 'TOT-44021',
@@ -325,7 +317,7 @@ function seedDefaultData() {
       {
         id: 'comp_maaden',
         name: "MA'ADEN",
-        logo_url: '',
+        logo_url: '/logos/maaden.svg',
         website_url: 'https://www.maaden.com.sa',
         description: 'Saudi Arabian Mining Company certified insulation supplier.',
         vendor_id_code: 'MAD-2091',

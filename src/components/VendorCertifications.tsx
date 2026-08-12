@@ -8,107 +8,49 @@ import { VendorModal } from './VendorModal';
 export const SaudiAramcoLogoSvg: React.FC<{ height?: number }> = ({ height = 26 }) => (
   <div style={{ display: 'inline-flex', alignItems: 'center', height: `${height}px`, maxWidth: '110px' }}>
     <img
-      src="https://www.aramco.com/-/jssmedia/project/aramcocom/aramco-logo--white.webp"
+      src="/logos/aramco.svg"
       alt="Saudi Aramco Official Logo"
       style={{
         height: `${height}px`,
         maxWidth: '110px',
         objectFit: 'contain',
-        filter: 'brightness(0) saturate(100%) invert(44%) sepia(85%) saturate(1915%) hue-rotate(164deg) brightness(96%) contrast(101%)',
       }}
     />
   </div>
 );
 
 const CompanyLogoIcon: React.FC<{ name: string; logoUrl?: string }> = ({ name, logoUrl }) => {
-  const [imgError, setImgError] = useState(false);
+  const getLogoPath = () => {
+    const n = (name || '').toLowerCase();
+    if (n.includes('aramco')) return '/logos/aramco.svg';
+    if (n.includes('sabic')) return '/logos/sabic.svg';
+    if (n.includes('adnoc')) return '/logos/adnoc.svg';
+    if (n.includes('sadara')) return '/logos/sadara.svg';
+    if (n.includes('knpc')) return '/logos/knpc.svg';
+    if (n.includes('total')) return '/logos/totalenergies.svg';
+    if (n.includes('maaden') || n.includes("ma'aden")) return '/logos/maaden.svg';
+    return logoUrl || '/logos/aramco.svg';
+  };
 
-  if (logoUrl && !imgError) {
-    return (
-      <img
-        src={logoUrl}
-        alt={name}
-        onError={() => setImgError(true)}
-        style={{ maxHeight: '28px', maxWidth: '95px', objectFit: 'contain' }}
-      />
-    );
-  }
-
-  const n = (name || '').toLowerCase();
-
-  if (n.includes('adnoc')) {
-    return (
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-        <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 21 12 21C12 21 19 14.25 19 9C19 5.13 15.87 2 12 2Z" fill="#005691" />
-        <circle cx="12" cy="9" r="3.5" fill="#00A3E0" />
-      </svg>
-    );
-  }
-
-  if (n.includes('ma\'aden') || n.includes('maaden')) {
-    return (
-      <svg width="28" height="22" viewBox="0 0 28 22" fill="none">
-        <path d="M3 16C3 11 7 5 14 5C21 5 25 16 25 16" stroke="#B8860B" strokeWidth="3.5" strokeLinecap="round" />
-        <path d="M7 16C7 12 10 8 14 8C18 8 21 16 21 16" stroke="#DAA520" strokeWidth="2.5" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  if (n.includes('aramco')) {
-    return (
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-        <rect width="24" height="24" rx="5" fill="#00A3E0" />
-        <circle cx="12" cy="12" r="6" fill="#84BD00" />
-      </svg>
-    );
-  }
-
-  if (n.includes('sabic')) {
-    return (
-      <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#005691', fontFamily: 'sans-serif' }}>sabic</span>
-    );
-  }
-
-  if (n.includes('totalenergies') || n.includes('total')) {
-    return (
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-        <path d="M4 8C8 4 16 4 20 8" stroke="#E11D48" strokeWidth="3.5" strokeLinecap="round" />
-        <path d="M4 16C8 20 16 20 20 16" stroke="#2563EB" strokeWidth="3.5" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  if (n.includes('sadara')) {
-    return (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <polygon points="12,3 21,21 3,21" fill="#0EA5E9" />
-      </svg>
-    );
-  }
-
-  if (n.includes('knpc')) {
-    return (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <polygon points="12,2 22,22 2,22" fill="#DC2626" />
-      </svg>
-    );
-  }
+  const src = (logoUrl && logoUrl.startsWith('/logos/')) ? logoUrl : getLogoPath();
 
   return (
-    <div style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--navy-dark)' }}>
-      {name?.charAt(0) || 'V'}
-    </div>
+    <img
+      src={src}
+      alt={name}
+      style={{ maxHeight: '30px', maxWidth: '110px', objectFit: 'contain' }}
+    />
   );
 };
 
 const DEFAULT_COMPANY_LOGOS = [
-  { id: 'comp_aramco', name: 'Saudi Aramco', vendor_id_code: '10114402', logo_url: 'https://cdn.worldvectorlogo.com/logos/saudi-aramco.svg' },
-  { id: 'comp_sabic', name: 'SABIC', vendor_id_code: '11047900', logo_url: 'https://cdn.worldvectorlogo.com/logos/sabic.svg' },
-  { id: 'comp_adnoc', name: 'ADNOC', vendor_id_code: 'ADNOC-88492', logo_url: '' },
-  { id: 'comp_sadara', name: 'Sadara Chemical', vendor_id_code: 'SAD-90112', logo_url: '' },
-  { id: 'comp_knpc', name: 'KNPC', vendor_id_code: 'KNPC-7492', logo_url: '' },
-  { id: 'comp_totalenergies', name: 'TotalEnergies', vendor_id_code: 'TOT-44021', logo_url: '' },
-  { id: 'comp_maaden', name: "MA'ADEN", vendor_id_code: 'MAD-2091', logo_url: '' },
+  { id: 'comp_aramco', name: 'Saudi Aramco', vendor_id_code: '10114402', logo_url: '/logos/aramco.svg' },
+  { id: 'comp_sabic', name: 'SABIC', vendor_id_code: '11047900', logo_url: '/logos/sabic.svg' },
+  { id: 'comp_adnoc', name: 'ADNOC', vendor_id_code: 'ADNOC-88492', logo_url: '/logos/adnoc.svg' },
+  { id: 'comp_sadara', name: 'Sadara Chemical', vendor_id_code: 'SAD-90112', logo_url: '/logos/sadara.svg' },
+  { id: 'comp_knpc', name: 'KNPC', vendor_id_code: 'KNPC-7492', logo_url: '/logos/knpc.svg' },
+  { id: 'comp_totalenergies', name: 'TotalEnergies', vendor_id_code: 'TOT-44021', logo_url: '/logos/totalenergies.svg' },
+  { id: 'comp_maaden', name: "MA'ADEN", vendor_id_code: 'MAD-2091', logo_url: '/logos/maaden.svg' },
 ];
 
 export const VendorCertifications: React.FC = () => {
@@ -122,21 +64,14 @@ export const VendorCertifications: React.FC = () => {
       .then((res) => res.json())
       .then((data) => {
         if (data.success && data.data && data.data.length > 0) {
-          // Normalize names and logo URLs for clean display
           const cleaned = data.data.map((item: any) => {
             let name = item.name;
             if (name.includes("MA'ADEN") || name.includes("Maaden")) name = "MA'ADEN";
             if (name.includes("KNPC")) name = "KNPC";
-            
-            let logo_url = item.logo_url;
-            if (!logo_url || logo_url.includes('oraclecloud') || logo_url.includes('adnoc.ae') || name === "MA'ADEN" || name === "ADNOC") {
-              logo_url = '';
-            }
-            
             return {
               ...item,
               name,
-              logo_url,
+              logo_url: item.logo_url && item.logo_url.startsWith('/logos/') ? item.logo_url : undefined,
             };
           });
           setCompanyLogos(cleaned);

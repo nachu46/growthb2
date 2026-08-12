@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 36" fill="none">
+  <rect width="28" height="28" y="4" rx="6" fill="#00A3E0"/>
+  <circle cx="14" cy="18" r="7" fill="#84BD00"/>
+  <path d="M14 8L16 14H22L17 18L19 24L14 20L9 24L11 18L6 14H12L14 8Z" fill="#FFFFFF"/>
+  <text x="36" y="24" fill="#0F172A" font-size="16" font-weight="900" font-family="system-ui, -apple-system, sans-serif">Aramco</text>
+</svg>

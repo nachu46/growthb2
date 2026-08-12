@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 36" fill="none">
+  <path d="M14 4C8.47715 4 4 8.47715 4 14C4 20.5 14 30 14 30C14 30 24 20.5 24 14C24 8.47715 19.5228 4 14 4Z" fill="#005691"/>
+  <circle cx="14" cy="14" r="4.5" fill="#00A3E0"/>
+  <text x="32" y="24" fill="#005691" font-size="17" font-weight="900" font-family="system-ui, -apple-system, sans-serif" letter-spacing="0.05em">ADNOC</text>
+</svg>

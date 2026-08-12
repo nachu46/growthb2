@@ -20,14 +20,95 @@ export const SaudiAramcoLogoSvg: React.FC<{ height?: number }> = ({ height = 26 
   </div>
 );
 
+const CompanyLogoIcon: React.FC<{ name: string; logoUrl?: string }> = ({ name, logoUrl }) => {
+  const [imgError, setImgError] = useState(false);
+
+  if (logoUrl && !imgError) {
+    return (
+      <img
+        src={logoUrl}
+        alt={name}
+        onError={() => setImgError(true)}
+        style={{ maxHeight: '28px', maxWidth: '95px', objectFit: 'contain' }}
+      />
+    );
+  }
+
+  const n = (name || '').toLowerCase();
+
+  if (n.includes('adnoc')) {
+    return (
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 21 12 21C12 21 19 14.25 19 9C19 5.13 15.87 2 12 2Z" fill="#005691" />
+        <circle cx="12" cy="9" r="3.5" fill="#00A3E0" />
+      </svg>
+    );
+  }
+
+  if (n.includes('ma\'aden') || n.includes('maaden')) {
+    return (
+      <svg width="28" height="22" viewBox="0 0 28 22" fill="none">
+        <path d="M3 16C3 11 7 5 14 5C21 5 25 16 25 16" stroke="#B8860B" strokeWidth="3.5" strokeLinecap="round" />
+        <path d="M7 16C7 12 10 8 14 8C18 8 21 16 21 16" stroke="#DAA520" strokeWidth="2.5" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (n.includes('aramco')) {
+    return (
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+        <rect width="24" height="24" rx="5" fill="#00A3E0" />
+        <circle cx="12" cy="12" r="6" fill="#84BD00" />
+      </svg>
+    );
+  }
+
+  if (n.includes('sabic')) {
+    return (
+      <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#005691', fontFamily: 'sans-serif' }}>sabic</span>
+    );
+  }
+
+  if (n.includes('totalenergies') || n.includes('total')) {
+    return (
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+        <path d="M4 8C8 4 16 4 20 8" stroke="#E11D48" strokeWidth="3.5" strokeLinecap="round" />
+        <path d="M4 16C8 20 16 20 20 16" stroke="#2563EB" strokeWidth="3.5" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (n.includes('sadara')) {
+    return (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <polygon points="12,3 21,21 3,21" fill="#0EA5E9" />
+      </svg>
+    );
+  }
+
+  if (n.includes('knpc')) {
+    return (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <polygon points="12,2 22,22 2,22" fill="#DC2626" />
+      </svg>
+    );
+  }
+
+  return (
+    <div style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--navy-dark)' }}>
+      {name?.charAt(0) || 'V'}
+    </div>
+  );
+};
+
 const DEFAULT_COMPANY_LOGOS = [
-  { id: 'comp_aramco', name: 'Saudi Aramco', vendor_id_code: '10114402', logo_url: 'https://www.aramco.com/-/jssmedia/project/aramcocom/aramco-logo--white.webp' },
-  { id: 'comp_sabic', name: 'SABIC', vendor_id_code: '11047900', logo_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Logo_of_Sabic.svg/960px-Logo_of_Sabic.svg.png' },
-  { id: 'comp_adnoc', name: 'ADNOC', vendor_id_code: 'ADNOC-88492', logo_url: 'https://www.adnoc.ae/-/media/adnoc/images/content/logo/adnoc-logo-updated.ashx?la=en&hash=AC4AE51DCC07971618CF5126A29DB82D' },
-  { id: 'comp_sadara', name: 'Sadara Chemical', vendor_id_code: 'SAD-90112', logo_url: 'https://sadara.com/documents/33025/48815/logo-white-en.png/f06ae9ae-4aa6-36eb-c038-3ac8b7e89c6e?version=1.0&t=1767967990634' },
-  { id: 'comp_knpc', name: 'KNPC (Kuwait National Petroleum)', vendor_id_code: 'KNPC-7492', logo_url: 'https://www.knpc.com/en-us/assets/images/logo-color.svg' },
-  { id: 'comp_totalenergies', name: 'TotalEnergies', vendor_id_code: 'TOT-44021', logo_url: 'https://totalenergies.com/sites/g/files/nyvcgl301/files/styles/w1200/public/logo-totalenergies.png' },
-  { id: 'comp_maaden', name: "MA'ADEN Saudi Mining", vendor_id_code: 'MAD-2091', logo_url: 'https://www.maaden.com.sa/assets/images/logo.png' },
+  { id: 'comp_aramco', name: 'Saudi Aramco', vendor_id_code: '10114402', logo_url: 'https://cdn.worldvectorlogo.com/logos/saudi-aramco.svg' },
+  { id: 'comp_sabic', name: 'SABIC', vendor_id_code: '11047900', logo_url: 'https://cdn.worldvectorlogo.com/logos/sabic.svg' },
+  { id: 'comp_adnoc', name: 'ADNOC', vendor_id_code: 'ADNOC-88492', logo_url: '' },
+  { id: 'comp_sadara', name: 'Sadara Chemical', vendor_id_code: 'SAD-90112', logo_url: '' },
+  { id: 'comp_knpc', name: 'KNPC', vendor_id_code: 'KNPC-7492', logo_url: '' },
+  { id: 'comp_totalenergies', name: 'TotalEnergies', vendor_id_code: 'TOT-44021', logo_url: '' },
+  { id: 'comp_maaden', name: "MA'ADEN", vendor_id_code: 'MAD-2091', logo_url: '' },
 ];
 
 export const VendorCertifications: React.FC = () => {
@@ -41,7 +122,12 @@ export const VendorCertifications: React.FC = () => {
       .then((res) => res.json())
       .then((data) => {
         if (data.success && data.data && data.data.length > 0) {
-          setCompanyLogos(data.data);
+          // Normalize names for clean display
+          const cleaned = data.data.map((item: any) => ({
+            ...item,
+            name: item.name === 'MA\'ADEN Saudi Mining' ? 'MA\'ADEN' : item.name === 'KNPC (Kuwait National Petroleum)' ? 'KNPC' : item.name
+          }));
+          setCompanyLogos(cleaned);
         }
         setLoading(false);
       })
@@ -50,12 +136,11 @@ export const VendorCertifications: React.FC = () => {
 
   const handleScroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
-      const scrollAmount = direction === 'left' ? -280 : 280;
+      const scrollAmount = direction === 'left' ? -300 : 300;
       scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
 
-  // Triple the array to create a continuous, infinite marquee sliding loop
   const displayLogos = [...companyLogos, ...companyLogos, ...companyLogos];
 
   return (
@@ -191,24 +276,20 @@ export const VendorCertifications: React.FC = () => {
                 padding: '1.25rem 1.5rem',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '1rem',
+                gap: '0.85rem',
                 cursor: 'pointer',
                 boxShadow: '0 4px 14px rgba(0, 0, 0, 0.03)',
                 transition: 'transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease',
                 flexShrink: 0,
-                width: '260px',
+                width: '270px',
               }}
               className="vendor-card"
             >
-              <div style={{ overflow: 'hidden', height: '36px', display: 'flex', alignItems: 'center', flexShrink: 0 }}>
-                <img
-                  src={v.logo_url}
-                  alt={v.name}
-                  style={{ maxHeight: '30px', maxWidth: '95px', objectFit: 'contain' }}
-                />
+              <div style={{ overflow: 'hidden', height: '32px', display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+                <CompanyLogoIcon name={v.name} logoUrl={v.logo_url} />
               </div>
 
-              <div style={{ fontSize: '0.875rem', fontWeight: 800, color: 'var(--slate-900)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1 }}>
+              <div style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--slate-900)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1 }}>
                 {v.name}
               </div>
             </div>

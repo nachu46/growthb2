@@ -174,15 +174,12 @@ export const ProductsCatalogView: React.FC<ProductsCatalogViewProps> = ({ onAddR
         </div>
 
         <span style={{
-          display: 'inline-block',
-          padding: '0.3rem 0.8rem',
-          borderRadius: 'var(--radius-full)',
-          backgroundColor: '#FFE4E6',
-          color: 'var(--primary-red)',
-          fontSize: '0.7rem',
+          fontSize: '0.8rem',
           fontWeight: 800,
+          color: 'var(--primary-red)',
           textTransform: 'uppercase',
-          letterSpacing: '0.06em',
+          letterSpacing: '0.08em',
+          display: 'block',
           marginBottom: '0.75rem',
         }}>
           Browse Products

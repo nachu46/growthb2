@@ -83,22 +83,16 @@ export const EngineeringResourceHub: React.FC<EngineeringResourceHubProps> = ({ 
           >
             {/* Icon Circle */}
             <div style={{
-              width: '52px',
-              height: '52px',
-              borderRadius: '50%',
-              backgroundColor: idx === 0 ? '#E0F2FE' : idx === 1 ? '#F1F5F9' : '#FFE4E6',
+              width: '48px',
+              height: '48px',
+              borderRadius: '12px',
+              backgroundColor: '#F1F5F9',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0,
             }}>
-              {idx === 0 ? (
-                <span style={{ color: '#0EA5E9', fontWeight: 800, fontSize: '1.2rem' }}>✕</span>
-              ) : idx === 1 ? (
-                <span style={{ color: 'var(--slate-600)', fontWeight: 800, fontSize: '1.2rem' }}>◯</span>
-              ) : (
-                <span style={{ color: 'var(--primary-red)', fontWeight: 800, fontSize: '1.2rem' }}>Δ</span>
-              )}
+              <FileText size={22} style={{ color: 'var(--slate-700)' }} />
             </div>
 
             <div>

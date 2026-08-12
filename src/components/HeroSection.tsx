@@ -39,19 +39,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenProfile }) => {
       }} className="hero-responsive-grid">
         {/* Left Hero Column */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          {/* Pill Badge (Matches Mobile Screenshot 1: B2B INDUSTRIAL SUPPLY) */}
+          {/* Eyebrow */}
           <div>
             <span style={{
-              display: 'inline-block',
-              padding: '0.35rem 0.95rem',
-              borderRadius: 'var(--radius-full)',
-              backgroundColor: '#FFE4E6',
-              color: 'var(--primary-red)',
-              fontSize: '0.725rem',
+              fontSize: '0.825rem',
               fontWeight: 800,
-              letterSpacing: '0.06em',
+              color: 'var(--primary-red)',
+              letterSpacing: '0.08em',
               textTransform: 'uppercase',
-              boxShadow: '0 2px 6px rgba(225, 29, 72, 0.1)',
             }}>
               B2B INDUSTRIAL SUPPLY
             </span>

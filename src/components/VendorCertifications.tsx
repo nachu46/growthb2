@@ -142,19 +142,6 @@ export const VendorCertifications: React.FC = () => {
           gap: '1.5rem',
         }}>
           <div>
-            <span style={{
-              display: 'inline-block',
-              padding: '0.35rem 0.9rem',
-              borderRadius: 'var(--radius-full)',
-              backgroundColor: '#FFE4E6',
-              color: 'var(--primary-red)',
-              fontSize: '0.725rem',
-              fontWeight: 800,
-              letterSpacing: '0.06em',
-              marginBottom: '0.75rem',
-            }}>
-              Tier-1 Quality Assurance
-            </span>
             <h2 style={{
               fontSize: 'clamp(1.75rem, 3.5vw, 2.5rem)',
               fontWeight: 800,

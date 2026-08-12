@@ -60,7 +60,8 @@ export default function AdminBomPage() {
         borderRadius: '20px',
         border: '1px solid var(--slate-200)',
         padding: '1.25rem',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
+        boxShadow: 'none',
+        overflowX: 'auto',
       }}>
         {loading ? (
           <div style={{ padding: '2rem', textAlign: 'center', fontWeight: 700, color: 'var(--slate-500)' }}>Loading BOM submissions...</div>

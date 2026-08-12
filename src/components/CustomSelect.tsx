@@ -113,7 +113,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
             fontSize: '0.8rem',
             cursor: disabled ? 'not-allowed' : 'pointer',
             transition: 'all 0.2s ease',
-            boxShadow: isOpen ? '0 0 0 3px rgba(225, 29, 72, 0.12)' : 'none',
+            boxShadow: 'none',
           }}
         >
           <span>{selectedOption ? selectedOption.label : placeholder}</span>
@@ -137,7 +137,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
               backgroundColor: '#FFFFFF',
               borderRadius: '12px',
               border: '1px solid var(--slate-200)',
-              boxShadow: '0 12px 30px rgba(15, 23, 42, 0.15)',
+              boxShadow: 'none',
               padding: '0.35rem',
               zIndex: 100,
             }}
@@ -212,7 +212,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
           outline: 'none',
           textAlign: 'left',
           transition: 'all 0.2s ease',
-          boxShadow: !isHero && isOpen ? `0 0 0 3px rgba(225, 29, 72, 0.1)` : 'none',
+          boxShadow: 'none',
         }}
       >
         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -242,7 +242,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
             backgroundColor: '#FFFFFF',
             borderRadius: '14px',
             border: '1px solid var(--slate-200)',
-            boxShadow: '0 16px 36px -4px rgba(15, 23, 42, 0.16), 0 4px 12px rgba(0, 0, 0, 0.05)',
+            boxShadow: 'none',
             padding: '0.4rem',
             zIndex: 999,
           }}

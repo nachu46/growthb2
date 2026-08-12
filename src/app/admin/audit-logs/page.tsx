@@ -33,7 +33,8 @@ export default function AdminAuditLogsPage() {
         borderRadius: '20px',
         border: '1px solid var(--slate-200)',
         padding: '1.25rem',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
+        boxShadow: 'none',
+        overflowX: 'auto',
       }}>
         {loading ? (
           <div style={{ padding: '2rem', textAlign: 'center', fontWeight: 700, color: 'var(--slate-500)' }}>Loading audit log entries...</div>
@@ -70,8 +71,9 @@ export default function AdminAuditLogsPage() {
                       fontWeight: 800,
                       padding: '0.2rem 0.55rem',
                       borderRadius: 'var(--radius-full)',
-                      backgroundColor: log.action === 'CREATE' ? '#ECFDF5' : log.action === 'DELETE' ? '#FFE4E6' : '#E0F2FE',
-                      color: log.action === 'CREATE' ? '#10B981' : log.action === 'DELETE' ? 'var(--primary-red)' : '#0EA5E9',
+                      backgroundColor: log.action === 'CREATE' ? '#F0F9FF' : log.action === 'DELETE' ? '#FEF2F2' : '#F8FAFC',
+                      color: log.action === 'CREATE' ? '#0284C7' : log.action === 'DELETE' ? '#DC2626' : '#475569',
+                      border: '1px solid var(--slate-200)',
                     }}>
                       {log.action}
                     </span>
@@ -79,7 +81,7 @@ export default function AdminAuditLogsPage() {
                   <td style={{ padding: '0.85rem 1rem', fontWeight: 800, color: 'var(--slate-800)' }}>
                     {log.entity}
                   </td>
-                  <td style={{ padding: '0.85rem 1rem', fontSize: '0.775rem', color: 'var(--slate-600)', fontFamily: 'monospace' }}>
+                  <td style={{ padding: '0.85rem 1rem', fontSize: '0.775rem', color: 'var(--slate-600)', fontFamily: 'monospace', maxWidth: '380px', wordBreak: 'break-all', whiteSpace: 'pre-wrap' }}>
                     {log.metadata_json || '—'}
                   </td>
                 </tr>

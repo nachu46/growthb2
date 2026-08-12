@@ -173,7 +173,7 @@ export default function AdminProductsPage() {
             fontSize: '0.9rem',
             border: 'none',
             cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(15, 23, 42, 0.08)',
+            boxShadow: 'none',
           }}
         >
           <Plus size={18} />
@@ -186,7 +186,7 @@ export default function AdminProductsPage() {
         borderRadius: '20px',
         border: '1px solid var(--slate-200)',
         padding: '1.25rem',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
+        boxShadow: 'none',
       }}>
         {loading ? (
           <div style={{ padding: '2rem', textAlign: 'center', fontWeight: 700, color: 'var(--slate-500)' }}>Loading database products...</div>

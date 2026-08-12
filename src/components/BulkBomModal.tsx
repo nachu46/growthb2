@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, Upload, FileSpreadsheet, CheckCircle2, MessageCircle } from 'lucide-react';
+import { X, Upload, FileSpreadsheet, Award, MessageCircle } from 'lucide-react';
 
 interface BulkBomModalProps {
   isOpen: boolean;
@@ -91,7 +91,7 @@ export const BulkBomModal: React.FC<BulkBomModalProps> = ({ isOpen, onClose }) =
 
         {bomResult ? (
           <div style={{ backgroundColor: '#ECFDF5', padding: '1.5rem', borderRadius: 'var(--radius-md)', border: '1px solid #10B981' }}>
-            <CheckCircle2 size={40} color="#10B981" style={{ margin: '0 auto 1rem auto' }} />
+            <Award size={40} color="#10B981" style={{ margin: '0 auto 1rem auto' }} />
             <h4 style={{ fontWeight: 800, fontSize: '1.25rem', color: '#065F46', textAlign: 'center', marginBottom: '0.5rem' }}>
               BOM Successfully Matched! ({bomResult.bomId})
             </h4>

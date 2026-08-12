@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { CheckCircle2, XCircle } from 'lucide-react';
+import { Award, XCircle } from 'lucide-react';
 
 export const SupplyPartners: React.FC = () => {
   const [partners, setPartners] = useState<any[]>([]);
@@ -58,7 +58,7 @@ export const SupplyPartners: React.FC = () => {
             color: '#0EA5E9',
             flexShrink: 0,
           }}>
-            <CheckCircle2 size={22} />
+            <Award size={22} />
           </div>
           <div>
             <h4 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '2px' }}>

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { ArrowUpRight, CheckCircle2, ArrowRight, ShieldCheck, Award, FileText } from 'lucide-react';
+import { ArrowUpRight, Award, ArrowRight, ShieldCheck, FileText } from 'lucide-react';
 import { CorporateProfileModal } from './CorporateProfileModal';
 
 export const CertificationsView: React.FC = () => {
@@ -319,7 +319,7 @@ export const CertificationsView: React.FC = () => {
             justifyContent: 'center',
             flexShrink: 0,
           }}>
-            <CheckCircle2 size={24} color="#FFFFFF" />
+            <Award size={24} color="#FFFFFF" />
           </div>
           <div>
             <h4 style={{ fontSize: '1.05rem', fontWeight: 800, marginBottom: '2px' }}>

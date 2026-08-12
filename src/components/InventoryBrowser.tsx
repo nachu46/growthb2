@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { MATERIAL_PILLARS, INDUSTRY_APPROVALS, PRODUCTS_CATALOG, ProductItem } from '@/data/mockData';
-import { Thermometer, ShieldCheck, Plus, ExternalLink } from 'lucide-react';
+import { Thermometer, Award, Plus, ExternalLink } from 'lucide-react';
 
 interface InventoryBrowserProps {
   onAddRfqItem: (product: ProductItem) => void;
@@ -287,7 +287,7 @@ export const InventoryBrowser: React.FC<InventoryBrowserProps> = ({ onAddRfqItem
                     <span>Temp: <strong>{product.tempRange}</strong></span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--slate-700)' }}>
-                    <ShieldCheck size={14} color="#0EA5E9" />
+                    <Award size={14} color="#0EA5E9" />
                     <span>Spec: <strong>{product.compliance}</strong></span>
                   </div>
                 </div>

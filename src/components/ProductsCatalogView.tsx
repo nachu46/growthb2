@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Search, ChevronDown, FileSpreadsheet, ArrowRight, ShieldCheck, Thermometer, Plus, Info, ExternalLink, RefreshCw, MessageSquare, Wrench } from 'lucide-react';
+import { Search, ChevronDown, FileSpreadsheet, ArrowRight, Award, Thermometer, Plus, Info, ExternalLink, RefreshCw, MessageSquare, Wrench } from 'lucide-react';
 import { PRODUCTS_CATALOG, ProductItem } from '@/data/mockData';
 import { BulkBomModal } from './BulkBomModal';
 

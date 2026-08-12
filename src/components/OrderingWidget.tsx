@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { MATERIAL_PILLARS, GCC_HUBS } from '@/data/mockData';
-import { ChevronDown, CheckCircle2, MessageCircle } from 'lucide-react';
+import { ChevronDown, Award, MessageCircle } from 'lucide-react';
 
 export const OrderingWidget: React.FC = () => {
   const [selectedPillar, setSelectedPillar] = useState('Insulation');
@@ -238,7 +238,7 @@ export const OrderingWidget: React.FC = () => {
                   color: '#10B981',
                   flexShrink: 0,
                 }}>
-                  <CheckCircle2 size={18} />
+                  <Award size={18} />
                 </div>
                 <div>
                   <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '2px' }}>

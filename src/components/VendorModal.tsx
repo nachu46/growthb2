@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { X, ShieldCheck, Download } from 'lucide-react';
+import { X, Award, Download } from 'lucide-react';
 
 interface VendorModalProps {
   isOpen: boolean;
@@ -38,9 +38,9 @@ export const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, vendo
         boxShadow: '0 25px 50px -12px rgba(0,0,0,0.3)',
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#10B981', fontWeight: 800, fontSize: '0.8rem' }}>
-            <ShieldCheck size={18} />
-            <span>VERIFIED TIER-1 VENDOR APPROVAL</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--navy-dark)', fontWeight: 800, fontSize: '0.8rem' }}>
+            <Award size={18} color="var(--primary-red)" />
+            <span>OFFICIAL TIER-1 VENDOR REGISTRATION</span>
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '1.2rem', color: 'var(--slate-400)', cursor: 'pointer' }}>
             ✕

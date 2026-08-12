@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { ProductItem } from '@/data/mockData';
-import { Plus, Minus, Download, FileText, CheckCircle2, ShieldCheck, Thermometer, Box } from 'lucide-react';
+import { Plus, Minus, Download, FileText, Award, Thermometer, Box } from 'lucide-react';
 
 interface ProductDetailViewProps {
   product: ProductItem;

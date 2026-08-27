@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Upload, FileSpreadsheet, Award, MessageCircle } from 'lucide-react';
 
 interface BulkBomModalProps {
@@ -12,8 +13,11 @@ export const BulkBomModal: React.FC<BulkBomModalProps> = ({ isOpen, onClose }) =
   const [bomText, setBomText] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [bomResult, setBomResult] = useState<any | null>(null);
+  const [mounted, setMounted] = useState(false);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleProcessBom = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,7 +53,9 @@ export const BulkBomModal: React.FC<BulkBomModalProps> = ({ isOpen, onClose }) =
     }
   };
 
-  return (
+  if (!isOpen || !mounted || typeof document === 'undefined') return null;
+
+  return createPortal(
     <div
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
@@ -60,10 +66,9 @@ export const BulkBomModal: React.FC<BulkBomModalProps> = ({ isOpen, onClose }) =
         zIndex: 110,
         backgroundColor: 'rgba(15, 23, 42, 0.75)',
         backdropFilter: 'blur(6px)',
-        display: 'flex',
-        alignItems: 'flex-start',
-        justifyContent: 'center',
-        padding: '2.5rem 1.25rem',
+        display: 'grid',
+        placeItems: 'center',
+        padding: '1.5rem',
         overflowY: 'auto',
       }}
     >
@@ -73,8 +78,7 @@ export const BulkBomModal: React.FC<BulkBomModalProps> = ({ isOpen, onClose }) =
         padding: '2rem 2.25rem',
         maxWidth: '680px',
         width: '100%',
-        margin: 'auto 0',
-        maxHeight: 'calc(100vh - 5rem)',
+        maxHeight: 'min(85vh, 650px)',
         overflowY: 'auto',
         boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(226, 232, 240, 0.9)',
         position: 'relative',
@@ -219,6 +223,7 @@ export const BulkBomModal: React.FC<BulkBomModalProps> = ({ isOpen, onClose }) =
           </form>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

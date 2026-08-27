@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Award, Download } from 'lucide-react';
 
 interface VendorModalProps {
@@ -10,14 +11,20 @@ interface VendorModalProps {
 }
 
 export const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, vendor }) => {
-  if (!isOpen || !vendor) return null;
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!isOpen || !vendor || !mounted || typeof document === 'undefined') return null;
 
   const handleDownloadCert = () => {
     const text = encodeURIComponent(`Hello Quality & Compliance Desk, please provide an official stamped copy of ${vendor.name} Approval Certificate (${vendor.vendorId}).`);
     window.open(`https://wa.me/9715309555?text=${text}`, '_blank');
   };
 
-  return (
+  return createPortal(
     <div
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
@@ -28,10 +35,9 @@ export const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, vendo
         backgroundColor: 'rgba(15, 23, 42, 0.75)',
         backdropFilter: 'blur(6px)',
         zIndex: 110,
-        display: 'flex',
-        alignItems: 'flex-start',
-        justifyContent: 'center',
-        padding: '2.5rem 1.25rem',
+        display: 'grid',
+        placeItems: 'center',
+        padding: '1.5rem',
         overflowY: 'auto',
       }}
     >
@@ -41,8 +47,7 @@ export const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, vendo
         padding: '2rem 2.25rem',
         maxWidth: '550px',
         width: '100%',
-        margin: 'auto 0',
-        maxHeight: 'calc(100vh - 5rem)',
+        maxHeight: 'min(85vh, 600px)',
         overflowY: 'auto',
         boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(226, 232, 240, 0.9)',
         position: 'relative',
@@ -113,6 +118,7 @@ export const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, vendo
           Request Official Certificate Copy →
         </button>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

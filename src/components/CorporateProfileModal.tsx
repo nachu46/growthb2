@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Award, ShieldCheck, Download, Calendar, MapPin, Building } from 'lucide-react';
 
 interface CorporateProfileModalProps {
@@ -9,7 +10,13 @@ interface CorporateProfileModalProps {
 }
 
 export const CorporateProfileModal: React.FC<CorporateProfileModalProps> = ({ isOpen, onClose }) => {
-  if (!isOpen) return null;
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!isOpen || !mounted || typeof document === 'undefined') return null;
 
   const timelineEvents = [
     { year: '2014', title: 'Founded in UAE', desc: 'Established Growth International L.L.C. in Ajman, UAE specializing in thermal insulation.' },
@@ -19,7 +26,7 @@ export const CorporateProfileModal: React.FC<CorporateProfileModalProps> = ({ is
     { year: '2026', title: '18-Year Leadership Network', desc: 'Over 14,000 metric tons of stock ready across 9 regional offices in 6 countries.' },
   ];
 
-  return (
+  return createPortal(
     <div
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
@@ -30,10 +37,9 @@ export const CorporateProfileModal: React.FC<CorporateProfileModalProps> = ({ is
         zIndex: 110,
         backgroundColor: 'rgba(15, 23, 42, 0.75)',
         backdropFilter: 'blur(6px)',
-        display: 'flex',
-        alignItems: 'flex-start',
-        justifyContent: 'center',
-        padding: '2.5rem 1.25rem',
+        display: 'grid',
+        placeItems: 'center',
+        padding: '1.5rem',
         overflowY: 'auto',
       }}
     >
@@ -43,8 +49,7 @@ export const CorporateProfileModal: React.FC<CorporateProfileModalProps> = ({ is
         padding: '2rem 2.25rem',
         maxWidth: '750px',
         width: '100%',
-        margin: 'auto 0',
-        maxHeight: 'calc(100vh - 5rem)',
+        maxHeight: 'min(85vh, 700px)',
         overflowY: 'auto',
         boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(226, 232, 240, 0.9)',
         position: 'relative',
@@ -160,6 +165,7 @@ export const CorporateProfileModal: React.FC<CorporateProfileModalProps> = ({ is
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

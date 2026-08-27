@@ -20,42 +20,66 @@ export const CorporateProfileModal: React.FC<CorporateProfileModalProps> = ({ is
   ];
 
   return (
-    <div style={{
-      position: 'fixed',
-      inset: 0,
-      zIndex: 110,
-      backgroundColor: 'rgba(15, 23, 42, 0.7)',
-      backdropFilter: 'blur(5px)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '1.5rem',
-    }}>
+    <div
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 110,
+        backgroundColor: 'rgba(15, 23, 42, 0.75)',
+        backdropFilter: 'blur(6px)',
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        padding: '2.5rem 1.25rem',
+        overflowY: 'auto',
+      }}
+    >
       <div style={{
         backgroundColor: '#FFFFFF',
-        borderRadius: 'var(--radius-lg)',
-        padding: '2.5rem',
+        borderRadius: '24px',
+        padding: '2rem 2.25rem',
         maxWidth: '750px',
         width: '100%',
-        maxHeight: '90vh',
+        margin: 'auto 0',
+        maxHeight: 'calc(100vh - 5rem)',
         overflowY: 'auto',
-        boxShadow: '0 25px 50px -12px rgba(0,0,0,0.3)',
+        boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(226, 232, 240, 0.9)',
+        position: 'relative',
       }}>
         {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem', gap: '1rem' }}>
           <div>
             <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--primary-red)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               Corporate Profile & History
             </span>
-            <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--slate-900)' }}>
+            <h2 style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--slate-900)' }}>
               Growth International L.L.C.
             </h2>
-            <p style={{ fontSize: '0.9rem', color: 'var(--slate-600)' }}>
+            <p style={{ fontSize: '0.85rem', color: 'var(--slate-600)' }}>
               Anchoring Middle East Industrial & Commercial Thermal Insulation Supply.
             </p>
           </div>
-          <button onClick={onClose} style={{ padding: '0.5rem', color: 'var(--slate-500)' }}>
-            <X size={24} />
+          <button
+            onClick={onClose}
+            aria-label="Close Modal"
+            style={{
+              padding: '0.6rem',
+              borderRadius: '50%',
+              backgroundColor: '#F1F5F9',
+              color: '#334155',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            }}
+          >
+            <X size={20} />
           </button>
         </div>
 

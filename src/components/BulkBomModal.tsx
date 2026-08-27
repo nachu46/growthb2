@@ -50,42 +50,66 @@ export const BulkBomModal: React.FC<BulkBomModalProps> = ({ isOpen, onClose }) =
   };
 
   return (
-    <div style={{
-      position: 'fixed',
-      inset: 0,
-      zIndex: 110,
-      backgroundColor: 'rgba(15, 23, 42, 0.65)',
-      backdropFilter: 'blur(5px)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '1.5rem',
-    }}>
+    <div
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 110,
+        backgroundColor: 'rgba(15, 23, 42, 0.75)',
+        backdropFilter: 'blur(6px)',
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        padding: '2.5rem 1.25rem',
+        overflowY: 'auto',
+      }}
+    >
       <div style={{
         backgroundColor: '#FFFFFF',
-        borderRadius: 'var(--radius-lg)',
-        padding: '2.5rem',
+        borderRadius: '24px',
+        padding: '2rem 2.25rem',
         maxWidth: '680px',
         width: '100%',
-        maxHeight: '90vh',
+        margin: 'auto 0',
+        maxHeight: 'calc(100vh - 5rem)',
         overflowY: 'auto',
-        boxShadow: '0 25px 50px -12px rgba(0,0,0,0.3)',
+        boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(226, 232, 240, 0.9)',
+        position: 'relative',
       }}>
         {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem', gap: '1rem' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
               <FileSpreadsheet size={22} color="var(--primary-red)" />
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--slate-900)' }}>
+              <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--slate-900)' }}>
                 Bulk Upload Bill of Materials (BOM)
               </h3>
             </div>
-            <p style={{ fontSize: '0.875rem', color: 'var(--slate-600)' }}>
+            <p style={{ fontSize: '0.85rem', color: 'var(--slate-600)' }}>
               Paste your line items or upload Excel/CSV/PDF schedule for automated SKU matching & bulk pricing.
             </p>
           </div>
-          <button onClick={onClose} style={{ padding: '0.5rem', color: 'var(--slate-500)' }}>
-            <X size={24} />
+          <button
+            onClick={onClose}
+            aria-label="Close Modal"
+            style={{
+              padding: '0.6rem',
+              borderRadius: '50%',
+              backgroundColor: '#F1F5F9',
+              color: '#334155',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            }}
+          >
+            <X size={20} />
           </button>
         </div>
 

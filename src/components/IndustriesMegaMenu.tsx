@@ -6,9 +6,11 @@ import { ArrowRight } from 'lucide-react';
 
 interface IndustriesMegaMenuProps {
   onClose?: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }
 
-export const IndustriesMegaMenu: React.FC<IndustriesMegaMenuProps> = ({ onClose }) => {
+export const IndustriesMegaMenu: React.FC<IndustriesMegaMenuProps> = ({ onClose, onMouseEnter, onMouseLeave }) => {
   const columns = [
     {
       id: 'oil-gas',
@@ -97,11 +99,14 @@ export const IndustriesMegaMenu: React.FC<IndustriesMegaMenuProps> = ({ onClose 
       />
 
       {/* Main Full-Container Mega Menu Card */}
-      <div style={{
-        position: 'absolute',
-        top: 'calc(100% + 8px)',
-        left: '50%',
-        transform: 'translateX(-50%)',
+      <div
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        style={{
+          position: 'absolute',
+          top: '100%',
+          left: '50%',
+          transform: 'translateX(-50%)',
         width: 'min(1280px, 98vw)',
         backgroundColor: '#FFFFFF',
         borderRadius: '24px',

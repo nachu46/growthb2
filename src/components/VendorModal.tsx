@@ -18,32 +18,58 @@ export const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, vendo
   };
 
   return (
-    <div style={{
-      position: 'fixed',
-      inset: 0,
-      backgroundColor: 'rgba(15, 23, 42, 0.65)',
-      backdropFilter: 'blur(4px)',
-      zIndex: 100,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '1.5rem',
-    }}>
+    <div
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        backgroundColor: 'rgba(15, 23, 42, 0.75)',
+        backdropFilter: 'blur(6px)',
+        zIndex: 110,
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        padding: '2.5rem 1.25rem',
+        overflowY: 'auto',
+      }}
+    >
       <div style={{
         backgroundColor: '#FFFFFF',
         borderRadius: '24px',
-        padding: '2.5rem',
+        padding: '2rem 2.25rem',
         maxWidth: '550px',
         width: '100%',
-        boxShadow: '0 25px 50px -12px rgba(0,0,0,0.3)',
+        margin: 'auto 0',
+        maxHeight: 'calc(100vh - 5rem)',
+        overflowY: 'auto',
+        boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(226, 232, 240, 0.9)',
+        position: 'relative',
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', gap: '1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--navy-dark)', fontWeight: 800, fontSize: '0.8rem' }}>
             <Award size={18} color="var(--primary-red)" />
             <span>OFFICIAL TIER-1 VENDOR REGISTRATION</span>
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '1.2rem', color: 'var(--slate-400)', cursor: 'pointer' }}>
-            ✕
+          <button
+            onClick={onClose}
+            aria-label="Close Modal"
+            style={{
+              padding: '0.6rem',
+              borderRadius: '50%',
+              backgroundColor: '#F1F5F9',
+              color: '#334155',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            }}
+          >
+            <X size={18} />
           </button>
         </div>
 

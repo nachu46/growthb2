@@ -22,6 +22,34 @@ export const Navbar: React.FC<NavbarProps> = ({ rfqCount, onOpenRfqQueue, onOpen
   const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
   const [isBomModalOpen, setIsBomModalOpen] = useState(false);
 
+  const prodTimeout = React.useRef<NodeJS.Timeout | null>(null);
+  const indTimeout = React.useRef<NodeJS.Timeout | null>(null);
+  const servTimeout = React.useRef<NodeJS.Timeout | null>(null);
+
+  const handleProductsEnter = () => {
+    if (prodTimeout.current) clearTimeout(prodTimeout.current);
+    setProductsDropdownOpen(true);
+  };
+  const handleProductsLeave = () => {
+    prodTimeout.current = setTimeout(() => setProductsDropdownOpen(false), 350);
+  };
+
+  const handleIndustriesEnter = () => {
+    if (indTimeout.current) clearTimeout(indTimeout.current);
+    setIndustriesDropdownOpen(true);
+  };
+  const handleIndustriesLeave = () => {
+    indTimeout.current = setTimeout(() => setIndustriesDropdownOpen(false), 350);
+  };
+
+  const handleServicesEnter = () => {
+    if (servTimeout.current) clearTimeout(servTimeout.current);
+    setServicesDropdownOpen(true);
+  };
+  const handleServicesLeave = () => {
+    servTimeout.current = setTimeout(() => setServicesDropdownOpen(false), 350);
+  };
+
   const pathname = usePathname();
 
   const isProductsActive = pathname.startsWith('/products');
@@ -74,12 +102,12 @@ export const Navbar: React.FC<NavbarProps> = ({ rfqCount, onOpenRfqQueue, onOpen
         <nav style={{ display: 'none', gap: '2rem', alignItems: 'center' }} className="desktop-nav">
           {/* Products Mega Menu */}
           <div
-            style={{ position: 'static' }}
-            onMouseEnter={() => setProductsDropdownOpen(true)}
-            onMouseLeave={() => setProductsDropdownOpen(false)}
+            style={{ position: 'static', paddingBottom: '0.5rem', paddingTop: '0.5rem' }}
+            onMouseEnter={handleProductsEnter}
+            onMouseLeave={handleProductsLeave}
           >
-            <Link
-              href="/products"
+            <div
+              onClick={() => setProductsDropdownOpen(prev => !prev)}
               style={{
                 fontWeight: 700,
                 fontSize: '0.925rem',
@@ -87,27 +115,31 @@ export const Navbar: React.FC<NavbarProps> = ({ rfqCount, onOpenRfqQueue, onOpen
                 display: 'flex',
                 alignItems: 'center',
                 gap: '4px',
-                padding: '0.5rem 0',
-                textDecoration: 'none',
+                padding: '0.25rem 0',
+                cursor: 'pointer',
               }}
             >
               <span>Products</span>
               <ChevronDown size={14} color={isProductsActive || productsDropdownOpen ? 'var(--primary-red)' : 'var(--slate-400)'} />
-            </Link>
+            </div>
 
             {productsDropdownOpen && (
-              <ProductsMegaMenu onClose={() => setProductsDropdownOpen(false)} />
+              <ProductsMegaMenu
+                onClose={() => setProductsDropdownOpen(false)}
+                onMouseEnter={handleProductsEnter}
+                onMouseLeave={handleProductsLeave}
+              />
             )}
           </div>
 
           {/* Industries Mega Menu */}
           <div
-            style={{ position: 'static' }}
-            onMouseEnter={() => setIndustriesDropdownOpen(true)}
-            onMouseLeave={() => setIndustriesDropdownOpen(false)}
+            style={{ position: 'static', paddingBottom: '0.5rem', paddingTop: '0.5rem' }}
+            onMouseEnter={handleIndustriesEnter}
+            onMouseLeave={handleIndustriesLeave}
           >
-            <Link
-              href="/industries"
+            <div
+              onClick={() => setIndustriesDropdownOpen(prev => !prev)}
               style={{
                 fontWeight: 700,
                 fontSize: '0.925rem',
@@ -115,16 +147,20 @@ export const Navbar: React.FC<NavbarProps> = ({ rfqCount, onOpenRfqQueue, onOpen
                 display: 'flex',
                 alignItems: 'center',
                 gap: '4px',
-                padding: '0.5rem 0',
-                textDecoration: 'none',
+                padding: '0.25rem 0',
+                cursor: 'pointer',
               }}
             >
               <span>Industries</span>
               <ChevronDown size={14} color={isIndustriesActive || industriesDropdownOpen ? 'var(--primary-red)' : 'var(--slate-400)'} />
-            </Link>
+            </div>
 
             {industriesDropdownOpen && (
-              <IndustriesMegaMenu onClose={() => setIndustriesDropdownOpen(false)} />
+              <IndustriesMegaMenu
+                onClose={() => setIndustriesDropdownOpen(false)}
+                onMouseEnter={handleIndustriesEnter}
+                onMouseLeave={handleIndustriesLeave}
+              />
             )}
           </div>
 
@@ -134,12 +170,12 @@ export const Navbar: React.FC<NavbarProps> = ({ rfqCount, onOpenRfqQueue, onOpen
 
           {/* Services Mega Menu */}
           <div
-            style={{ position: 'static' }}
-            onMouseEnter={() => setServicesDropdownOpen(true)}
-            onMouseLeave={() => setServicesDropdownOpen(false)}
+            style={{ position: 'static', paddingBottom: '0.5rem', paddingTop: '0.5rem' }}
+            onMouseEnter={handleServicesEnter}
+            onMouseLeave={handleServicesLeave}
           >
-            <Link
-              href="/#fabrication-section"
+            <div
+              onClick={() => setServicesDropdownOpen(prev => !prev)}
               style={{
                 fontWeight: 600,
                 fontSize: '0.925rem',
@@ -147,18 +183,20 @@ export const Navbar: React.FC<NavbarProps> = ({ rfqCount, onOpenRfqQueue, onOpen
                 display: 'flex',
                 alignItems: 'center',
                 gap: '4px',
-                padding: '0.5rem 0',
-                textDecoration: 'none',
+                padding: '0.25rem 0',
+                cursor: 'pointer',
               }}
             >
               <span>Services</span>
               <ChevronDown size={14} color={servicesDropdownOpen ? 'var(--primary-red)' : 'var(--slate-400)'} />
-            </Link>
+            </div>
 
             {servicesDropdownOpen && (
               <ServicesMegaMenu
                 onClose={() => setServicesDropdownOpen(false)}
                 onOpenBomUpload={() => setIsBomModalOpen(true)}
+                onMouseEnter={handleServicesEnter}
+                onMouseLeave={handleServicesLeave}
               />
             )}
           </div>

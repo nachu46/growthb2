@@ -57,10 +57,10 @@ export const CorporateProfileModal: React.FC<CorporateProfileModalProps> = ({ is
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem', gap: '1rem' }}>
           <div>
-            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--primary-red)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--primary-red)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
               Corporate Profile & History
             </span>
-            <h2 style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--slate-900)' }}>
+            <h2 style={{ fontSize: '1.65rem', fontWeight: 700, color: 'var(--slate-900)' }}>
               Growth International L.L.C.
             </h2>
             <p style={{ fontSize: '0.85rem', color: 'var(--slate-600)' }}>
@@ -96,21 +96,21 @@ export const CorporateProfileModal: React.FC<CorporateProfileModalProps> = ({ is
           marginBottom: '2rem',
         }}>
           <div style={{ backgroundColor: 'var(--slate-50)', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--slate-200)', textAlign: 'center' }}>
-            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary-red)' }}>18+ Yrs</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--primary-red)' }}>18+ Yrs</div>
             <div style={{ fontSize: '0.75rem', color: 'var(--slate-600)', fontWeight: 600 }}>Leadership Expertise</div>
           </div>
           <div style={{ backgroundColor: 'var(--slate-50)', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--slate-200)', textAlign: 'center' }}>
-            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--navy-dark)' }}>9 Offices</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--navy-dark)' }}>9 Offices</div>
             <div style={{ fontSize: '0.75rem', color: 'var(--slate-600)', fontWeight: 600 }}>6 GCC Countries</div>
           </div>
           <div style={{ backgroundColor: 'var(--slate-50)', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--slate-200)', textAlign: 'center' }}>
-            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0EA5E9' }}>ISO 9001</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0EA5E9' }}>ISO 9001</div>
             <div style={{ fontSize: '0.75rem', color: 'var(--slate-600)', fontWeight: 600 }}>Quality Certified</div>
           </div>
         </div>
 
         {/* Timeline */}
-        <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '1rem' }}>
+        <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--slate-900)', marginBottom: '1rem' }}>
           Milestone Timeline
         </h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '2rem' }}>
@@ -121,13 +121,13 @@ export const CorporateProfileModal: React.FC<CorporateProfileModalProps> = ({ is
                 borderRadius: 'var(--radius-sm)',
                 backgroundColor: 'var(--navy-dark)',
                 color: '#FFFFFF',
-                fontWeight: 800,
+                fontWeight: 700,
                 fontSize: '0.8rem',
               }}>
                 {ev.year}
               </div>
               <div>
-                <div style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--slate-900)' }}>{ev.title}</div>
+                <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--slate-900)' }}>{ev.title}</div>
                 <div style={{ fontSize: '0.85rem', color: 'var(--slate-600)' }}>{ev.desc}</div>
               </div>
             </div>
@@ -156,7 +156,7 @@ export const CorporateProfileModal: React.FC<CorporateProfileModalProps> = ({ is
               borderRadius: 'var(--radius-md)',
               backgroundColor: 'var(--primary-red)',
               color: '#FFFFFF',
-              fontWeight: 800,
+              fontWeight: 700,
               fontSize: '0.95rem',
             }}
           >

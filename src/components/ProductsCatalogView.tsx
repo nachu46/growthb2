@@ -1,9 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Search, ChevronDown, FileSpreadsheet, ArrowRight, Award, Thermometer, Plus, Info, ExternalLink, RefreshCw, MessageSquare, Wrench } from 'lucide-react';
-import { PRODUCTS_CATALOG, ProductItem } from '@/data/mockData';
+import { Search, ChevronDown, FileSpreadsheet, ArrowRight, Award, Thermometer, Plus, Info, ExternalLink, RefreshCw, MessageSquare, Wrench, X, ArrowDown } from 'lucide-react';
+import { ProductItem } from '@/data/mockData';
+import { useCatalogProducts } from '@/hooks/useCatalogProducts';
+import { useCategories } from '@/hooks/useCategories';
+import { categoryForPillar } from '@/data/categories';
 import { BulkBomModal } from './BulkBomModal';
 
 interface ProductsCatalogViewProps {
@@ -17,8 +20,28 @@ export const ProductsCatalogView: React.FC<ProductsCatalogViewProps> = ({ onAddR
   const [selectedManufacturers, setSelectedManufacturers] = useState<string[]>([]);
   const [selectedCategoryCard, setSelectedCategoryCard] = useState<string | null>(null);
   const [isBomModalOpen, setIsBomModalOpen] = useState(false);
+  const { products: catalogProducts, loading: catalogLoading } = useCatalogProducts();
+  const [industryFilter, setIndustryFilter] = useState<string | null>(null);
+  const [openSections, setOpenSections] = useState<Record<string, boolean | undefined>>({});
+  const toggleSection = (key: string) =>
+    setOpenSections(prev => {
+      const openByDefault = window.matchMedia('(min-width: 1024px)').matches;
+      return { ...prev, [key]: !(prev[key] ?? openByDefault) };
+    });
+  const sectionClass = (key: string) => (openSections[key] === undefined ? '' : openSections[key] ? 'is-open' : 'is-closed');
+  const [visibleCount, setVisibleCount] = useState(10);
 
-  const CATEGORY_CARDS = [
+  // Deep links from the home page lenses: /products?pillar=Insulation or ?industry=HVAC
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const pillar = params.get('pillar');
+    const industry = params.get('industry');
+    if (pillar) setSelectedPillars([pillar.toLowerCase()]);
+    if (industry) setIndustryFilter(industry);
+  }, []);
+
+  // Built-in line icons per category key; categories themselves come from Admin → Categories
+  const BUILTIN_CARDS = [
     {
       id: 'insulation',
       pillarName: 'Insulation',
@@ -98,6 +121,17 @@ export const ProductsCatalogView: React.FC<ProductsCatalogViewProps> = ({ onAddR
     },
   ];
 
+  const categories = useCategories();
+  const categoryName = (slug: string) => categoryForPillar(categories, slug)?.name || slug;
+  const CATEGORY_CARDS = categories.map(c => ({
+    id: c.slug,
+    pillarName: c.slug,
+    title: c.name,
+    items: c.items,
+    imageUrl: c.imageUrl,
+    iconSvg: (BUILTIN_CARDS.find(b => b.id === c.slug) || BUILTIN_CARDS[0]).iconSvg,
+  }));
+
   const handleTogglePillar = (pillarName: string) => {
     setSelectedPillars(prev =>
       prev.includes(pillarName) ? prev.filter(p => p !== pillarName) : [...prev, pillarName]
@@ -110,6 +144,8 @@ export const ProductsCatalogView: React.FC<ProductsCatalogViewProps> = ({ onAddR
     setSelectedManufacturers([]);
     setSelectedCategoryCard(null);
     setSearchQuery('');
+    setIndustryFilter(null);
+    setVisibleCount(10);
   };
 
   const handleContactEngineer = () => {
@@ -122,81 +158,73 @@ export const ProductsCatalogView: React.FC<ProductsCatalogViewProps> = ({ onAddR
     window.open(`https://wa.me/9715309555?text=${text}`, '_blank');
   };
 
-  const filteredProducts = PRODUCTS_CATALOG.filter(p => {
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      const matchName = p.name.toLowerCase().includes(q);
-      const matchSpec = p.compliance.toLowerCase().includes(q);
-      const matchPillar = p.pillar.toLowerCase().includes(q);
-      if (!matchName && !matchSpec && !matchPillar) return false;
-    }
+  const APPROVAL_MATCHERS: Record<string, (p: ProductItem) => boolean> = {
+    'Saudi ARAMCO': p => Boolean(p.aramcoApproved) || /aramco/i.test(p.compliance),
+    'SABIC': p => /sabic/i.test(p.compliance) || (p.complianceBadges || []).some(b => /sabic/i.test(b)),
+    'ADNOC / TAKREER': p => /adnoc|takreer/i.test(p.compliance),
+    'ICV Certified Only': p => /icv/i.test(p.compliance),
+  };
 
-    if (selectedCategoryCard && p.pillar.toLowerCase() !== selectedCategoryCard.toLowerCase()) {
-      return false;
-    }
+  const isFiltering = Boolean(
+    searchQuery.trim() || selectedPillars.length || selectedApprovals.length || selectedManufacturers.length || industryFilter || selectedCategoryCard
+  );
 
-    if (selectedPillars.length > 0) {
-      const matchPillar = selectedPillars.some(sp => p.pillar.toLowerCase().includes(sp.toLowerCase()));
-      if (!matchPillar) return false;
+  const filteredProducts = catalogProducts.filter(p => {
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      const haystack = [p.name, p.compliance, p.pillar, p.manufacturer, p.description, p.slug].join(' ').toLowerCase();
+      if (!haystack.includes(q)) return false;
     }
-
+    if (selectedCategoryCard && p.pillar.toLowerCase() !== selectedCategoryCard.toLowerCase()) return false;
+    if (selectedPillars.length > 0 && !selectedPillars.some(sp => p.pillar.toLowerCase() === sp.toLowerCase())) return false;
+    if (industryFilter && p.industry.toLowerCase() !== industryFilter.toLowerCase()) return false;
+    if (selectedApprovals.length > 0 && !selectedApprovals.every(a => APPROVAL_MATCHERS[a]?.(p))) return false;
+    if (selectedManufacturers.length > 0 && !selectedManufacturers.some(m => (p.manufacturer || '').toLowerCase().includes(m.toLowerCase()))) return false;
     return true;
   });
 
-  return (
-    <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '2rem 1.5rem 4rem 1.5rem' }}>
-      {/* Top Ticker Notification Header */}
-      <div style={{
-        backgroundColor: '#F8FAFC',
-        border: '1px solid var(--slate-200)',
-        borderRadius: 'var(--radius-sm)',
-        padding: '0.5rem 1rem',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        fontSize: '0.725rem',
-        fontWeight: 800,
-        color: 'var(--slate-700)',
-        marginBottom: '2rem',
-        letterSpacing: '0.04em',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#10B981' }} />
-          <span>VERIFIED GCC VENDOR: ARAMCO 10114402 • SABIC 11047900 • ICV CERTIFIED</span>
-        </div>
-        <div>HQ: +971-6-530-9555 | SALES@GROWTHME.COM</div>
-      </div>
+  const pillarCount = (pillar: string) => catalogProducts.filter(p => p.pillar.toLowerCase() === pillar.toLowerCase()).length;
 
+  const activeChips: { label: string; onRemove: () => void }[] = [
+    ...selectedPillars.map(pl => ({ label: `Category: ${categoryName(pl)}`, onRemove: () => handleTogglePillar(pl) })),
+    ...(industryFilter ? [{ label: `Industry: ${industryFilter}`, onRemove: () => setIndustryFilter(null) }] : []),
+    ...selectedApprovals.map(a => ({ label: `EPC: ${a}`, onRemove: () => setSelectedApprovals(prev => prev.filter(x => x !== a)) })),
+    ...selectedManufacturers.map(m => ({ label: `Brand: ${m}`, onRemove: () => setSelectedManufacturers(prev => prev.filter(x => x !== m)) })),
+  ];
+
+  const stockDot = (level?: string) => (level === 'High' ? '#10B981' : level === 'On Order' ? 'var(--slate-400)' : '#F59E0B');
+  const stockLabel = (level?: string) => (level === 'High' ? 'High Stock' : level === 'Medium' ? 'Med. Stock' : level === 'Low' ? 'Low Stock' : 'On Order');
+
+  return (
+    <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto', padding: '1rem 1.5rem 4rem 1.5rem' }}>
       {/* Breadcrumb & Heading Section */}
       <div style={{ marginBottom: '2rem' }}>
-        <div style={{ fontSize: '0.85rem', color: 'var(--slate-500)', marginBottom: '0.5rem', fontWeight: 600 }}>
-          Home &gt; <strong style={{ color: 'var(--slate-900)' }}>Products</strong>
+        <div style={{ fontSize: '0.9rem', color: 'var(--slate-500)', margin: '0.5rem 0 1rem 0', fontWeight: 600 }}>
+          <Link href="/" style={{ color: 'var(--slate-500)', textDecoration: 'none' }}>Home</Link> &gt;{' '}
+          {isFiltering ? (
+            <>
+              <button onClick={handleClearAllFilters} style={{ color: 'var(--slate-500)', fontWeight: 600, fontSize: 'inherit' }}>Products</button> &gt;{' '}
+              <strong style={{ color: 'var(--slate-900)' }}>{selectedPillars.length === 1 ? categoryName(selectedPillars[0]) : 'Catalog'}</strong>
+            </>
+          ) : (
+            <strong style={{ color: 'var(--slate-900)' }}>Products</strong>
+          )}
         </div>
 
-        <span style={{
-          fontSize: '0.8rem',
-          fontWeight: 800,
-          color: 'var(--primary-red)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.08em',
-          display: 'block',
-          marginBottom: '0.75rem',
-        }}>
-          Browse Products
-        </span>
-
         <h1 style={{
-          fontSize: 'clamp(2.2rem, 4vw, 3.2rem)',
-          fontWeight: 800,
+          fontSize: 'clamp(2rem, 4vw, 2.8rem)',
+          fontWeight: 700,
           color: 'var(--slate-900)',
-          marginBottom: '0.5rem',
-          letterSpacing: '-0.03em',
+          margin: '0.6rem 0 0.4rem 0',
+          letterSpacing: '-0.025em',
         }}>
-          Browse Certified Industrial
+          {isFiltering ? 'Master Industrial Catalog' : 'Browse Certified Industrial Materials'}
         </h1>
 
-        <p style={{ fontSize: '1.05rem', color: 'var(--slate-600)' }}>
-          Select a material category below or apply precision filters to generate a localized SKU catalog.
+        <p style={{ fontSize: '1rem', color: 'var(--slate-600)', maxWidth: '560px' }}>
+          {isFiltering
+            ? `${filteredProducts.length} verified technical material${filteredProducts.length === 1 ? '' : 's'} currently matching your parameters.`
+            : 'Select a material category below or apply precision filters to generate a localized SKU catalog.'}
         </p>
       </div>
 
@@ -216,57 +244,61 @@ export const ProductsCatalogView: React.FC<ProductsCatalogViewProps> = ({ onAddR
           height: 'max-content',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-            <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--slate-900)' }}>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--slate-900)' }}>
               Filter Parameters
             </h3>
             <button
               onClick={handleClearAllFilters}
               style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--primary-red)', background: 'none', border: 'none', cursor: 'pointer' }}
             >
-              Clear All ✕
+              Clear All <X size={13} aria-hidden style={{ verticalAlign: '-3px', flexShrink: 0 }} />
             </button>
           </div>
 
           {/* Filter Section 1: Material Pillar */}
-          <div style={{ marginBottom: '1.5rem', borderBottom: '1px solid var(--slate-100)', paddingBottom: '1.25rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: 800, fontSize: '0.875rem', color: 'var(--slate-900)', marginBottom: '0.85rem' }}>
-              <span>Material Pillar</span>
-              <ChevronDown size={16} />
-            </div>
+          <div style={{ marginBottom: '0.9rem', borderBottom: '1px solid var(--slate-100)', paddingBottom: '0.9rem' }}>
+            <button
+              type="button"
+              className="filter-toggle"
+              onClick={() => toggleSection('pillar')}
+              aria-expanded={openSections['pillar'] ?? undefined}
+            >
+              <span>Material Pillar{selectedPillars.length > 0 ? ` (${selectedPillars.length})` : ''}</span>
+              <ChevronDown size={16} className={`filter-chevron ${sectionClass('pillar')}`} />
+            </button>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-              {[
-                { name: 'Insulation (Cellular Glass)', pillar: 'Insulation', count: 48 },
-                { name: 'Metal Jacketing (Al, Alu-St, SS)', pillar: 'Jacketing', count: 82 },
-                { name: 'Accessories & Tapes', pillar: 'Accessories', count: 114 },
-                { name: 'Acoustic & Vapor Barrier', pillar: 'Acoustic', count: 18 },
-                { name: 'Valves & Refractory', pillar: 'Valves', count: 24 },
-              ].map((item, idx) => (
+            <div className={`filter-body ${sectionClass('pillar')}`}>
+              {categories.map(c => ({ name: c.name, pillar: c.slug })).map((item, idx) => (
                 <label key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.825rem', color: 'var(--slate-700)', cursor: 'pointer' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <input
                       type="checkbox"
-                      checked={selectedPillars.includes(item.pillar)}
-                      onChange={() => handleTogglePillar(item.pillar)}
+                      checked={selectedPillars.includes(item.pillar.toLowerCase())}
+                      onChange={() => handleTogglePillar(item.pillar.toLowerCase())}
                       style={{ accentColor: 'var(--primary-red)', cursor: 'pointer' }}
                     />
                     <span>{item.name}</span>
                   </div>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--slate-400)', fontWeight: 600 }}>{item.count}</span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--slate-400)', fontWeight: 600 }}>{catalogLoading ? '' : pillarCount(item.pillar)}</span>
                 </label>
               ))}
             </div>
           </div>
 
           {/* Filter Section 2: Tier-1 EPC Approvals */}
-          <div style={{ marginBottom: '1.5rem', borderBottom: '1px solid var(--slate-100)', paddingBottom: '1.25rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: 800, fontSize: '0.875rem', color: 'var(--slate-900)', marginBottom: '0.85rem' }}>
-              <span>Tier-1 EPC Approvals</span>
-              <ChevronDown size={16} />
-            </div>
+          <div style={{ marginBottom: '0.9rem', borderBottom: '1px solid var(--slate-100)', paddingBottom: '0.9rem' }}>
+            <button
+              type="button"
+              className="filter-toggle"
+              onClick={() => toggleSection('approvals')}
+              aria-expanded={openSections['approvals'] ?? undefined}
+            >
+              <span>Tier-1 EPC Approvals{selectedApprovals.length > 0 ? ` (${selectedApprovals.length})` : ''}</span>
+              <ChevronDown size={16} className={`filter-chevron ${sectionClass('approvals')}`} />
+            </button>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-              {['Saudi ARAMCO', 'SABIC', 'ADNOC / TAKREER', 'ICV Certified Units'].map((name, idx) => (
+            <div className={`filter-body ${sectionClass('approvals')}`}>
+              {Object.keys(APPROVAL_MATCHERS).map((name, idx) => (
                 <label key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.825rem', color: 'var(--slate-700)', cursor: 'pointer' }}>
                   <input
                     type="checkbox"
@@ -286,12 +318,17 @@ export const ProductsCatalogView: React.FC<ProductsCatalogViewProps> = ({ onAddR
 
           {/* Filter Section 3: Featured Manufacturers */}
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: 800, fontSize: '0.875rem', color: 'var(--slate-900)', marginBottom: '0.85rem' }}>
-              <span>Featured Manufacturers</span>
-              <ChevronDown size={16} />
-            </div>
+            <button
+              type="button"
+              className="filter-toggle"
+              onClick={() => toggleSection('manufacturers')}
+              aria-expanded={openSections['manufacturers'] ?? undefined}
+            >
+              <span>Featured Manufacturers{selectedManufacturers.length > 0 ? ` (${selectedManufacturers.length})` : ''}</span>
+              <ChevronDown size={16} className={`filter-chevron ${sectionClass('manufacturers')}`} />
+            </button>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+            <div className={`filter-body ${sectionClass('manufacturers')}`}>
               {['Owens Corning', 'FOAMGLAS', 'Armacell', 'Aspen Aerogels'].map((mfr, idx) => (
                 <label key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.825rem', color: 'var(--slate-700)', cursor: 'pointer' }}>
                   <input
@@ -312,7 +349,7 @@ export const ProductsCatalogView: React.FC<ProductsCatalogViewProps> = ({ onAddR
         </aside>
 
         {/* Right Main Content Area */}
-        <main style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <main style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', backgroundColor: '#FFFFFF', borderRadius: '16px', padding: 'clamp(0.75rem, 2vw, 1.25rem)', minWidth: 0 }}>
           {/* Search Bar & Bulk Upload BOM Action */}
           <div style={{
             display: 'flex',
@@ -321,12 +358,16 @@ export const ProductsCatalogView: React.FC<ProductsCatalogViewProps> = ({ onAddR
             alignItems: 'center',
             justifyContent: 'space-between',
           }}>
-            <div style={{ position: 'relative', flex: 1, minWidth: '280px' }}>
+            <div style={{ position: 'relative', flex: 1, minWidth: 'min(100%, 260px)' }}>
               <input
                 type="text"
                 placeholder="Search materials, specs (e.g., ASTM C552), or SKU..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setVisibleCount(10);
+                }}
+                aria-label="Search materials"
                 style={{
                   width: '100%',
                   padding: '0.85rem 1rem 0.85rem 2.75rem',
@@ -363,8 +404,9 @@ export const ProductsCatalogView: React.FC<ProductsCatalogViewProps> = ({ onAddR
             </button>
           </div>
 
-          {/* Conditional Rendering: 0 Matches State vs Product Grid */}
-          {filteredProducts.length === 0 ? (
+          {isFiltering && catalogLoading ? (
+            <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--slate-500)', fontWeight: 600 }}>Loading catalog…</div>
+          ) : isFiltering && filteredProducts.length === 0 ? (
             /* Zero Matches Search View (Matches Screenshot Home / Products / Not Found) */
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
               {/* Main 0 Matches Container */}
@@ -390,7 +432,7 @@ export const ProductsCatalogView: React.FC<ProductsCatalogViewProps> = ({ onAddR
                   <Search size={32} />
                 </div>
 
-                <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '0.5rem' }}>
+                <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--slate-900)', marginBottom: '0.5rem' }}>
                   0 Standard Inventory Matches Found
                 </h2>
 
@@ -402,21 +444,21 @@ export const ProductsCatalogView: React.FC<ProductsCatalogViewProps> = ({ onAddR
                   onClick={handleClearAllFilters}
                   style={{
                     fontSize: '0.9rem',
-                    fontWeight: 800,
+                    fontWeight: 700,
                     color: '#0EA5E9',
                     background: 'none',
                     border: 'none',
                     cursor: 'pointer',
                   }}
                 >
-                  Clear Search & View All Inventory ✕
+                  Clear Search & View All Inventory <X size={14} aria-hidden style={{ verticalAlign: '-3px', flexShrink: 0 }} />
                 </button>
               </div>
 
               {/* 2 Alternative Cards Grid */}
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
                 gap: '1.5rem',
               }}>
                 {/* Card 1: Require a Custom Spec? */}
@@ -444,7 +486,7 @@ export const ProductsCatalogView: React.FC<ProductsCatalogViewProps> = ({ onAddR
                       <Wrench size={20} />
                     </div>
 
-                    <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '0.5rem' }}>
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--slate-900)', marginBottom: '0.5rem' }}>
                       Require a Custom Spec?
                     </h3>
 
@@ -457,7 +499,7 @@ export const ProductsCatalogView: React.FC<ProductsCatalogViewProps> = ({ onAddR
                     onClick={handleCustomFabRequest}
                     style={{
                       fontSize: '0.85rem',
-                      fontWeight: 800,
+                      fontWeight: 700,
                       color: 'var(--primary-red)',
                       background: 'none',
                       border: 'none',
@@ -498,7 +540,7 @@ export const ProductsCatalogView: React.FC<ProductsCatalogViewProps> = ({ onAddR
                       <MessageSquare size={20} />
                     </div>
 
-                    <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '0.5rem' }}>
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--slate-900)', marginBottom: '0.5rem' }}>
                       Need an EPC Alternative?
                     </h3>
 
@@ -511,7 +553,7 @@ export const ProductsCatalogView: React.FC<ProductsCatalogViewProps> = ({ onAddR
                     onClick={handleContactEngineer}
                     style={{
                       fontSize: '0.85rem',
-                      fontWeight: 800,
+                      fontWeight: 700,
                       color: '#0EA5E9',
                       background: 'none',
                       border: 'none',
@@ -528,168 +570,93 @@ export const ProductsCatalogView: React.FC<ProductsCatalogViewProps> = ({ onAddR
                 </div>
               </div>
             </div>
+          ) : isFiltering ? (
+            <>
+              {activeChips.length > 0 && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
+                  {activeChips.map(chip => (
+                    <button key={chip.label} onClick={chip.onRemove} className="filter-chip" aria-label={`Remove filter ${chip.label}`}>
+                      {chip.label} <X size={13} aria-hidden style={{ verticalAlign: '-3px', flexShrink: 0 }} />
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              <div className="catalog-table-wrap">
+                <div className="catalog-row catalog-head">
+                  <span>Material &amp; Specification</span>
+                  <span>Manufacturer</span>
+                  <span>Operating Range</span>
+                  <span>Availability</span>
+                  <span />
+                </div>
+                {filteredProducts.slice(0, visibleCount).map(product => (
+                  <div key={product.id} className="catalog-row catalog-item">
+                    <div style={{ minWidth: 0 }}>
+                      <Link href={`/products/${product.slug}`} style={{ textDecoration: 'none' }}>
+                        <div style={{ fontWeight: 700, color: 'var(--slate-900)', marginBottom: '0.35rem' }}>{product.name}</div>
+                      </Link>
+                      <span className="spec-tag">{product.compliance.split('/')[0].trim()}</span>
+                    </div>
+                    <div className="cell-label" data-label="Manufacturer" style={{ fontWeight: 700, color: 'var(--slate-800)' }}>{product.manufacturer || '—'}</div>
+                    <div className="cell-label" data-label="Operating Range" style={{ color: 'var(--slate-700)' }}>{product.tempRange}</div>
+                    <div className="cell-label" data-label="Availability">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, color: 'var(--slate-900)' }}>
+                        <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: stockDot(product.stockLevel), flexShrink: 0 }} />
+                        {stockLabel(product.stockLevel)}
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--slate-500)', paddingLeft: '14px' }}>{product.stockHub || product.leadTime}</div>
+                    </div>
+                    <button onClick={() => onAddRfqItem(product)} className="add-rfq-btn">+ Add to RFQ</button>
+                  </div>
+                ))}
+              </div>
+
+              {filteredProducts.length > visibleCount && (
+                <button onClick={() => setVisibleCount(c => c + 10)} className="load-more-btn">
+                  Load More Items <ArrowDown size={15} aria-hidden style={{ verticalAlign: '-3px', flexShrink: 0 }} />
+                </button>
+              )}
+            </>
           ) : (
             <>
               {/* 6 Category Cards Grid */}
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 240px), 1fr))',
                 gap: '1.25rem',
               }}>
                 {CATEGORY_CARDS.map(card => (
-                  <div
-                    key={card.id}
-                    style={{
-                      backgroundColor: '#FFFFFF',
-                      borderRadius: 'var(--radius-md)',
-                      border: '1px solid var(--slate-200)',
-                      padding: '1.5rem',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'space-between',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.02)',
-                    }}
-                  >
-                    <div>
-                      <div style={{
-                        backgroundColor: 'var(--slate-50)',
-                        borderRadius: 'var(--radius-sm)',
-                        height: '90px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginBottom: '1rem',
-                        border: '1px dashed var(--slate-200)',
-                      }}>
-                        {card.iconSvg}
-                      </div>
-
-                      <Link href={`/products/${card.slug}`} style={{ textDecoration: 'none' }}>
-                        <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '0.75rem' }}>
-                          {card.title}
-                        </h3>
-                      </Link>
-
-                      <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.35rem', marginBottom: '1.25rem' }}>
+                  <div key={card.id} className="cat-card">
+                    <div className="cat-card-image">
+                      {card.imageUrl ? (
+                        <img src={card.imageUrl} alt={card.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ) : (
+                        card.iconSvg
+                      )}
+                    </div>
+                    <div style={{ padding: '1rem 1.25rem 1.25rem 1.25rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                      <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--slate-900)', marginBottom: '0.6rem' }}>
+                        {card.title}
+                      </h3>
+                      <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.3rem', marginBottom: '1.25rem', flex: 1 }}>
                         {card.items.map((sub, i) => (
-                          <li key={i} style={{ fontSize: '0.8rem', color: 'var(--slate-600)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'var(--slate-400)' }} />
-                            <span>{sub}</span>
-                          </li>
+                          <li key={i} style={{ fontSize: '0.8rem', color: 'var(--slate-600)' }}>{sub}</li>
                         ))}
                       </ul>
+                      <button
+                        onClick={() => {
+                          setSelectedPillars([card.pillarName]);
+                          setVisibleCount(10);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                        style={{ alignSelf: 'flex-start', color: '#0EA5E9', fontSize: '0.85rem', fontWeight: 700 }}
+                      >
+                        View Category <ArrowRight size={15} aria-hidden style={{ verticalAlign: '-3px', flexShrink: 0 }} />
+                      </button>
                     </div>
-
-                    <Link
-                      href={`/products/${card.slug}`}
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        color: '#0EA5E9',
-                        fontSize: '0.85rem',
-                        fontWeight: 700,
-                        textDecoration: 'none',
-                      }}
-                    >
-                      <span>Open Product Page →</span>
-                    </Link>
                   </div>
                 ))}
-              </div>
-
-              {/* Matched Product Items Listing */}
-              <div style={{ marginTop: '1.5rem' }}>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '1rem' }}>
-                  Matched SKU Catalog Items ({filteredProducts.length})
-                </h3>
-
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-                  gap: '1.25rem',
-                }}>
-                  {filteredProducts.map(product => (
-                    <div
-                      key={product.id}
-                      style={{
-                        backgroundColor: '#FFFFFF',
-                        borderRadius: 'var(--radius-md)',
-                        border: '1px solid var(--slate-200)',
-                        padding: '1.25rem',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'space-between',
-                      }}
-                    >
-                      <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                          <span style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--primary-red)', textTransform: 'uppercase' }}>
-                            {product.pillar}
-                          </span>
-                          <span style={{ fontSize: '0.75rem', color: 'var(--slate-500)' }}>{product.leadTime}</span>
-                        </div>
-
-                        <Link href={`/products/${product.slug}`} style={{ textDecoration: 'none' }}>
-                          <h4 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '0.5rem' }}>
-                            {product.name}
-                          </h4>
-                        </Link>
-
-                        <div style={{ fontSize: '0.8rem', color: 'var(--slate-600)', marginBottom: '0.75rem' }}>
-                          {product.description}
-                        </div>
-
-                        <div style={{ fontSize: '0.75rem', color: 'var(--slate-500)', backgroundColor: 'var(--slate-50)', padding: '0.5rem', borderRadius: '4px', marginBottom: '1rem' }}>
-                          Spec: <strong>{product.compliance}</strong>
-                        </div>
-                      </div>
-
-                      <div style={{ display: 'flex', gap: '0.5rem' }}>
-                        <button
-                          onClick={() => onAddRfqItem(product)}
-                          style={{
-                            flex: 1,
-                            padding: '0.6rem',
-                            borderRadius: 'var(--radius-sm)',
-                            backgroundColor: 'var(--navy-dark)',
-                            color: '#FFFFFF',
-                            fontWeight: 700,
-                            fontSize: '0.825rem',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '4px',
-                            border: 'none',
-                            cursor: 'pointer',
-                          }}
-                        >
-                          <Plus size={14} />
-                          <span>Add to RFQ</span>
-                        </button>
-
-                        <Link
-                          href={`/products/${product.slug}`}
-                          style={{
-                            padding: '0.6rem 0.8rem',
-                            borderRadius: 'var(--radius-sm)',
-                            border: '1px solid var(--slate-300)',
-                            color: '#0EA5E9',
-                            fontWeight: 700,
-                            fontSize: '0.8rem',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            textDecoration: 'none',
-                          }}
-                        >
-                          <span>View Specs</span>
-                          <ExternalLink size={14} />
-                        </Link>
-                      </div>
-                    </div>
-                  ))}
-                </div>
               </div>
             </>
           )}
@@ -706,6 +673,149 @@ export const ProductsCatalogView: React.FC<ProductsCatalogViewProps> = ({ onAddR
         @media (min-width: 1024px) {
           :global(.catalog-grid) {
             grid-template-columns: 280px 1fr !important;
+          }
+        }
+        .filter-toggle {
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-weight: 700;
+          font-size: 0.875rem;
+          color: var(--slate-900);
+          padding: 0.25rem 0;
+          margin-bottom: 0.6rem;
+          cursor: pointer;
+        }
+        :global(.filter-chevron) {
+          transition: transform 0.2s ease;
+        }
+        :global(.filter-chevron.is-closed) {
+          transform: rotate(-90deg);
+        }
+        .filter-body {
+          display: flex;
+          flex-direction: column;
+          gap: 0.65rem;
+          padding-top: 0.25rem;
+        }
+        .filter-body.is-closed {
+          display: none;
+        }
+        /* Phones/tablets: filter groups start collapsed until tapped */
+        @media (max-width: 1023px) {
+          .filter-body:not(.is-open) {
+            display: none;
+          }
+          :global(.filter-chevron:not(.is-open)) {
+            transform: rotate(-90deg);
+          }
+        }
+        .cat-card {
+          background: #ffffff;
+          border: 1.5px solid var(--slate-200);
+          border-radius: 12px;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+        }
+        .cat-card-image {
+          background: #f1f5f9;
+          height: 120px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .filter-chip {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.4rem;
+          background: #e0f2fe;
+          border: 1px solid #bae6fd;
+          color: #0284c7;
+          font-weight: 700;
+          font-size: 0.8rem;
+          padding: 0.4rem 0.9rem;
+          border-radius: 9999px;
+        }
+        .catalog-table-wrap {
+          border: 1px solid var(--slate-200);
+          border-radius: 16px;
+          padding: 0 1rem 1rem 1rem;
+          background: #fcfcfd;
+        }
+        .catalog-row {
+          display: grid;
+          grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.1fr) minmax(0, 1.1fr) minmax(0, 1.1fr) auto;
+          gap: 1rem;
+          align-items: center;
+        }
+        .catalog-head {
+          padding: 1rem 0.5rem;
+          font-size: 0.7rem;
+          font-weight: 700;
+          color: var(--slate-600);
+          text-transform: uppercase;
+          letter-spacing: 0.03em;
+          border-bottom: 1px solid var(--slate-200);
+          margin-bottom: 0.75rem;
+        }
+        .catalog-item {
+          background: #ffffff;
+          border: 1px solid var(--slate-200);
+          border-radius: 12px;
+          padding: 1rem 1.25rem;
+          margin-bottom: 0.75rem;
+          font-size: 0.875rem;
+        }
+        .spec-tag {
+          display: inline-block;
+          font-size: 0.65rem;
+          font-weight: 700;
+          color: var(--slate-600);
+          background: #f1f5f9;
+          border-radius: 4px;
+          padding: 0.15rem 0.45rem;
+        }
+        .add-rfq-btn {
+          border: 1.5px solid #0ea5e9;
+          color: #0ea5e9;
+          background: #f0f9ff;
+          font-weight: 700;
+          font-size: 0.85rem;
+          padding: 0.6rem 1.25rem;
+          border-radius: 8px;
+          white-space: nowrap;
+        }
+        .load-more-btn {
+          align-self: center;
+          background: var(--slate-900);
+          color: #ffffff;
+          font-weight: 700;
+          font-size: 0.9rem;
+          padding: 0.85rem 2.25rem;
+          border-radius: 9999px;
+        }
+        @media (max-width: 860px) {
+          .catalog-head {
+            display: none;
+          }
+          .catalog-row {
+            grid-template-columns: 1fr 1fr;
+          }
+          .catalog-item > :first-child {
+            grid-column: 1 / -1;
+          }
+          .cell-label::before {
+            content: attr(data-label);
+            display: block;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--slate-500);
+            text-transform: uppercase;
+          }
+          .add-rfq-btn {
+            grid-column: 1 / -1;
           }
         }
       `}</style>

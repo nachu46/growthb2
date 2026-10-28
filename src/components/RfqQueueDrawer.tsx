@@ -2,14 +2,18 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { X, Plus, Minus, MessageSquare, Building2, MapPin, ChevronDown } from 'lucide-react';
-import { ProductItem, GCC_HUBS } from '@/data/mockData';
+import { X, ArrowRight } from 'lucide-react';
+import { GCC_HUBS } from '@/data/mockData';
+import { RfqQueueItem, useRfqQueue } from '@/hooks/useRfqQueue';
 import { CustomSelect } from './CustomSelect';
+import { WhatsAppIcon } from '@/components/WhatsAppIcon';
+
+const DEFAULT_QTY = 500;
 
 interface RfqQueueDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  items: ProductItem[];
+  items: RfqQueueItem[];
   onRemoveItem: (id: string) => void;
   onClearQueue: () => void;
 }
@@ -23,20 +27,13 @@ export const RfqQueueDrawer: React.FC<RfqQueueDrawerProps> = ({
 }) => {
   const [companyName, setCompanyName] = useState('');
   const [selectedHub, setSelectedHub] = useState('UAE HQ (Ajman) - Stock Available');
-  const [itemQuantities, setItemQuantities] = useState<Record<string, number>>({
-    'P-001': 5000,
-    'P-002': 120,
-    'P-003': 120,
-  });
+  const { setQuantity } = useRfqQueue();
+  const itemQuantities: Record<string, number> = Object.fromEntries(items.map(i => [i.id, i.rfqQty ?? DEFAULT_QTY]));
 
   if (!isOpen) return null;
 
   const handleUpdateQty = (id: string, delta: number) => {
-    setItemQuantities(prev => {
-      const current = prev[id] || 100;
-      const updated = Math.max(10, current + delta);
-      return { ...prev, [id]: updated };
-    });
+    setQuantity(id, Math.max(10, (itemQuantities[id] ?? DEFAULT_QTY) + delta));
   };
 
   const handleWhatsAppRedirect = () => {
@@ -48,11 +45,32 @@ export const RfqQueueDrawer: React.FC<RfqQueueDrawerProps> = ({
     text += `*Requested Materials Inventory (${items.length} items):*\n`;
 
     items.forEach((item, index) => {
-      const qty = itemQuantities[item.id] || 100;
+      const qty = itemQuantities[item.id] ?? DEFAULT_QTY;
       text += `${index + 1}. *${item.name}*\n   - Spec: ${item.compliance}\n   - Quantity: ${qty} ${item.unit}\n\n`;
     });
 
     text += `Please send volume pricing matrix, EPC test certificates, and dispatch schedule.`;
+
+    // Record the RFQ for the admin queue; keepalive lets it finish while WhatsApp opens
+    fetch('/api/rfq', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      keepalive: true,
+      body: JSON.stringify({
+        company: companyName.trim(),
+        deliveryHub: selectedHub,
+        items: items.map(item => ({
+          id: item.id,
+          name: item.name,
+          pillar: item.pillar,
+          compliance: item.compliance,
+          unit: item.unit,
+          quantity: itemQuantities[item.id] ?? DEFAULT_QTY,
+        })),
+        message: 'Submitted via website RFQ basket (WhatsApp).',
+      }),
+    }).catch(() => {});
+
     const encoded = encodeURIComponent(text);
     window.open(`https://wa.me/9715309555?text=${encoded}`, '_blank');
   };
@@ -96,7 +114,7 @@ export const RfqQueueDrawer: React.FC<RfqQueueDrawerProps> = ({
         }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-              <h2 style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--slate-900)' }}>
+              <h2 style={{ fontSize: '1.45rem', fontWeight: 700, color: 'var(--slate-900)' }}>
                 Live RFQ Queue
               </h2>
               {items.length > 0 && (
@@ -107,7 +125,7 @@ export const RfqQueueDrawer: React.FC<RfqQueueDrawerProps> = ({
                   backgroundColor: 'var(--primary-red)',
                   color: '#FFFFFF',
                   fontSize: '0.75rem',
-                  fontWeight: 800,
+                  fontWeight: 700,
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -154,8 +172,8 @@ export const RfqQueueDrawer: React.FC<RfqQueueDrawerProps> = ({
             <div style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--slate-500)' }}>
               <p style={{ fontWeight: 700, fontSize: '1rem', marginBottom: '0.5rem' }}>Your RFQ Queue is empty.</p>
               <p style={{ fontSize: '0.85rem', marginBottom: '1.5rem' }}>Browse our catalog to add materials for instant quote generation.</p>
-              <Link href="/products" onClick={onClose} style={{ color: '#0EA5E9', fontWeight: 800, textDecoration: 'none' }}>
-                Browse Master Catalog →
+              <Link href="/products" onClick={onClose} style={{ color: '#0EA5E9', fontWeight: 700, textDecoration: 'none' }}>
+                Browse Master Catalog <ArrowRight size={15} aria-hidden style={{ verticalAlign: '-3px', flexShrink: 0 }} />
               </Link>
             </div>
           ) : (
@@ -163,7 +181,7 @@ export const RfqQueueDrawer: React.FC<RfqQueueDrawerProps> = ({
               {/* Materials Items List */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
                 {items.map(item => {
-                  const qty = itemQuantities[item.id] ?? 500;
+                  const qty = itemQuantities[item.id] ?? DEFAULT_QTY;
                   return (
                     <div
                       key={item.id}
@@ -192,7 +210,7 @@ export const RfqQueueDrawer: React.FC<RfqQueueDrawerProps> = ({
                         <X size={16} />
                       </button>
 
-                      <h3 style={{ fontSize: '0.975rem', fontWeight: 800, color: 'var(--slate-900)', paddingRight: '1.5rem', marginBottom: '3px' }}>
+                      <h3 style={{ fontSize: '0.975rem', fontWeight: 700, color: 'var(--slate-900)', paddingRight: '1.5rem', marginBottom: '3px' }}>
                         {item.name}
                       </h3>
                       <p style={{ fontSize: '0.775rem', color: 'var(--slate-500)', fontWeight: 600, marginBottom: '0.85rem' }}>
@@ -211,16 +229,16 @@ export const RfqQueueDrawer: React.FC<RfqQueueDrawerProps> = ({
                         }}>
                           <button
                             onClick={() => handleUpdateQty(item.id, -50)}
-                            style={{ padding: '0.35rem 0.65rem', fontWeight: 800, color: 'var(--slate-600)' }}
+                            style={{ padding: '0.35rem 0.65rem', fontWeight: 700, color: 'var(--slate-600)' }}
                           >
                             -
                           </button>
-                          <span style={{ padding: '0.35rem 0.85rem', fontWeight: 800, fontSize: '0.85rem', color: 'var(--slate-900)', minWidth: '55px', textAlign: 'center' }}>
+                          <span style={{ padding: '0.35rem 0.85rem', fontWeight: 700, fontSize: '0.85rem', color: 'var(--slate-900)', minWidth: '55px', textAlign: 'center' }}>
                             {qty.toLocaleString()}
                           </span>
                           <button
                             onClick={() => handleUpdateQty(item.id, 50)}
-                            style={{ padding: '0.35rem 0.65rem', fontWeight: 800, color: 'var(--slate-600)' }}
+                            style={{ padding: '0.35rem 0.65rem', fontWeight: 700, color: 'var(--slate-600)' }}
                           >
                             +
                           </button>
@@ -240,7 +258,7 @@ export const RfqQueueDrawer: React.FC<RfqQueueDrawerProps> = ({
                     onClick={onClose}
                     style={{
                       fontSize: '0.85rem',
-                      fontWeight: 800,
+                      fontWeight: 700,
                       color: '#0EA5E9',
                       textDecoration: 'none',
                     }}
@@ -252,13 +270,13 @@ export const RfqQueueDrawer: React.FC<RfqQueueDrawerProps> = ({
 
               {/* Routing Details Form Section */}
               <div style={{ paddingTop: '1rem', borderTop: '1px solid var(--slate-200)' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '1.15rem' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--slate-900)', marginBottom: '1.15rem' }}>
                   Routing Details
                 </h3>
 
                 {/* Project / Company Name Input */}
                 <div style={{ marginBottom: '1.15rem' }}>
-                  <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 800, color: 'var(--slate-500)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.5rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 700, color: 'var(--slate-500)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.5rem' }}>
                     PROJECT / COMPANY NAME (OPTIONAL)
                   </label>
                   <input
@@ -280,7 +298,7 @@ export const RfqQueueDrawer: React.FC<RfqQueueDrawerProps> = ({
 
                 {/* Preferred Delivery Hub Select */}
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 800, color: 'var(--slate-500)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.5rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 700, color: 'var(--slate-500)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.5rem' }}>
                     PREFERRED DELIVERY HUB
                   </label>
                   <CustomSelect
@@ -326,15 +344,15 @@ export const RfqQueueDrawer: React.FC<RfqQueueDrawerProps> = ({
                 borderRadius: '12px',
                 backgroundColor: '#10B981',
                 color: '#FFFFFF',
-                fontWeight: 800,
+                fontWeight: 700,
                 fontSize: '1rem',
                 border: 'none',
                 boxShadow: '0 8px 20px -4px rgba(16, 185, 129, 0.4)',
                 cursor: 'pointer',
               }}
             >
-              <MessageSquare size={20} fill="#FFFFFF" color="#10B981" />
-              <span>Request via WhatsApp →</span>
+              <WhatsAppIcon size={22} color="#FFFFFF" />
+              <span>Request via WhatsApp <ArrowRight size={15} aria-hidden style={{ verticalAlign: '-3px', flexShrink: 0 }} /></span>
             </button>
 
             <span style={{ fontSize: '0.725rem', color: 'var(--slate-500)', fontWeight: 600 }}>

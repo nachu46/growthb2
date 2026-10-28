@@ -1,484 +1,318 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowUpRight, Award, ArrowRight, ShieldCheck, FileText } from 'lucide-react';
-import { CorporateProfileModal } from './CorporateProfileModal';
+import { ArrowUpRight, Check, ArrowUp, ArrowRight } from 'lucide-react';
+
+interface Certification {
+  id: string;
+  name: string;
+  issuing_org: string;
+  cert_number: string;
+  description?: string;
+  status?: string;
+}
+
+interface Project {
+  id: string;
+  project_name: string;
+  client: string;
+  country: string;
+  industry: string;
+  scope: string;
+  description?: string;
+}
+
+// Shown until the database responds (and if it is unreachable)
+const FALLBACK_CERTS: Certification[] = [
+  { id: 'cert_aramco', name: 'Saudi Aramco Vendor Registration', issuing_org: 'Saudi Arabian Oil Company', cert_number: '10114402', status: 'Active' },
+  { id: 'cert_sabic', name: 'SABIC Qualification Certificate', issuing_org: 'Saudi Basic Industries Corporation', cert_number: '11047900', status: 'Active' },
+  { id: 'cert_adnoc', name: 'ADNOC / TAKREER', issuing_org: 'Abu Dhabi National Oil Company', cert_number: 'Approved Supply Chain', status: 'Active' },
+  { id: 'cert_iso', name: 'ISO 9001:2015 Quality Management Systems', issuing_org: 'Bureau Veritas', cert_number: 'UAE-QMS-90812', description: 'Global Quality Management Systems.', status: 'Active' },
+  { id: 'cert_icv', name: 'UAE ICV Certified', issuing_org: 'UAE Ministry of Industry', cert_number: 'ICV', description: 'In-Country Value certification for UAE government tenders.', status: 'Active' },
+];
+
+const isQualityCert = (c: Certification) => /iso|icv/i.test(c.name);
+
+const shortName = (name: string) =>
+  name.replace(/\s+(vendor registration|qualification certificate|certificate|registration)$/i, '').trim();
+
+const initials = (name: string) => {
+  const n = name.toLowerCase();
+  if (n.includes('aramco')) return 'AR';
+  if (n.includes('sabic')) return 'SB';
+  if (n.includes('adnoc')) return 'AD';
+  return name.replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase();
+};
 
 export const CertificationsView: React.FC = () => {
-  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [certs, setCerts] = useState<Certification[]>(FALLBACK_CERTS);
+  const [projects, setProjects] = useState<Project[]>([]);
 
-  const handleRequestCertificate = (vendorName: string) => {
-    const text = encodeURIComponent(`Hello Growth International Quality & Compliance Team, I would like to request an official copy of your ${vendorName} Approved Vendor Certificate.`);
-    window.open(`https://wa.me/9715309555?text=${text}`, '_blank');
-  };
+  useEffect(() => {
+    fetch('/api/certifications')
+      .then(res => res.json())
+      .then(data => {
+        if (!data.success) return;
+        if (Array.isArray(data.certifications) && data.certifications.length) setCerts(data.certifications);
+        if (Array.isArray(data.projects)) setProjects(data.projects);
+      })
+      .catch(() => {});
+  }, []);
+
+  const requestCertificateUrl = (vendorName: string) =>
+    `https://wa.me/9715309555?text=${encodeURIComponent(`Hello Growth International Quality & Compliance Team, I would like to request an official copy of your ${vendorName} Approved Vendor Certificate.`)}`;
+
+  const vendorCerts = certs.filter(c => !isQualityCert(c));
+  const qualityCerts = certs.filter(isQualityCert);
 
   return (
-    <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '2rem 1.5rem 4rem 1.5rem' }}>
-      {/* Top Ticker Header */}
-      <div style={{
-        backgroundColor: '#F8FAFC',
-        border: '1px solid var(--slate-200)',
-        borderRadius: 'var(--radius-sm)',
-        padding: '0.5rem 1rem',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        fontSize: '0.725rem',
-        fontWeight: 800,
-        color: 'var(--slate-700)',
-        marginBottom: '2rem',
-        letterSpacing: '0.04em',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#10B981' }} />
-          <span>VERIFIED GCC VENDOR: ARAMCO 10114402 • SABIC 11047900 • ICV CERTIFIED</span>
-        </div>
-        <div>HQ: +971-6-530-9555 | SALES@GROWTHME.COM</div>
+    <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto', padding: '1rem 1.5rem 4rem 1.5rem' }}>
+      <div style={{ fontSize: '0.9rem', color: 'var(--slate-500)', margin: '0.5rem 0 1.5rem 0', fontWeight: 600 }}>
+        <Link href="/" style={{ color: 'var(--slate-500)', textDecoration: 'none' }}>Home</Link> &gt; <strong style={{ color: 'var(--slate-900)' }}>Certifications &amp; Approvals</strong>
       </div>
 
-      {/* Breadcrumb Navigation */}
-      <div style={{ fontSize: '0.85rem', color: 'var(--slate-500)', marginBottom: '1.25rem', fontWeight: 600 }}>
-        Home &gt; <strong style={{ color: 'var(--slate-900)' }}>Certifications & Approvals</strong>
-      </div>
-
-      {/* Hero Section (Matches Screenshot) */}
-      <div style={{ marginBottom: '3rem' }}>
-        <span style={{
-          fontSize: '0.8rem',
-          fontWeight: 800,
-          color: 'var(--primary-red)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.08em',
-          display: 'block',
-          marginBottom: '0.75rem',
-        }}>
-          CORPORATE DOSSIER
-        </span>
-
+      {/* Hero */}
+      <div style={{ marginBottom: '2.5rem' }}>
         <h1 style={{
-          fontSize: 'clamp(2.2rem, 4vw, 3.4rem)',
-          fontWeight: 800,
+          fontSize: 'clamp(2.1rem, 4.5vw, 3.4rem)',
+          fontWeight: 700,
           color: 'var(--slate-900)',
-          lineHeight: 1.1,
-          marginBottom: '1rem',
-          letterSpacing: '-0.03em',
+          lineHeight: 1.12,
+          margin: '0.75rem 0 0.9rem 0',
+          letterSpacing: '-0.025em',
+          maxWidth: '620px',
         }}>
           Certified Tier-1 EPC Vendor Approvals
         </h1>
-
-        <p style={{ fontSize: '1.05rem', color: 'var(--slate-600)', maxWidth: '750px', lineHeight: 1.6 }}>
-          Growth International holds active vendor registrations with the Middle East's most rigorous Engineering, Procurement, and Construction (EPC) entities.
+        <p style={{ fontSize: '1rem', color: 'var(--slate-600)', maxWidth: '720px', lineHeight: 1.6 }}>
+          Growth International holds active vendor registrations with the Middle East&apos;s most rigorous Engineering, Procurement, and Construction (EPC) entities.
         </p>
       </div>
 
-      {/* 3 Tier-1 EPC Vendor Registration Cards Grid (Matches Screenshot) */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-        gap: '1.75rem',
-        marginBottom: '2.5rem',
-      }}>
-        {/* Card 1: Saudi Aramco */}
-        <div style={{
-          backgroundColor: '#FFFFFF',
-          borderRadius: '24px',
-          border: '1px solid var(--slate-200)',
-          padding: '2rem 1.75rem',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          boxShadow: '0 4px 16px rgba(0,0,0,0.02)',
-        }}>
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+      {/* Vendor registration cards (Admin → Certifications) */}
+      <div className="cert-grid">
+        {vendorCerts.map(cert => {
+          const numericId = /^\d{5,}$/.test(String(cert.cert_number).trim());
+          return (
+            <div key={cert.id} className="cert-card">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', paddingBottom: '1rem', borderBottom: '1px solid var(--slate-200)', marginBottom: '1rem' }}>
+                <div className="cert-initials">{initials(cert.name)}</div>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--slate-900)', marginBottom: '0.3rem' }}>
+                    {shortName(cert.name)}
+                  </div>
+                  <span className="cert-status">{(cert.status || 'Active').toUpperCase()}</span>
+                </div>
+              </div>
+              <div style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--slate-500)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                {numericId ? 'Registered Vendor ID' : 'Registration Status'}
+              </div>
               <div style={{
-                width: '48px',
-                height: '48px',
-                borderRadius: '50%',
-                backgroundColor: 'var(--slate-100)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 800,
-                fontSize: '1rem',
+                fontSize: numericId ? '1.6rem' : '1.2rem',
+                fontWeight: 700,
+                letterSpacing: numericId ? '0.22em' : '-0.01em',
                 color: 'var(--slate-900)',
+                margin: '0.15rem 0 0.6rem 0',
               }}>
-                AR
+                {cert.cert_number}
               </div>
-              <div style={{
-                padding: '0.25rem 0.65rem',
-                borderRadius: 'var(--radius-full)',
-                backgroundColor: '#DCFCE7',
-                color: '#166534',
-                fontSize: '0.7rem',
-                fontWeight: 800,
-              }}>
-                ACTIVE
-              </div>
+              <a href={requestCertificateUrl(shortName(cert.name))} target="_blank" rel="noopener noreferrer" className="cert-link">
+                Request Certificate <ArrowUpRight size={14} />
+              </a>
             </div>
-
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '1rem' }}>
-              Saudi Aramco
-            </h3>
-
-            <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--slate-400)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>
-              REGISTERED VENDOR ID
-            </div>
-            <div style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--slate-900)', letterSpacing: '0.25em', marginBottom: '1.5rem' }}>
-              1 0 1 1 4 4 0 2
-            </div>
-          </div>
-
-          <button
-            onClick={() => handleRequestCertificate('Saudi Aramco')}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '4px',
-              color: '#0EA5E9',
-              fontSize: '0.85rem',
-              fontWeight: 800,
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-          >
-            <span>Request Certificate</span>
-            <ArrowUpRight size={16} />
-          </button>
-        </div>
-
-        {/* Card 2: SABIC */}
-        <div style={{
-          backgroundColor: '#FFFFFF',
-          borderRadius: '24px',
-          border: '1px solid var(--slate-200)',
-          padding: '2rem 1.75rem',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          boxShadow: '0 4px 16px rgba(0,0,0,0.02)',
-        }}>
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <div style={{
-                width: '48px',
-                height: '48px',
-                borderRadius: '50%',
-                backgroundColor: 'var(--slate-100)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 800,
-                fontSize: '1rem',
-                color: 'var(--slate-900)',
-              }}>
-                SB
-              </div>
-              <div style={{
-                padding: '0.25rem 0.65rem',
-                borderRadius: 'var(--radius-full)',
-                backgroundColor: '#DCFCE7',
-                color: '#166534',
-                fontSize: '0.7rem',
-                fontWeight: 800,
-              }}>
-                ACTIVE
-              </div>
-            </div>
-
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '1rem' }}>
-              SABIC
-            </h3>
-
-            <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--slate-400)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>
-              REGISTERED VENDOR ID
-            </div>
-            <div style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--slate-900)', letterSpacing: '0.25em', marginBottom: '1.5rem' }}>
-              1 1 0 4 7 9 0 0
-            </div>
-          </div>
-
-          <button
-            onClick={() => handleRequestCertificate('SABIC')}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '4px',
-              color: '#0EA5E9',
-              fontSize: '0.85rem',
-              fontWeight: 800,
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-          >
-            <span>Request Certificate</span>
-            <ArrowUpRight size={16} />
-          </button>
-        </div>
-
-        {/* Card 3: ADNOC / TAKREER */}
-        <div style={{
-          backgroundColor: '#FFFFFF',
-          borderRadius: '24px',
-          border: '1px solid var(--slate-200)',
-          padding: '2rem 1.75rem',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          boxShadow: '0 4px 16px rgba(0,0,0,0.02)',
-        }}>
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <div style={{
-                width: '48px',
-                height: '48px',
-                borderRadius: '50%',
-                backgroundColor: 'var(--slate-100)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 800,
-                fontSize: '1rem',
-                color: 'var(--slate-900)',
-              }}>
-                AD
-              </div>
-              <div style={{
-                padding: '0.25rem 0.65rem',
-                borderRadius: 'var(--radius-full)',
-                backgroundColor: '#DCFCE7',
-                color: '#166534',
-                fontSize: '0.7rem',
-                fontWeight: 800,
-              }}>
-                ACTIVE
-              </div>
-            </div>
-
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '1rem' }}>
-              ADNOC / TAKREER
-            </h3>
-
-            <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--slate-400)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>
-              REGISTRATION STATUS
-            </div>
-            <div style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '1.5rem' }}>
-              Approved Supply Chain
-            </div>
-          </div>
-
-          <button
-            onClick={() => handleRequestCertificate('ADNOC / TAKREER')}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '4px',
-              color: '#0EA5E9',
-              fontSize: '0.85rem',
-              fontWeight: 800,
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-          >
-            <span>Request Certificate</span>
-            <ArrowUpRight size={16} />
-          </button>
-        </div>
+          );
+        })}
       </div>
 
-      {/* ISO 9001 & ICV Quality Banner (Matches Screenshot) */}
-      <div style={{
-        backgroundColor: 'var(--navy-dark)',
-        borderRadius: '20px',
-        padding: '2rem 2.5rem',
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-        gap: '2rem',
-        color: '#FFFFFF',
-        marginBottom: '3.5rem',
-        boxShadow: '0 12px 30px rgba(11, 19, 43, 0.4)',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-          <div style={{
-            width: '48px',
-            height: '48px',
-            borderRadius: '12px',
-            backgroundColor: 'rgba(255,255,255,0.1)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
-          }}>
-            <Award size={24} color="#FFFFFF" />
-          </div>
-          <div>
-            <h4 style={{ fontSize: '1.05rem', fontWeight: 800, marginBottom: '2px' }}>
-              ISO 9001:2015 Certified
-            </h4>
-            <p style={{ fontSize: '0.825rem', color: 'var(--slate-300)' }}>
-              Global Quality Management Systems.
-            </p>
-          </div>
+      {/* ISO / ICV quality banner */}
+      {qualityCerts.length > 0 && (
+        <div className="quality-banner">
+          {qualityCerts.map((cert, i) => (
+            <div key={cert.id} className="quality-item">
+              <div className="quality-icon">{i === 0 ? <Check size={20} /> : <ArrowUp size={20} />}</div>
+              <div>
+                <div style={{ fontSize: '1rem', fontWeight: 700, color: '#FFFFFF' }}>
+                  {cert.name.replace(/\s+Quality Management Systems$/i, '')}{/certified/i.test(cert.name) ? '' : ' Certified'}
+                </div>
+                <div style={{ fontSize: '0.825rem', color: 'var(--slate-400)' }}>
+                  {cert.description || cert.issuing_org}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
+      )}
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-          <div style={{
-            width: '48px',
-            height: '48px',
-            borderRadius: '12px',
-            backgroundColor: 'rgba(255,255,255,0.1)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
-          }}>
-            <ArrowUpRight size={24} color="#FFFFFF" />
-          </div>
-          <div>
-            <h4 style={{ fontSize: '1.05rem', fontWeight: 800, marginBottom: '2px' }}>
-              UAE ICV Certified
-            </h4>
-            <p style={{ fontSize: '0.825rem', color: 'var(--slate-300)' }}>
-              In-Country Value certification for UAE government tenders.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Project Execution History Table (Matches Screenshot) */}
-      <div style={{
-        backgroundColor: '#FFFFFF',
-        borderRadius: '24px',
-        border: '1px solid var(--slate-200)',
-        padding: '2.5rem',
-        marginBottom: '3.5rem',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.02)',
-      }}>
-        <div style={{ marginBottom: '1.75rem' }}>
-          <h2 style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '0.35rem' }}>
+      {/* Project execution history (Admin → Project History) */}
+      {projects.length > 0 && (
+        <div className="projects-card">
+          <h2 style={{ fontSize: 'clamp(1.4rem, 3vw, 1.9rem)', fontWeight: 700, color: 'var(--slate-900)', marginBottom: '0.3rem' }}>
             Project Execution History
           </h2>
-          <p style={{ fontSize: '0.925rem', color: 'var(--slate-600)' }}>
+          <p style={{ fontSize: '0.95rem', color: 'var(--slate-600)', marginBottom: '1.5rem' }}>
             A sample of recent mega-projects supplied under strict Tier-1 technical auditing.
           </p>
+          <div style={{ overflowX: 'auto' }}>
+            <table className="projects-table">
+              <thead>
+                <tr>
+                  <th>Project Name</th>
+                  <th>Location</th>
+                  <th>Sector</th>
+                  <th>Materials Supplied</th>
+                </tr>
+              </thead>
+              <tbody>
+                {projects.map(p => (
+                  <tr key={p.id}>
+                    <td style={{ fontWeight: 700, color: 'var(--slate-900)' }}>{p.project_name}</td>
+                    <td>{p.country}</td>
+                    <td style={{ color: '#0EA5E9', fontWeight: 600 }}>{p.industry}</td>
+                    <td>
+                      <div style={{ fontWeight: 700, color: 'var(--slate-900)' }}>{p.scope}</div>
+                      {p.client && <div style={{ fontSize: '0.75rem', color: 'var(--slate-500)' }}>Client: {p.client}</div>}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
+      )}
 
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-            <thead>
-              <tr style={{ backgroundColor: '#F8FAFC', borderBottom: '1px solid var(--slate-200)' }}>
-                <th style={{ padding: '1rem 1.25rem', fontSize: '0.725rem', fontWeight: 800, color: 'var(--slate-500)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  PROJECT NAME
-                </th>
-                <th style={{ padding: '1rem 1.25rem', fontSize: '0.725rem', fontWeight: 800, color: 'var(--slate-500)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  LOCATION
-                </th>
-                <th style={{ padding: '1rem 1.25rem', fontSize: '0.725rem', fontWeight: 800, color: 'var(--slate-500)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  SECTOR
-                </th>
-                <th style={{ padding: '1rem 1.25rem', fontSize: '0.725rem', fontWeight: 800, color: 'var(--slate-500)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  MATERIALS SUPPLIED
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr style={{ borderBottom: '1px solid var(--slate-100)' }}>
-                <td style={{ padding: '1.1rem 1.25rem', fontWeight: 800, fontSize: '0.9rem', color: 'var(--slate-900)' }}>
-                  Jafurah Petrochemical Complex
-                </td>
-                <td style={{ padding: '1.1rem 1.25rem', fontSize: '0.85rem', color: 'var(--slate-600)' }}>
-                  Jubail, KSA
-                </td>
-                <td style={{ padding: '1.1rem 1.25rem', fontWeight: 700, fontSize: '0.85rem', color: '#0EA5E9' }}>
-                  Oil & Gas (Downstream)
-                </td>
-                <td style={{ padding: '1.1rem 1.25rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--slate-900)' }}>Cellular Glass, SS Jacketing</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--slate-500)' }}>Volume: 12,000+ SQM</div>
-                </td>
-              </tr>
-              <tr style={{ borderBottom: '1px solid var(--slate-100)' }}>
-                <td style={{ padding: '1.1rem 1.25rem', fontWeight: 800, fontSize: '0.9rem', color: 'var(--slate-900)' }}>
-                  Al Taweelah Alumina Refinery
-                </td>
-                <td style={{ padding: '1.1rem 1.25rem', fontSize: '0.85rem', color: 'var(--slate-600)' }}>
-                  Abu Dhabi, UAE
-                </td>
-                <td style={{ padding: '1.1rem 1.25rem', fontWeight: 700, fontSize: '0.85rem', color: '#0EA5E9' }}>
-                  Industrial Processing
-                </td>
-                <td style={{ padding: '1.1rem 1.25rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--slate-900)' }}>PIR Foam, Mastics, Toggle Clips</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--slate-500)' }}>Volume: 8,500+ SQM</div>
-                </td>
-              </tr>
-              <tr>
-                <td style={{ padding: '1.1rem 1.25rem', fontWeight: 800, fontSize: '0.9rem', color: 'var(--slate-900)' }}>
-                  Clean Fuels Project (CFP)
-                </td>
-                <td style={{ padding: '1.1rem 1.25rem', fontSize: '0.85rem', color: 'var(--slate-600)' }}>
-                  Mina Abdullah, Kuwait
-                </td>
-                <td style={{ padding: '1.1rem 1.25rem', fontWeight: 700, fontSize: '0.85rem', color: '#0EA5E9' }}>
-                  Petrochemical Refinery
-                </td>
-                <td style={{ padding: '1.1rem 1.25rem' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--slate-900)' }}>Aerogel Blankets, Acoustic Cloth</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--slate-500)' }}>Volume: Critical High-Temp Segments</div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Bottom Callout Banner (Matches Screenshot) */}
-      <div style={{
-        backgroundColor: '#E0F2FE',
-        borderRadius: '24px',
-        padding: '3rem 2.5rem',
-        textAlign: 'center',
-        color: 'var(--slate-900)',
-      }}>
-        <h2 style={{ fontSize: 'clamp(1.6rem, 3vw, 2.25rem)', fontWeight: 800, marginBottom: '0.5rem' }}>
+      {/* CTA */}
+      <div className="verify-cta">
+        <h2 style={{ fontSize: 'clamp(1.4rem, 3vw, 2rem)', fontWeight: 700, color: 'var(--slate-900)', marginBottom: '0.4rem' }}>
           Verify our materials against your project specs.
         </h2>
-        <p style={{ fontSize: '0.975rem', color: 'var(--slate-600)', maxWidth: '600px', margin: '0 auto 1.75rem auto' }}>
+        <p style={{ fontSize: '0.95rem', color: 'var(--slate-600)', marginBottom: '1.5rem' }}>
           All documentation and ASTM testing sheets are available in the Master Catalog.
         </p>
-
-        <Link
-          href="/products"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.85rem 2rem',
-            borderRadius: 'var(--radius-full)',
-            backgroundColor: '#0EA5E9',
-            color: '#FFFFFF',
-            fontWeight: 800,
-            fontSize: '0.925rem',
-            textDecoration: 'none',
-            boxShadow: '0 8px 20px -4px rgba(14, 165, 233, 0.4)',
-          }}
-        >
-          <span>Browse Products →</span>
-        </Link>
+        <Link href="/products" className="verify-btn">Browse Products <ArrowRight size={15} aria-hidden style={{ verticalAlign: '-3px', flexShrink: 0 }} /></Link>
       </div>
 
-      {/* Profile Modal */}
-      <CorporateProfileModal
-        isOpen={isProfileModalOpen}
-        onClose={() => setIsProfileModalOpen(false)}
-      />
+      <style jsx>{`
+        .cert-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+          gap: 1.5rem;
+          margin-bottom: 2rem;
+        }
+        .cert-card {
+          background: #ffffff;
+          border: 1px solid var(--slate-200);
+          border-radius: 18px;
+          padding: 1.5rem;
+        }
+        .cert-initials {
+          width: 52px;
+          height: 52px;
+          border-radius: 12px;
+          border: 1px solid var(--slate-200);
+          background: #f8fafc;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 700;
+          color: var(--slate-900);
+          flex-shrink: 0;
+        }
+        .cert-status {
+          display: inline-block;
+          font-size: 0.65rem;
+          font-weight: 700;
+          color: #047857;
+          background: #d1fae5;
+          border-radius: 4px;
+          padding: 0.15rem 0.5rem;
+        }
+        .cert-card :global(.cert-link) {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 0.85rem;
+          font-weight: 700;
+          color: #0ea5e9;
+          text-decoration: none;
+        }
+        .quality-banner {
+          background: var(--slate-900);
+          border-radius: 16px;
+          padding: 1.5rem;
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-between;
+          gap: 1rem;
+          margin-bottom: 3rem;
+        }
+        .quality-item {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          border: 1.5px solid rgba(255, 255, 255, 0.85);
+          border-radius: 10px;
+          padding: 0.75rem 1.25rem 0.75rem 0.75rem;
+          flex: 0 1 460px;
+        }
+        .quality-icon {
+          width: 44px;
+          height: 44px;
+          border-radius: 8px;
+          background: rgba(255, 255, 255, 0.1);
+          color: #ffffff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+        .projects-card {
+          background: #ffffff;
+          border: 1px solid var(--slate-200);
+          border-radius: 20px;
+          padding: clamp(1.25rem, 4vw, 2.5rem);
+          margin-bottom: 3rem;
+        }
+        .projects-table {
+          width: 100%;
+          min-width: 640px;
+          border-collapse: collapse;
+          text-align: left;
+          font-size: 0.875rem;
+        }
+        .projects-table th {
+          background: #f1f5f9;
+          padding: 0.9rem 1.25rem;
+          font-size: 0.7rem;
+          font-weight: 700;
+          color: var(--slate-600);
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+        }
+        .projects-table td {
+          padding: 1.1rem 1.25rem;
+          border-bottom: 1px solid var(--slate-200);
+          color: var(--slate-600);
+          vertical-align: top;
+        }
+        .verify-cta {
+          background: #e0f2fe;
+          border: 1.5px solid #bae6fd;
+          border-radius: 20px;
+          padding: clamp(1.75rem, 5vw, 3rem) 1.5rem;
+          text-align: center;
+        }
+        .verify-cta :global(.verify-btn) {
+          display: inline-block;
+          background: #0ea5e9;
+          color: #ffffff;
+          font-weight: 700;
+          font-size: 0.9rem;
+          padding: 0.85rem 3.5rem;
+          border-radius: 9999px;
+          text-decoration: none;
+        }
+      `}</style>
     </div>
   );
 };

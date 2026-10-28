@@ -7,7 +7,9 @@ import { Footer } from '@/components/Footer';
 import { RfqQueueDrawer } from '@/components/RfqQueueDrawer';
 import { CorporateProfileModal } from '@/components/CorporateProfileModal';
 import { FloatingWhatsApp } from '@/components/FloatingWhatsApp';
-import { ProductItem, PRODUCTS_CATALOG } from '@/data/mockData';
+import Link from 'next/link';
+import { ProductItem } from '@/data/mockData';
+import { useRfqQueue } from '@/hooks/useRfqQueue';
 
 export default function ProductDetailPage({
   params,
@@ -15,10 +17,8 @@ export default function ProductDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const [product, setProduct] = useState<ProductItem | null>(null);
-  const [rfqItems, setRfqItems] = useState<ProductItem[]>([
-    PRODUCTS_CATALOG[0],
-    PRODUCTS_CATALOG[2],
-  ]);
+  const [notFound, setNotFound] = useState(false);
+  const { items: rfqItems, addItem, removeItem, clear } = useRfqQueue();
   const [isRfqDrawerOpen, setIsRfqDrawerOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
@@ -30,34 +30,41 @@ export default function ProductDetailPage({
           if (data.success && data.product) {
             setProduct(data.product);
           } else {
-            setProduct(PRODUCTS_CATALOG[0]);
+            setNotFound(true);
           }
         })
-        .catch(() => setProduct(PRODUCTS_CATALOG[0]));
+        .catch(() => setNotFound(true));
     });
   }, [params]);
 
   const handleAddRfqItem = (p: ProductItem, qty: number, form: string, thickness: string) => {
-    if (!rfqItems.some(i => i.id === p.id)) {
-      setRfqItems(prev => [...prev, p]);
-    }
+    addItem(p, qty);
     setIsRfqDrawerOpen(true);
   };
 
   const handleRemoveRfqItem = (id: string) => {
-    setRfqItems(prev => prev.filter(item => item.id !== id));
+    removeItem(id);
   };
 
   const handleClearQueue = () => {
-    setRfqItems([]);
+    clear();
   };
+
+  if (notFound) {
+    return (
+      <div style={{ padding: '4rem', textAlign: 'center' }}>
+        <p style={{ fontWeight: 700, marginBottom: '1rem' }}>This product could not be found.</p>
+        <Link href="/products" style={{ color: 'var(--primary-red)', fontWeight: 700 }}>Back to product catalog</Link>
+      </div>
+    );
+  }
 
   if (!product) {
     return <div style={{ padding: '4rem', textAlign: 'center' }}>Loading product specification data...</div>;
   }
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#F8FAFC', color: 'var(--slate-900)' }}>
+    <div style={{ minHeight: '100vh', color: 'var(--slate-900)' }}>
       {/* Navbar Header */}
       <Navbar
         rfqCount={rfqItems.length}

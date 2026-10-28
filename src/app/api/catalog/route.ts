@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/db';
+import { formatProduct } from '@/lib/products';
 
 export async function GET(req: NextRequest) {
   try {
@@ -35,14 +36,7 @@ export async function GET(req: NextRequest) {
     const industriesList = db.prepare(`SELECT * FROM industries WHERE is_active = 1 ORDER BY display_order ASC`).all();
 
     // Transform boolean flags for client representation
-    const formattedProducts = products.map((p: any) => ({
-      ...p,
-      inStock: Boolean(p.in_stock),
-      aramcoApproved: Boolean(p.aramco_approved),
-      pricePerUnitEstimate: p.price_estimate,
-      leadTime: p.lead_time,
-      tempRange: p.temp_range,
-    }));
+    const formattedProducts = products.map(formatProduct);
 
     return NextResponse.json({
       success: true,

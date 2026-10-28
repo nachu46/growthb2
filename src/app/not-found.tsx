@@ -8,14 +8,14 @@ import { Search, Home, ArrowLeft } from 'lucide-react';
 
 export default function NotFound() {
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#F8FAFC', color: 'var(--slate-900)' }}>
+    <div style={{ minHeight: '100vh', color: 'var(--slate-900)' }}>
       <Navbar
         rfqCount={0}
         onOpenRfqQueue={() => {}}
         onOpenProfile={() => {}}
       />
 
-      <main style={{ maxWidth: '1280px', margin: '0 auto', padding: '4rem 1.5rem', textAlign: 'center' }}>
+      <main style={{ maxWidth: 'var(--container-max)', margin: '0 auto', padding: '4rem 1.5rem', textAlign: 'center' }}>
         <div style={{
           backgroundColor: '#FFFFFF',
           borderRadius: '24px',
@@ -35,13 +35,13 @@ export default function NotFound() {
             alignItems: 'center',
             justifyContent: 'center',
             margin: '0 auto 1.5rem auto',
-            fontWeight: 900,
+            fontWeight: 700,
             fontSize: '1.75rem',
           }}>
             404
           </div>
 
-          <h1 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '0.75rem' }}>
+          <h1 style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--slate-900)', marginBottom: '0.75rem' }}>
             Page Not Found
           </h1>
 
@@ -60,7 +60,7 @@ export default function NotFound() {
                 borderRadius: 'var(--radius-md)',
                 backgroundColor: 'var(--navy-dark)',
                 color: '#FFFFFF',
-                fontWeight: 800,
+                fontWeight: 700,
                 fontSize: '0.9rem',
                 textDecoration: 'none',
               }}
@@ -80,7 +80,7 @@ export default function NotFound() {
                 backgroundColor: '#FFFFFF',
                 color: 'var(--slate-900)',
                 border: '1.5px solid var(--slate-300)',
-                fontWeight: 800,
+                fontWeight: 700,
                 fontSize: '0.9rem',
                 textDecoration: 'none',
               }}

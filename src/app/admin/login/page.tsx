@@ -2,11 +2,13 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ShieldCheck, Lock, Mail, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
+import { Lock, Mail, ArrowRight, Eye, EyeOff, AlertCircle, ArrowLeft } from 'lucide-react';
 
 export default function AdminLoginPage() {
-  const [email, setEmail] = useState('admin@growthme.com');
-  const [password, setPassword] = useState('Admin@Growth2026');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -39,147 +41,176 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      backgroundColor: '#0B132B',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '1.5rem',
-      color: '#FFFFFF',
-    }}>
-      <div style={{
-        width: '100%',
-        maxWidth: '440px',
-        backgroundColor: '#1C2541',
-        borderRadius: '24px',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        padding: '2.5rem 2rem',
-        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)',
-      }}>
-        {/* Brand Logo Header */}
+    <div className="login-page">
+      <div className="login-card">
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '2rem' }}>
-          <div style={{
-            width: '54px',
-            height: '54px',
-            borderRadius: '50%',
-            backgroundColor: 'var(--primary-red)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#FFFFFF',
-            fontWeight: 900,
-            fontSize: '1.6rem',
-            marginBottom: '1rem',
-            boxShadow: '0 8px 20px rgba(225, 29, 72, 0.4)',
-          }}>
-            G
-          </div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.35rem' }}>
-            Growth International
+          <img src="/emblem.png" alt="Growth International" style={{ width: '56px', height: '56px', objectFit: 'contain', marginBottom: '1rem' }} />
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--slate-900)', marginBottom: '0.25rem' }}>
+            <span style={{ color: 'var(--primary-red)' }}>Growth</span> International
           </h1>
-          <p style={{ fontSize: '0.85rem', color: '#94A3B8' }}>
-            Admin Management Portal
-          </p>
+          <p style={{ fontSize: '0.9rem', color: 'var(--slate-500)' }}>Sign in to the Admin Control Center</p>
         </div>
 
         {error && (
-          <div style={{
-            backgroundColor: 'rgba(225, 29, 72, 0.15)',
-            border: '1px solid #E11D48',
-            borderRadius: '12px',
-            padding: '0.75rem 1rem',
-            color: '#FF6B81',
-            fontSize: '0.85rem',
-            fontWeight: 700,
-            marginBottom: '1.5rem',
-            textAlign: 'center',
-          }}>
-            {error}
+          <div className="login-error" role="alert">
+            <AlertCircle size={16} style={{ flexShrink: 0 }} />
+            <span>{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.4rem' }}>
-              ADMIN EMAIL
-            </label>
+            <label htmlFor="admin-email" className="login-label">Email</label>
             <div style={{ position: 'relative' }}>
-              <Mail size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#64748B' }} />
+              <Mail size={18} className="login-icon" />
               <input
+                id="admin-email"
                 type="email"
                 required
                 autoComplete="username"
+                placeholder="admin@company.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '0.85rem 1rem 0.85rem 2.75rem',
-                  borderRadius: '12px',
-                  backgroundColor: '#0B132B',
-                  border: '1px solid #334155',
-                  color: '#FFFFFF',
-                  fontSize: '0.9rem',
-                  fontWeight: 600,
-                  outline: 'none',
-                }}
+                className="login-input"
               />
             </div>
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.4rem' }}>
-              PASSWORD
-            </label>
+            <label htmlFor="admin-password" className="login-label">Password</label>
             <div style={{ position: 'relative' }}>
-              <Lock size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#64748B' }} />
+              <Lock size={18} className="login-icon" />
               <input
-                type="password"
+                id="admin-password"
+                type={showPassword ? 'text' : 'password'}
                 required
                 autoComplete="current-password"
+                placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '0.85rem 1rem 0.85rem 2.75rem',
-                  borderRadius: '12px',
-                  backgroundColor: '#0B132B',
-                  border: '1px solid #334155',
-                  color: '#FFFFFF',
-                  fontSize: '0.9rem',
-                  fontWeight: 600,
-                  outline: 'none',
-                }}
+                className="login-input"
+                style={{ paddingRight: '3rem' }}
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(v => !v)}
+                className="login-eye"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              marginTop: '0.5rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.5rem',
-              padding: '0.95rem',
-              borderRadius: '12px',
-              backgroundColor: 'var(--primary-red)',
-              color: '#FFFFFF',
-              fontWeight: 800,
-              fontSize: '0.95rem',
-              border: 'none',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              opacity: loading ? 0.7 : 1,
-              boxShadow: '0 8px 20px rgba(225, 29, 72, 0.3)',
-            }}
-          >
-            <span>{loading ? 'Authenticating...' : 'Sign In as Admin'}</span>
+          <button type="submit" disabled={loading} className="login-submit">
+            <span>{loading ? 'Signing in…' : 'Sign In'}</span>
             {!loading && <ArrowRight size={18} />}
           </button>
         </form>
+
+        <Link href="/" className="login-back">
+          <ArrowLeft size={15} /> Back to website
+        </Link>
       </div>
+
+      <style jsx>{`
+        .login-page {
+          min-height: 100vh;
+          background: #ffffff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 1.5rem;
+        }
+        .login-card {
+          width: 100%;
+          max-width: 420px;
+          background: #ffffff;
+          border: 1px solid var(--slate-200);
+          border-radius: 20px;
+          padding: 2.5rem 2rem 2rem 2rem;
+        }
+        .login-error {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          background: #fde7ea;
+          border: 1px solid #fbc4cc;
+          border-radius: 10px;
+          padding: 0.75rem 1rem;
+          color: var(--primary-red);
+          font-size: 0.85rem;
+          font-weight: 600;
+          margin-bottom: 1.25rem;
+        }
+        .login-label {
+          display: block;
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: var(--slate-600);
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+          margin-bottom: 0.4rem;
+        }
+        .login-card :global(.login-icon) {
+          position: absolute;
+          left: 1rem;
+          top: 50%;
+          transform: translateY(-50%);
+          color: var(--slate-400);
+          pointer-events: none;
+        }
+        .login-input {
+          width: 100%;
+          padding: 0.85rem 1rem 0.85rem 2.75rem;
+          border-radius: 10px;
+          background: #ffffff;
+          border: 1.5px solid var(--slate-300);
+          color: var(--slate-900);
+          font-size: 0.95rem;
+          font-family: inherit;
+          outline: none;
+        }
+        .login-input:focus {
+          border-color: var(--slate-900);
+        }
+        .login-eye {
+          position: absolute;
+          right: 0.6rem;
+          top: 50%;
+          transform: translateY(-50%);
+          color: var(--slate-500);
+          padding: 0.35rem;
+          display: flex;
+        }
+        .login-submit {
+          margin-top: 0.5rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          padding: 0.9rem;
+          border-radius: 10px;
+          background: var(--primary-red);
+          color: #ffffff;
+          font-weight: 700;
+          font-size: 0.95rem;
+        }
+        .login-submit:disabled {
+          opacity: 0.7;
+          cursor: wait;
+        }
+        .login-card :global(.login-back) {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.35rem;
+          margin-top: 1.5rem;
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: var(--slate-500);
+          text-decoration: none;
+        }
+      `}</style>
     </div>
   );
 }

@@ -22,6 +22,9 @@
 
 # database & user uploads
 /data/growth_b2b.db*
+/data/uploads/
+/data/.session-secret
+/data/admin-credentials.txt
 /public/uploads/*
 !/public/uploads/.gitkeep
 

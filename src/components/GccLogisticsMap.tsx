@@ -1,14 +1,38 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { GCC_HUBS, HubLocation } from '@/data/mockData';
-import { Radio } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 
 export const GccLogisticsMap: React.FC = () => {
+  // Hub details are managed in Admin → Locations; built-in data is shown until they load
+  const [hubs, setHubs] = useState<HubLocation[]>(GCC_HUBS);
   const [selectedHub, setSelectedHub] = useState<HubLocation>(GCC_HUBS[0]);
   const [hoveredHub, setHoveredHub] = useState<HubLocation | null>(null);
 
-  const uaeHq = GCC_HUBS[0]; // UAE HQ at x=70, y=45
+  useEffect(() => {
+    fetch('/api/gcc-locations')
+      .then(res => res.json())
+      .then(data => {
+        if (!data.success || !Array.isArray(data.data) || data.data.length === 0) return;
+        const mapped: HubLocation[] = data.data.map((l: any) => ({
+          id: l.id,
+          name: l.hub_name,
+          country: l.country,
+          isHq: Boolean(l.is_hq),
+          status: l.status,
+          phone: l.phone,
+          coordinates: { x: l.coord_x, y: l.coord_y },
+          lastShipment: l.last_shipment || '',
+          inventoryCount: l.inventory_count || '',
+        }));
+        setHubs(mapped);
+        setSelectedHub(mapped.find(h => h.isHq) || mapped[0]);
+      })
+      .catch(() => {});
+  }, []);
+
+  const activeHub = hoveredHub || selectedHub;
 
   // Map node positions (x%, y%)
   const nodePositions: Record<string, { x: number; y: number; label: string }> = {
@@ -22,9 +46,9 @@ export const GccLogisticsMap: React.FC = () => {
 
   return (
     <div style={{
-      backgroundColor: '#F0F9FF',
+      backgroundColor: '#FFFFFF',
       borderRadius: '24px',
-      border: '1px solid #E0F2FE',
+      border: '1px solid var(--slate-200)',
       padding: '2.5rem 1.5rem',
       position: 'relative',
       overflow: 'hidden',
@@ -72,7 +96,7 @@ export const GccLogisticsMap: React.FC = () => {
         {/* Render Map Nodes */}
         {Object.entries(nodePositions).map(([id, pos]) => {
           const isHq = id === 'uae-hq';
-          const hubData = GCC_HUBS.find(h => h.id === id) || GCC_HUBS[0];
+          const hubData = hubs.find(h => h.id === id) || GCC_HUBS.find(h => h.id === id) || hubs[0];
 
           return (
             <div
@@ -99,7 +123,7 @@ export const GccLogisticsMap: React.FC = () => {
                   width: '40px',
                   height: '40px',
                   borderRadius: '50%',
-                  backgroundColor: 'rgba(225, 29, 72, 0.15)',
+                  backgroundColor: 'rgba(217, 11, 42, 0.15)',
                   animation: 'pulseGlow 2s infinite ease-in-out',
                 }} />
               )}
@@ -110,7 +134,7 @@ export const GccLogisticsMap: React.FC = () => {
                 height: isHq ? '16px' : '12px',
                 borderRadius: '50%',
                 backgroundColor: 'var(--primary-red)',
-                boxShadow: isHq ? '0 0 12px rgba(225, 29, 72, 0.6)' : 'none',
+                boxShadow: isHq ? '0 0 12px rgba(217, 11, 42, 0.6)' : 'none',
                 position: 'relative',
                 zIndex: 2,
               }} />
@@ -133,11 +157,11 @@ export const GccLogisticsMap: React.FC = () => {
                 {isHq && (
                   <div style={{
                     fontSize: '0.75rem',
-                    fontWeight: 800,
+                    fontWeight: 700,
                     color: 'var(--primary-red)',
                     marginTop: '2px',
                   }}>
-                    Stock Ready
+                    {hubData.status}
                   </div>
                 )}
               </div>
@@ -146,29 +170,39 @@ export const GccLogisticsMap: React.FC = () => {
         })}
 
         {/* Live Route Tooltip Badge (Matches Screenshot) */}
-        <div style={{
+        <div className="route-badge" style={{
           position: 'absolute',
-          top: '58%',
+          top: '48%',
           left: '69%',
-          transform: 'translate(10px, -10px)',
+          transform: 'translate(12px, 0)',
           backgroundColor: '#FFFFFF',
           borderRadius: '16px',
           border: '1.5px solid #BAE6FD',
           padding: '0.85rem 1.15rem',
           boxShadow: '0 8px 24px rgba(14, 165, 233, 0.15)',
-          maxWidth: '240px',
+          maxWidth: '210px',
           zIndex: 30,
         }}>
-          <div style={{ fontSize: '0.775rem', fontWeight: 800, color: 'var(--slate-900)', lineHeight: 1.3, marginBottom: '4px' }}>
-            Last shipment to KSA cleared 42 mins ago.
+          <div style={{ fontSize: '0.775rem', fontWeight: 700, color: 'var(--slate-900)', lineHeight: 1.3, marginBottom: '4px' }}>
+            {activeHub.lastShipment || `${activeHub.name}: ${activeHub.status}`}
           </div>
-          <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#0EA5E9' }}>
-            Algorithmic Routing to UAE Hub ↗
+          <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0EA5E9' }}>
+            {activeHub.isHq ? <>Algorithmic Routing to UAE Hub <ArrowUpRight size={13} aria-hidden style={{ verticalAlign: '-3px', flexShrink: 0 }} /></> : `${activeHub.name} · ${activeHub.phone}`}
           </div>
         </div>
       </div>
 
       <style jsx>{`
+        @media (max-width: 640px) {
+          .route-badge {
+            top: 0 !important;
+            left: 0 !important;
+            right: 0;
+            transform: none !important;
+            max-width: none !important;
+            padding: 0.6rem 0.9rem !important;
+          }
+        }
         @keyframes pulseGlow {
           0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.8; }
           50% { transform: translate(-50%, -50%) scale(1.4); opacity: 0.2; }

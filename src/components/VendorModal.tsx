@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Award, Download } from 'lucide-react';
+import { X, Award, Download, ArrowRight } from 'lucide-react';
 
 interface VendorModalProps {
   isOpen: boolean;
@@ -53,7 +53,7 @@ export const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, vendo
         position: 'relative',
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', gap: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--navy-dark)', fontWeight: 800, fontSize: '0.8rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--navy-dark)', fontWeight: 700, fontSize: '0.8rem' }}>
             <Award size={18} color="var(--primary-red)" />
             <span>OFFICIAL TIER-1 VENDOR REGISTRATION</span>
           </div>
@@ -78,7 +78,7 @@ export const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, vendo
           </button>
         </div>
 
-        <h3 style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '0.5rem' }}>
+        <h3 style={{ fontSize: '1.65rem', fontWeight: 700, color: 'var(--slate-900)', marginBottom: '0.5rem' }}>
           {vendor.name}
         </h3>
         <p style={{ fontSize: '0.9rem', color: 'var(--slate-600)', marginBottom: '1.5rem' }}>
@@ -92,10 +92,10 @@ export const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, vendo
           padding: '1.25rem',
           marginBottom: '2rem',
         }}>
-          <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--slate-400)', textTransform: 'uppercase', marginBottom: '4px' }}>
+          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--slate-400)', textTransform: 'uppercase', marginBottom: '4px' }}>
             OFFICIAL REGISTRATION NUMBER
           </div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--slate-900)', letterSpacing: '0.15em' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--slate-900)', letterSpacing: '0.15em' }}>
             {vendor.vendorId}
           </div>
         </div>
@@ -108,14 +108,14 @@ export const VendorModal: React.FC<VendorModalProps> = ({ isOpen, onClose, vendo
             borderRadius: 'var(--radius-md)',
             backgroundColor: 'var(--primary-red)',
             color: '#FFFFFF',
-            fontWeight: 800,
+            fontWeight: 700,
             fontSize: '0.95rem',
             border: 'none',
             cursor: 'pointer',
-            boxShadow: '0 8px 16px -4px rgba(225, 29, 72, 0.4)',
+            boxShadow: '0 8px 16px -4px rgba(217, 11, 42, 0.4)',
           }}
         >
-          Request Official Certificate Copy →
+          Request Official Certificate Copy <ArrowRight size={15} aria-hidden style={{ verticalAlign: '-3px', flexShrink: 0 }} />
         </button>
       </div>
     </div>,

@@ -3,28 +3,24 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import {
-  LayoutDashboard,
-  Package,
-  Building2,
-  Handshake,
-  Award,
-  FolderGit2,
-  FileText,
-  MapPin,
-  Inbox,
-  FileSpreadsheet,
-  History,
-  LogOut,
-  ExternalLink,
-  ShieldCheck,
-} from 'lucide-react';
+import { Menu, X, LayoutDashboard, Package, Building2, Handshake, Award, FolderGit2, FileText, MapPin, Inbox, FileSpreadsheet, History, LogOut, ExternalLink, ShieldCheck, ArrowRight, Tags } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [adminUser, setAdminUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Phones/tablets: the sidebar is a drawer; close it after navigating or on Escape
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [pathname]);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setSidebarOpen(false);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
 
   const isLoginPage = pathname === '/admin/login';
 
@@ -76,6 +72,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { label: 'Company Logos', href: '/admin/company-logos', icon: Building2 },
     { label: 'Supply Partners', href: '/admin/partners', icon: Handshake },
     { label: 'Products Catalog', href: '/admin/products', icon: Package },
+    { label: 'Categories', href: '/admin/categories', icon: Tags },
     { label: 'Certifications', href: '/admin/certifications', icon: Award },
     { label: 'Project History', href: '/admin/project-history', icon: FolderGit2 },
     { label: 'Technical Resources', href: '/admin/resources', icon: FileText },
@@ -87,8 +84,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#F6F6F7', color: '#303030' }}>
+      {sidebarOpen && <div className="admin-backdrop" onClick={() => setSidebarOpen(false)} aria-hidden />}
+
       {/* Clean White Admin Sidebar Navigation */}
-      <aside style={{
+      <aside className={`admin-sidebar${sidebarOpen ? ' is-open' : ''}`} aria-label="Admin navigation" style={{
         width: '250px',
         backgroundColor: '#FFFFFF',
         color: '#303030',
@@ -169,7 +168,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               textDecoration: 'none',
             }}
           >
-            <span>View Public Store →</span>
+            <span>View Public Store <ArrowRight size={15} aria-hidden style={{ verticalAlign: '-3px', flexShrink: 0 }} /></span>
             <ExternalLink size={14} />
           </Link>
 
@@ -202,19 +201,29 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <header style={{
           backgroundColor: '#FFFFFF',
           borderBottom: '1px solid #E1E3E5',
-          padding: '0.85rem 2rem',
+          padding: '0.85rem clamp(1rem, 3vw, 2rem)',
           display: 'flex',
+          gap: '1rem',
           alignItems: 'center',
           justifyContent: 'space-between',
         }}>
-          <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <button
+              type="button"
+              className="admin-menu-btn"
+              onClick={() => setSidebarOpen(v => !v)}
+              aria-label={sidebarOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={sidebarOpen}
+            >
+              {sidebarOpen ? <X size={22} /> : <Menu size={22} />}
+            </button>
             <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--slate-600)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               ADMIN CONTROL PANEL
             </span>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div style={{
+            <div className="admin-role-badge" style={{
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
@@ -229,16 +238,83 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <ShieldCheck size={14} />
               <span>Role: ADMIN</span>
             </div>
-            <div style={{ fontSize: '0.875rem', fontWeight: 800, color: '#1A1A1A' }}>
+            <div className="admin-email" style={{ fontSize: '0.875rem', fontWeight: 800, color: '#1A1A1A' }}>
               {adminUser?.email || 'admin@growthme.com'}
             </div>
           </div>
         </header>
 
-        <main style={{ padding: '2rem', flex: 1 }}>
+        <main className="admin-main" style={{ padding: 'clamp(1rem, 3vw, 2rem)', flex: 1, minWidth: 0 }}>
           {children}
         </main>
       </div>
+
+      <style jsx global>{`
+        .admin-menu-btn {
+          display: none;
+          align-items: center;
+          justify-content: center;
+          width: 38px;
+          height: 38px;
+          border-radius: 8px;
+          border: 1px solid #e1e3e5;
+          color: #303030;
+        }
+        .admin-backdrop {
+          position: fixed;
+          inset: 0;
+          background: rgba(15, 23, 42, 0.45);
+          z-index: 60;
+        }
+        /* Wide tables scroll inside their card instead of squashing */
+        .admin-main div:has(> table) {
+          overflow-x: auto;
+        }
+        .admin-main table {
+          min-width: 640px;
+        }
+        @media (max-width: 1023px) {
+          .admin-menu-btn {
+            display: inline-flex;
+          }
+          .admin-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 70;
+            overflow-y: auto;
+            transform: translateX(-100%);
+            transition: transform 0.22s ease;
+          }
+          .admin-sidebar.is-open {
+            transform: translateX(0);
+          }
+          .admin-role-badge {
+            display: none !important;
+          }
+        }
+        @media (max-width: 640px) {
+          .admin-email {
+            max-width: 160px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 0.8rem !important;
+          }
+          /* Page title rows and toolbars wrap; side-by-side form fields stack */
+          .admin-main [style*="justify-content: space-between"] {
+            flex-wrap: wrap;
+            gap: 0.75rem;
+          }
+          .admin-main [style*="grid-template-columns: 1fr 1fr"] {
+            grid-template-columns: 1fr !important;
+          }
+          .admin-main h1 {
+            font-size: 1.4rem !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

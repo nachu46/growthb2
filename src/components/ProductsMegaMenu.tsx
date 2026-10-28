@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useCategories } from '@/hooks/useCategories';
 import { ArrowRight } from 'lucide-react';
 
 interface ProductsMegaMenuProps {
@@ -11,7 +12,8 @@ interface ProductsMegaMenuProps {
 }
 
 export const ProductsMegaMenu: React.FC<ProductsMegaMenuProps> = ({ onClose, onMouseEnter, onMouseLeave }) => {
-  const columns = [
+  // Icons for the built-in category keys; columns themselves come from Admin → Categories
+  const BUILTIN_COLUMNS = [
     {
       id: 'insulation',
       title: 'Insulation',
@@ -29,7 +31,7 @@ export const ProductsMegaMenu: React.FC<ProductsMegaMenuProps> = ({ onClose, onM
         { name: 'Rock Wool (Hot)', slug: 'mineral-wool-pipe-section' },
         { name: 'Aerogel (Pyrogel)', slug: 'foamglas-cellular-glass' },
       ],
-      linkText: 'Explore 12+ Materials →',
+      linkText: 'Explore 12+ Materials',
     },
     {
       id: 'jacketing',
@@ -49,7 +51,7 @@ export const ProductsMegaMenu: React.FC<ProductsMegaMenuProps> = ({ onClose, onM
         { name: 'Galvanized Steel (GI)', slug: 'psmb-polysurlyn-jacketing' },
         { name: 'PSMB Moisture Barrier Aluzinc Coil', slug: 'psmb-polysurlyn-jacketing' },
       ],
-      linkText: 'Explore 13+ Materials →',
+      linkText: 'Explore 13+ Materials',
     },
     {
       id: 'accessories',
@@ -69,7 +71,7 @@ export const ProductsMegaMenu: React.FC<ProductsMegaMenuProps> = ({ onClose, onM
         { name: 'Industrial Duct Tape', slug: 'foamglas-cellular-glass' },
         { name: 'Toggle Clips & Springs Mastic & Sealants', slug: 'foamglas-cellular-glass' },
       ],
-      linkText: 'Explore 24+ Items →',
+      linkText: 'Explore 24+ Items',
     },
     {
       id: 'acoustic',
@@ -88,7 +90,7 @@ export const ProductsMegaMenu: React.FC<ProductsMegaMenuProps> = ({ onClose, onM
         { name: 'FG Silica Coated Cloth', slug: 'mineral-wool-pipe-section' },
         { name: 'High Temp Vermiculite Teflon Cloth', slug: 'mineral-wool-pipe-section' },
       ],
-      linkText: 'Explore 11+ Materials →',
+      linkText: 'Explore 11+ Materials',
     },
     {
       id: 'valves',
@@ -107,46 +109,50 @@ export const ProductsMegaMenu: React.FC<ProductsMegaMenuProps> = ({ onClose, onM
         { name: 'Refractory Bricks', slug: 'foamglas-cellular-glass' },
         { name: 'Refractory Anchors Inspection Plugs', slug: 'foamglas-cellular-glass' },
       ],
-      linkText: 'Explore 8+ Items →',
+      linkText: 'Explore 8+ Items',
     },
   ];
 
+  const categories = useCategories();
+  const columns = categories.map((c, i) => {
+    const look = BUILTIN_COLUMNS.find(b => b.id === c.slug) || BUILTIN_COLUMNS[i % BUILTIN_COLUMNS.length];
+    return {
+      id: c.slug,
+      title: c.name,
+      pillar: c.slug,
+      iconBg: look.iconBg,
+      iconColor: look.iconColor,
+      icon: look.icon,
+      items: c.items.slice(0, 4).map(name => ({ name })),
+      linkText: `View ${c.name}`,
+    };
+  });
+
   return (
     <>
-      {/* Dimmed Soft Overlay Behind Popup */}
-      <div
-        onClick={onClose}
-        style={{
-          position: 'fixed',
-          top: '72px',
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(15, 23, 42, 0.25)',
-          backdropFilter: 'blur(3px)',
-          zIndex: 80,
-        }}
-      />
-
       {/* Main Full-Container Mega Menu Card */}
       <div
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         style={{
           position: 'absolute',
-          top: '100%',
+          top: 'calc(100% + 12px)',
           left: '50%',
           transform: 'translateX(-50%)',
-        width: 'min(1280px, 98vw)',
+        width: 'min(var(--container-max), 98vw)',
         backgroundColor: '#FFFFFF',
         borderRadius: '24px',
-        boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(226, 232, 240, 0.95)',
+        boxShadow: '0 24px 48px -16px rgba(15, 23, 42, 0.18)',
+        border: '1px solid var(--slate-200)',
         padding: '2.5rem 3rem 1.75rem 3rem',
         zIndex: 90,
         color: 'var(--slate-900)',
         cursor: 'default',
-        animation: 'fadeInMenu 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+        animation: 'fadeInMenu 0.22s cubic-bezier(0.16, 1, 0.3, 1)',
       }}>
+        {/* Invisible bridge over the 12px gap so moving the mouse down to the panel keeps it open */}
+        <div aria-hidden style={{ position: 'absolute', top: '-14px', left: 0, right: 0, height: '14px' }} />
+
         {/* Top Header Bar inside Mega-Menu */}
         <div style={{
           display: 'flex',
@@ -159,7 +165,7 @@ export const ProductsMegaMenu: React.FC<ProductsMegaMenuProps> = ({ onClose, onM
           gap: '1rem',
         }}>
           <div>
-            <h2 style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--slate-900)', letterSpacing: '-0.02em', marginBottom: '4px' }}>
+            <h2 style={{ fontSize: '1.65rem', fontWeight: 700, color: 'var(--slate-900)', letterSpacing: '-0.02em', marginBottom: '4px' }}>
               Complete Materials
             </h2>
             <p style={{ fontSize: '0.925rem', color: 'var(--slate-500)', fontWeight: 500 }}>
@@ -178,7 +184,7 @@ export const ProductsMegaMenu: React.FC<ProductsMegaMenuProps> = ({ onClose, onM
               backgroundColor: '#E0F2FE',
               color: '#0EA5E9',
               fontSize: '0.8rem',
-              fontWeight: 800,
+              fontWeight: 700,
             }}>
               <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#0EA5E9' }} />
               <span>Live Sync Active</span>
@@ -196,7 +202,7 @@ export const ProductsMegaMenu: React.FC<ProductsMegaMenuProps> = ({ onClose, onM
                 borderRadius: 'var(--radius-md)',
                 backgroundColor: 'var(--navy-dark)',
                 color: '#FFFFFF',
-                fontWeight: 800,
+                fontWeight: 700,
                 fontSize: '0.9rem',
                 textDecoration: 'none',
                 boxShadow: '0 4px 14px rgba(11, 19, 43, 0.25)',
@@ -211,7 +217,7 @@ export const ProductsMegaMenu: React.FC<ProductsMegaMenuProps> = ({ onClose, onM
         {/* 5 Columns Material Breakdown */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(5, 1fr)',
+          gridTemplateColumns: `repeat(${Math.min(Math.max(columns.length, 1), 6)}, minmax(0, 1fr))`,
           gap: '2rem',
           marginBottom: '2.25rem',
         }} className="megamenu-grid">
@@ -232,7 +238,7 @@ export const ProductsMegaMenu: React.FC<ProductsMegaMenuProps> = ({ onClose, onM
                   }}>
                     {col.icon}
                   </div>
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--slate-900)' }}>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--slate-900)' }}>
                     {col.title}
                   </h3>
                 </div>
@@ -242,7 +248,7 @@ export const ProductsMegaMenu: React.FC<ProductsMegaMenuProps> = ({ onClose, onM
                   {col.items.map((item, idx) => (
                     <li key={idx}>
                       <Link
-                        href={`/products/${item.slug}`}
+                        href={`/products?pillar=${encodeURIComponent(col.pillar)}`}
                         onClick={onClose}
                         style={{
                           fontSize: '0.85rem',
@@ -265,11 +271,11 @@ export const ProductsMegaMenu: React.FC<ProductsMegaMenuProps> = ({ onClose, onM
 
               {/* Explore Link at Bottom of Column */}
               <Link
-                href={`/products/foamglas-cellular-glass`}
+                href={`/products?pillar=${encodeURIComponent(col.pillar)}`}
                 onClick={onClose}
                 style={{
                   fontSize: '0.825rem',
-                  fontWeight: 800,
+                  fontWeight: 700,
                   color: 'var(--primary-red)',
                   textDecoration: 'none',
                   display: 'inline-flex',
@@ -278,7 +284,7 @@ export const ProductsMegaMenu: React.FC<ProductsMegaMenuProps> = ({ onClose, onM
                   padding: '0.2rem 0',
                 }}
               >
-                <span>{col.linkText}</span>
+                <span>{col.linkText} <ArrowRight size={14} aria-hidden style={{ verticalAlign: '-3px', flexShrink: 0 }} /></span>
               </Link>
             </div>
           ))}
@@ -290,7 +296,7 @@ export const ProductsMegaMenu: React.FC<ProductsMegaMenuProps> = ({ onClose, onM
           paddingTop: '1.25rem',
           borderTop: '1px solid var(--slate-100)',
           fontSize: '0.7rem',
-          fontWeight: 800,
+          fontWeight: 700,
           color: 'var(--slate-400)',
           letterSpacing: '0.08em',
           textTransform: 'uppercase',
@@ -303,7 +309,7 @@ export const ProductsMegaMenu: React.FC<ProductsMegaMenuProps> = ({ onClose, onM
         @keyframes fadeInMenu {
           from {
             opacity: 0;
-            transform: translate(-50%, 8px);
+            transform: translate(-50%, -10px);
           }
           to {
             opacity: 1;

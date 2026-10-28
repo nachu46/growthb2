@@ -3,8 +3,17 @@ import db from '@/lib/db';
 import bcrypt from 'bcryptjs';
 import { createSessionToken, SESSION_COOKIE } from '@/lib/auth';
 import { logAdminAction } from '@/lib/audit';
+import { rateLimit } from '@/lib/rateLimit';
 
 export async function POST(req: NextRequest) {
+  // Slow down password guessing: 10 attempts per 15 minutes per IP
+  if (!rateLimit(req, 'login', 10, 15 * 60 * 1000)) {
+    return NextResponse.json(
+      { success: false, error: 'Too many login attempts. Please wait 15 minutes and try again.' },
+      { status: 429 }
+    );
+  }
+
   try {
     const { email, password } = await req.json();
 
@@ -64,7 +73,8 @@ export async function POST(req: NextRequest) {
 
     res.cookies.set(SESSION_COOKIE, token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      // Only mark Secure when actually served over HTTPS, so login also works on plain http://server-ip
+      secure: (req.headers.get('x-forwarded-proto') || req.nextUrl.protocol.replace(':', '')) === 'https',
       sameSite: 'lax',
       path: '/',
       maxAge: 24 * 60 * 60, // 24 hours

@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Mail, Phone, MapPin, CheckCircle, MessageCircle, Calendar } from 'lucide-react';
+import { Mail, Phone, MapPin, Calendar } from 'lucide-react';
 import { CustomSelect } from '@/components/CustomSelect';
+import { WhatsAppIcon } from '@/components/WhatsAppIcon';
 
 const RFQ_STATUS_OPTIONS = [
   { value: 'New', label: 'New', color: '#1D4ED8', bg: '#EFF6FF' },
@@ -141,7 +142,7 @@ export default function AdminRfqPage() {
                     <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                       {items.map((it: any, i: number) => (
                         <li key={i}>
-                          <strong>{it.name || it.title}</strong> — {it.pillar || ''} ({it.compliance || ''})
+                          <strong>{it.name || it.title}</strong> — {it.pillar || ''} ({it.compliance || ''}){it.quantity ? ` · Qty: ${it.quantity} ${it.unit || ''}` : ''}
                         </li>
                       ))}
                     </ul>
@@ -178,7 +179,7 @@ export default function AdminRfqPage() {
                       cursor: 'pointer',
                     }}
                   >
-                    <MessageCircle size={16} />
+                    <WhatsAppIcon size={16} />
                     <span>Reply via WhatsApp</span>
                   </button>
                 </div>

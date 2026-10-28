@@ -8,7 +8,7 @@ export const FabricationBanner: React.FC = () => {
   return (
     <section id="fabrication-section" style={{
       padding: '2.5rem 1.5rem',
-      maxWidth: '1280px',
+      maxWidth: 'var(--container-max)',
       margin: '0 auto',
     }}>
       <div style={{
@@ -26,20 +26,10 @@ export const FabricationBanner: React.FC = () => {
         gap: '2rem',
       }}>
         <div style={{ flex: '1 1 500px', minWidth: 0 }}>
-          <div style={{
-            color: '#E11D48',
-            fontSize: '0.725rem',
-            fontWeight: 800,
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-            marginBottom: '0.5rem',
-          }}>
-            BEYOND TRADING
-          </div>
 
           <h2 style={{
-            fontSize: 'clamp(1.75rem, 3vw, 2.4rem)',
-            fontWeight: 800,
+            fontSize: 'clamp(1.5rem, 3vw, 2rem)',
+            fontWeight: 700,
             lineHeight: 1.15,
             marginBottom: '0.75rem',
             letterSpacing: '-0.02em',
@@ -60,7 +50,7 @@ export const FabricationBanner: React.FC = () => {
 
         <div style={{ flexShrink: 0 }}>
           <Link
-            href="/#fabrication-section"
+            href="/services"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -70,7 +60,7 @@ export const FabricationBanner: React.FC = () => {
               borderRadius: '9999px',
               backgroundColor: '#FFFFFF',
               color: '#0F172A',
-              fontWeight: 800,
+              fontWeight: 700,
               fontSize: '0.9rem',
               textDecoration: 'none',
               boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
@@ -78,7 +68,7 @@ export const FabricationBanner: React.FC = () => {
               whiteSpace: 'nowrap',
             }}
           >
-            <span>Explore Engineering →</span>
+            <span>Explore Engineering <ArrowRight size={15} aria-hidden style={{ verticalAlign: '-3px', flexShrink: 0 }} /></span>
           </Link>
         </div>
       </div>

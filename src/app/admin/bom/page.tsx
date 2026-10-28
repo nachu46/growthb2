@@ -89,12 +89,13 @@ export default function AdminBomPage() {
                     {new Date(item.created_at).toLocaleDateString()}
                   </td>
                   <td style={{ padding: '0.85rem 1rem' }}>
-                    <div style={{ fontWeight: 800, color: 'var(--slate-900)' }}>{item.project_name || 'Industrial Project'}</div>
+                    <div style={{ fontWeight: 800, color: 'var(--slate-900)' }}>{item.project_name || 'BOM Upload'}</div>
                     <div style={{ fontSize: '0.75rem', color: 'var(--slate-500)' }}>{item.company} ({item.customer_name})</div>
                   </td>
                   <td style={{ padding: '0.85rem 1rem', fontSize: '0.8rem', color: 'var(--slate-600)' }}>
-                    <div>{item.email}</div>
-                    <div style={{ color: 'var(--slate-500)' }}>{item.phone}</div>
+                    <div><a href={`mailto:${item.email}`} style={{ color: 'inherit' }}>{item.email}</a></div>
+                    {item.target_quarter && <div style={{ color: 'var(--slate-900)', fontWeight: 700 }}>Delivery: {item.target_quarter}</div>}
+                    {item.phone && item.phone !== 'Not provided' && <div style={{ color: 'var(--slate-500)' }}>{item.phone}</div>}
                   </td>
                   <td style={{ padding: '0.85rem 1rem', fontWeight: 700, color: '#0EA5E9' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>

@@ -1,9 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
-
 :root {
   /* Brand Color Palette - Clean B2B White & Red Theme */
-  --primary-red: #E11D48;
-  --primary-red-hover: #BE123C;
+  --primary-red: #D90B2A;
+  --primary-red-hover: #B80923;
   --primary-red-light: #FFE4E6;
   --primary-red-badge: #FFF1F2;
   
@@ -28,8 +26,12 @@
   --accent-cyan: #0EA5E9;
   --accent-green: #10B981;
 
-  --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  /* Inter is self-hosted via next/font in layout.tsx (exposes --font-inter) */
+  --font-heading: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Page content width on large screens (header, sections, footer, menus) */
+  --container-max: 1520px;
 
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -54,7 +56,7 @@ body {
   max-width: 100vw;
   overflow-x: hidden;
   font-family: var(--font-body);
-  background-color: #FFFFFF;
+  background-color: #F8FAFC;
   color: var(--slate-900);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -130,4 +132,12 @@ button {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Soft brand circles behind page content, as in the Figma background */
+body {
+  background-image:
+    radial-gradient(circle at 92% 8%, rgba(14, 165, 233, 0.09) 0, rgba(14, 165, 233, 0.09) 22rem, transparent 22rem),
+    radial-gradient(circle at -6% 38%, rgba(217, 11, 42, 0.05) 0, rgba(217, 11, 42, 0.05) 18rem, transparent 18rem);
+  background-repeat: no-repeat;
 }

@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Package, Building2, Handshake, Award, Inbox, FileSpreadsheet, MapPin, FileText } from 'lucide-react';
+import { WebsiteTraffic } from '@/components/admin/WebsiteTraffic';
+import { Package, Building2, Handshake, Award, Inbox, FileSpreadsheet, MapPin, FileText, ArrowRight } from 'lucide-react';
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<any>(null);
@@ -46,14 +47,18 @@ export default function AdminDashboardPage() {
           Admin Management Dashboard
         </h1>
         <p style={{ fontSize: '0.925rem', color: 'var(--slate-500)' }}>
-          Real-time business performance & content management metrics directly from SQLite database.
+          Website traffic, enquiries and content at a glance.
         </p>
       </div>
+
+      <WebsiteTraffic />
+
+      <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '1rem' }}>Content &amp; Leads</h2>
 
       {/* Real Stat Cards Grid */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))',
         gap: '1.25rem',
         marginBottom: '2.5rem',
       }}>
@@ -118,7 +123,7 @@ export default function AdminDashboardPage() {
             Recent Customer RFQ Requests
           </h3>
           <Link href="/admin/rfq" style={{ fontSize: '0.825rem', fontWeight: 800, color: 'var(--primary-red)', textDecoration: 'none' }}>
-            View All RFQs →
+            View All RFQs <ArrowRight size={15} aria-hidden style={{ verticalAlign: '-3px', flexShrink: 0 }} />
           </Link>
         </div>
 

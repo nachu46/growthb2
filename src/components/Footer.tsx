@@ -15,11 +15,11 @@ export const Footer: React.FC<FooterProps> = ({ onOpenProfile }) => {
       padding: '4rem 1.5rem 2.5rem 1.5rem',
       color: 'var(--slate-900)',
     }}>
-      <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+      <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto' }}>
         {/* Main Columns Stack on Mobile */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))',
           gap: '2.5rem',
           marginBottom: '3rem',
         }}>
@@ -37,13 +37,13 @@ export const Footer: React.FC<FooterProps> = ({ onOpenProfile }) => {
               />
               <span style={{
                 fontFamily: 'var(--font-heading)',
-                fontWeight: 800,
+                fontWeight: 700,
                 fontSize: '1.25rem',
                 letterSpacing: '-0.02em',
                 whiteSpace: 'nowrap',
               }}>
                 <span style={{ color: 'var(--primary-red)' }}>Growth</span>{' '}
-                <span style={{ color: 'var(--slate-900)', fontWeight: 700 }}>International L.L.C</span>
+                <span style={{ color: 'var(--slate-900)', fontWeight: 700 }}>International</span>
               </span>
             </Link>
 
@@ -59,7 +59,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenProfile }) => {
 
           {/* Column 2: Material Catalogue */}
           <div>
-            <h4 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '1rem' }}>
+            <h4 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--slate-900)', marginBottom: '1rem' }}>
               Material Catalogue
             </h4>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.875rem', color: 'var(--slate-600)' }}>
@@ -73,7 +73,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenProfile }) => {
 
           {/* Column 3: Industries & Trust (Matches Mobile Screenshot 6) */}
           <div>
-            <h4 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '1rem' }}>
+            <h4 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--slate-900)', marginBottom: '1rem' }}>
               Industries & Trust
             </h4>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.875rem', color: 'var(--slate-600)' }}>
@@ -91,7 +91,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenProfile }) => {
 
           {/* Column 4: GCC Logistics Hubs (Matches Mobile Screenshot 6) */}
           <div>
-            <h4 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '1rem' }}>
+            <h4 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--slate-900)', marginBottom: '1rem' }}>
               GCC Logistics Hubs
             </h4>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.875rem', color: 'var(--slate-600)' }}>
@@ -107,37 +107,51 @@ export const Footer: React.FC<FooterProps> = ({ onOpenProfile }) => {
         {/* Bottom Horizontal Divider Line */}
         <div style={{ height: '1px', backgroundColor: 'var(--slate-200)', marginBottom: '1.5rem' }} />
 
-        {/* Copyright & Centered Vendor Box (Matches Mobile Screenshot 6) */}
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '1.25rem',
-          textAlign: 'center',
-        }}>
-          <div style={{ fontSize: '0.775rem', color: 'var(--slate-500)' }}>
-            © 2026 Growth International L.L.C. All rights reserved.
+        {/* Copyright left, vendor registrations right; stacks into a centred box on phones */}
+        <div className="footer-bottom">
+          <div style={{ fontSize: '0.775rem', color: 'var(--slate-400)' }}>
+            © {new Date().getFullYear()} Growth International L.L.C. All rights reserved.
           </div>
-
-          {/* Centered Vendor Registration Box (Matches Mobile Screenshot 6) */}
-          <div style={{
-            backgroundColor: '#F8FAFC',
-            borderRadius: '16px',
-            border: '1px solid var(--slate-200)',
-            padding: '1rem 1.75rem',
-            width: '100%',
-            maxWidth: '420px',
-            fontSize: '0.75rem',
-            fontWeight: 800,
-            color: 'var(--slate-900)',
-            lineHeight: 1.5,
-            letterSpacing: '0.04em',
-          }}>
-            <div>ARAMCO VENDOR: 10114402</div>
-            <div>SABIC: 11047900 | ICV CERTIFIED</div>
+          <div className="footer-vendor">
+            <span>ARAMCO VENDOR: 10114402</span>
+            <span className="footer-sep"> | </span>
+            <span>SABIC VENDOR: 11047900 | ICV CERTIFIED</span>
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        .footer-bottom {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 1rem;
+          flex-wrap: wrap;
+        }
+        .footer-vendor {
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: var(--slate-900);
+        }
+        @media (max-width: 640px) {
+          .footer-bottom {
+            flex-direction: column;
+            text-align: center;
+          }
+          .footer-vendor {
+            background: #F8FAFC;
+            border: 1px solid var(--slate-200);
+            border-radius: 16px;
+            padding: 1rem 1.5rem;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+          }
+          .footer-sep {
+            display: none;
+          }
+        }
+      `}</style>
     </footer>
   );
 };

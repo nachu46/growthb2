@@ -8,8 +8,8 @@ const getLogoSrc = (item: any) => {
   const n = (item.name || '').toLowerCase();
   if (n.includes('aramco')) return '/logos/aramco.webp';
   if (n.includes('sabic')) return '/logos/sabic.svg';
-  if (n.includes('adnoc')) return '/logos/adnoc.png';
-  if (n.includes('sadara')) return '/logos/sadara.png';
+  if (n.includes('adnoc')) return '/logos/adnoc-logo.svg';
+  if (n.includes('sadara')) return '/logos/sadara-logo.svg';
   if (n.includes('knpc')) return '/logos/knpc.svg';
   if (n.includes('total')) return '/logos/totalenergies.png';
   if (n.includes('maaden') || n.includes("ma'aden")) return '/logos/maaden.svg';

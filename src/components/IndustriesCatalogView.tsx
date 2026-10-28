@@ -4,8 +4,10 @@ import React, { useState } from 'react';
 import { GCC_INDUSTRIES, IndustryAssembly } from '@/data/industriesData';
 import { InventoryBrowser } from './InventoryBrowser';
 import { BulkBomModal } from './BulkBomModal';
-import { ProductItem, PRODUCTS_CATALOG } from '@/data/mockData';
-import { Plus, MessageSquare, ArrowRight, ShieldCheck, FileText, CheckCircle2, ChevronRight } from 'lucide-react';
+import { ProductItem } from '@/data/mockData';
+import { useCatalogProducts } from '@/hooks/useCatalogProducts';
+import { Plus, ArrowRight, X, Check } from 'lucide-react';
+import { WhatsAppIcon } from '@/components/WhatsAppIcon';
 
 interface IndustriesCatalogViewProps {
   onAddRfqItem: (product: ProductItem) => void;
@@ -14,6 +16,7 @@ interface IndustriesCatalogViewProps {
 export const IndustriesCatalogView: React.FC<IndustriesCatalogViewProps> = ({ onAddRfqItem }) => {
   const [selectedIndustry, setSelectedIndustry] = useState<IndustryAssembly | null>(null);
   const [isBomModalOpen, setIsBomModalOpen] = useState(false);
+  const { products: catalogProducts } = useCatalogProducts();
 
   const handleOpenConsultation = () => {
     const text = encodeURIComponent('Hello Growth International Technical Engineering Team, I would like to request a free engineering consultation regarding pre-vetted material assemblies for our project.');
@@ -89,7 +92,7 @@ export const IndustriesCatalogView: React.FC<IndustriesCatalogViewProps> = ({ on
   };
 
   return (
-    <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '2rem 1.5rem 4rem 1.5rem' }}>
+    <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto', padding: '2rem 1.5rem 4rem 1.5rem' }}>
       {/* Breadcrumb */}
       <div style={{ fontSize: '0.85rem', color: 'var(--slate-500)', marginBottom: '1.25rem', fontWeight: 600 }}>
         Home &gt; <strong style={{ color: 'var(--slate-900)' }}>Industries</strong>
@@ -114,7 +117,7 @@ export const IndustriesCatalogView: React.FC<IndustriesCatalogViewProps> = ({ on
           width: '550px',
           height: '550px',
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(225, 29, 72, 0.18) 0%, rgba(11, 19, 43, 0) 70%)',
+          background: 'radial-gradient(circle, rgba(217, 11, 42, 0.18) 0%, rgba(11, 19, 43, 0) 70%)',
           pointerEvents: 'none',
         }} />
 
@@ -128,21 +131,10 @@ export const IndustriesCatalogView: React.FC<IndustriesCatalogViewProps> = ({ on
         }} className="industries-hero-grid">
           {/* Left Text Content */}
           <div>
-            <span style={{
-              fontSize: '0.825rem',
-              fontWeight: 800,
-              color: '#FF6B81',
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              display: 'block',
-              marginBottom: '0.75rem',
-            }}>
-              Industries Application
-            </span>
 
             <h1 style={{
               fontSize: 'clamp(2.2rem, 4.2vw, 3.5rem)',
-              fontWeight: 800,
+              fontWeight: 700,
               lineHeight: 1.1,
               color: '#FFFFFF',
               marginBottom: '1rem',
@@ -176,9 +168,9 @@ export const IndustriesCatalogView: React.FC<IndustriesCatalogViewProps> = ({ on
                 borderRadius: 'var(--radius-md)',
                 backgroundColor: 'var(--primary-red)',
                 color: '#FFFFFF',
-                fontWeight: 800,
+                fontWeight: 700,
                 fontSize: '0.95rem',
-                boxShadow: '0 10px 20px -5px rgba(225, 29, 72, 0.4)',
+                boxShadow: '0 10px 20px -5px rgba(217, 11, 42, 0.4)',
                 border: 'none',
                 cursor: 'pointer',
               }}
@@ -200,14 +192,14 @@ export const IndustriesCatalogView: React.FC<IndustriesCatalogViewProps> = ({ on
                 borderRadius: 'var(--radius-md)',
                 backgroundColor: '#10B981',
                 color: '#FFFFFF',
-                fontWeight: 800,
+                fontWeight: 700,
                 fontSize: '0.95rem',
                 boxShadow: '0 10px 20px -5px rgba(16, 185, 129, 0.4)',
                 border: 'none',
                 cursor: 'pointer',
               }}
             >
-              <MessageSquare size={18} fill="#FFFFFF" color="#10B981" />
+              <WhatsAppIcon size={20} color="#FFFFFF" />
               <span>Request for Free Consultation</span>
             </button>
           </div>
@@ -217,7 +209,7 @@ export const IndustriesCatalogView: React.FC<IndustriesCatalogViewProps> = ({ on
       {/* 9 Industry Assembly Cards Grid (Matches Screenshots 2 & 3) */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
         gap: '1.75rem',
         marginBottom: '4rem',
       }}>
@@ -259,7 +251,7 @@ export const IndustriesCatalogView: React.FC<IndustriesCatalogViewProps> = ({ on
               {/* Title with Red Arrow */}
               <h3 style={{
                 fontSize: '1.3rem',
-                fontWeight: 800,
+                fontWeight: 700,
                 color: 'var(--slate-900)',
                 marginBottom: '0.75rem',
                 display: 'inline-flex',
@@ -268,7 +260,7 @@ export const IndustriesCatalogView: React.FC<IndustriesCatalogViewProps> = ({ on
                 lineHeight: 1.2,
               }}>
                 <span>{ind.title}</span>
-                <span style={{ color: 'var(--primary-red)' }}>→</span>
+                <span style={{ color: 'var(--primary-red)', display: 'inline-flex' }}><ArrowRight size={18} aria-hidden style={{ verticalAlign: '-3px', flexShrink: 0 }} /></span>
               </h3>
 
               {/* Description */}
@@ -287,7 +279,7 @@ export const IndustriesCatalogView: React.FC<IndustriesCatalogViewProps> = ({ on
             <div>
               <div style={{ height: '1px', backgroundColor: 'var(--slate-100)', marginBottom: '1rem' }} />
 
-              <div style={{ fontSize: '0.675rem', fontWeight: 800, color: 'var(--slate-500)', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.65rem' }}>
+              <div style={{ fontSize: '0.675rem', fontWeight: 700, color: 'var(--slate-500)', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.65rem' }}>
                 EPC APPROVED MATERIALS:
               </div>
 
@@ -324,7 +316,7 @@ export const IndustriesCatalogView: React.FC<IndustriesCatalogViewProps> = ({ on
         marginBottom: '4rem',
         boxShadow: '0 20px 40px -10px rgba(11, 19, 43, 0.4)',
       }}>
-        <h2 style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2.5rem)', fontWeight: 800, marginBottom: '0.75rem', letterSpacing: '-0.02em' }}>
+        <h2 style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2.5rem)', fontWeight: 700, marginBottom: '0.75rem', letterSpacing: '-0.02em' }}>
           Not sure which materials meet your environmental specs?
         </h2>
         <p style={{ fontSize: '1.05rem', color: 'var(--slate-300)', maxWidth: '700px', margin: '0 auto 2rem auto', lineHeight: 1.5 }}>
@@ -341,14 +333,14 @@ export const IndustriesCatalogView: React.FC<IndustriesCatalogViewProps> = ({ on
             borderRadius: 'var(--radius-full)',
             backgroundColor: '#0EA5E9',
             color: '#FFFFFF',
-            fontWeight: 800,
+            fontWeight: 700,
             fontSize: '0.95rem',
             border: 'none',
             boxShadow: '0 10px 20px -5px rgba(14, 165, 233, 0.4)',
             cursor: 'pointer',
           }}
         >
-          <span>Contact Engineering →</span>
+          <span>Contact Engineering <ArrowRight size={15} aria-hidden style={{ verticalAlign: '-3px', flexShrink: 0 }} /></span>
         </button>
       </div>
 
@@ -386,15 +378,15 @@ export const IndustriesCatalogView: React.FC<IndustriesCatalogViewProps> = ({ on
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem' }}>
               <div>
-                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--primary-red)', textTransform: 'uppercase' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--primary-red)', textTransform: 'uppercase' }}>
                   Pre-Vetted Material Assembly
                 </span>
-                <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--slate-900)' }}>
+                <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--slate-900)' }}>
                   {selectedIndustry.title}
                 </h3>
               </div>
               <button onClick={() => setSelectedIndustry(null)} style={{ fontWeight: 700, fontSize: '1.2rem', color: 'var(--slate-500)' }}>
-                ✕
+                <X size={18} aria-hidden style={{ verticalAlign: '-3px', flexShrink: 0 }} />
               </button>
             </div>
 
@@ -403,13 +395,13 @@ export const IndustriesCatalogView: React.FC<IndustriesCatalogViewProps> = ({ on
             </p>
 
             <div style={{ backgroundColor: 'var(--slate-50)', padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--slate-200)', marginBottom: '1.75rem' }}>
-              <div style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '0.75rem' }}>
+              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--slate-900)', marginBottom: '0.75rem' }}>
                 EPC Approved Material Specifications:
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                 {selectedIndustry.epcApprovedMaterials.map((mat, i) => (
                   <span key={i} style={{ backgroundColor: '#FFFFFF', padding: '0.4rem 0.8rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--slate-300)', fontWeight: 700, fontSize: '0.85rem', color: 'var(--primary-red)' }}>
-                    ✓ {mat}
+                    <Check size={14} aria-hidden style={{ verticalAlign: '-3px', flexShrink: 0 }} /> {mat}
                   </span>
                 ))}
               </div>
@@ -419,8 +411,8 @@ export const IndustriesCatalogView: React.FC<IndustriesCatalogViewProps> = ({ on
               <button
                 onClick={() => {
                   // Add first approved item to RFQ
-                  const matched = PRODUCTS_CATALOG.find(p => p.pillar.toLowerCase() === 'insulation') || PRODUCTS_CATALOG[0];
-                  onAddRfqItem(matched);
+                  const matched = catalogProducts.find(p => p.pillar.toLowerCase() === 'insulation') || catalogProducts[0];
+                  if (matched) onAddRfqItem(matched);
                   setSelectedIndustry(null);
                 }}
                 style={{
@@ -429,7 +421,7 @@ export const IndustriesCatalogView: React.FC<IndustriesCatalogViewProps> = ({ on
                   borderRadius: 'var(--radius-md)',
                   backgroundColor: 'var(--primary-red)',
                   color: '#FFFFFF',
-                  fontWeight: 800,
+                  fontWeight: 700,
                 }}
               >
                 Add Assembly Materials to RFQ

@@ -1,172 +1,143 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
 import { GccLogisticsMap } from './GccLogisticsMap';
-import { FileText, ArrowRight, ShieldCheck } from 'lucide-react';
+import { WhatsAppIcon } from './WhatsAppIcon';
 
 interface HeroSectionProps {
   onOpenProfile: () => void;
 }
 
+const WHATSAPP_PROCUREMENT_URL = `https://wa.me/9715309555?text=${encodeURIComponent(
+  'Hello Growth International Procurement Desk, I would like to discuss a direct material procurement requirement.'
+)}`;
+
 export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenProfile }) => {
   return (
     <section style={{
       position: 'relative',
-      overflow: 'hidden',
-      padding: '3rem 1.5rem 4rem 1.5rem',
-      backgroundColor: '#F8FAFC',
+      padding: '2.5rem 1.5rem 2.5rem 1.5rem',
     }}>
-      {/* Background Soft Radial Mesh Glow */}
       <div style={{
-        position: 'absolute',
-        top: '-10%',
-        right: '-5%',
-        width: '600px',
-        height: '600px',
-        borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(225, 29, 72, 0.08) 0%, rgba(248, 250, 252, 0) 70%)',
-        pointerEvents: 'none',
-      }} />
-
-      <div style={{
-        maxWidth: '1280px',
+        maxWidth: 'var(--container-max)',
         margin: '0 auto',
         display: 'grid',
         gridTemplateColumns: '1fr',
-        gap: '3rem',
+        gap: '2.5rem',
         alignItems: 'center',
       }} className="hero-responsive-grid">
         {/* Left Hero Column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          {/* Eyebrow */}
-          <div>
-            <span style={{
-              fontSize: '0.825rem',
-              fontWeight: 800,
-              color: 'var(--primary-red)',
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-            }}>
-              B2B INDUSTRIAL SUPPLY
-            </span>
-          </div>
-
-          {/* Headline (Matches Mobile Screenshot 1) */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem', minWidth: 0 }}>
           <h1 style={{
-            fontSize: 'clamp(2.1rem, 4.5vw, 3.8rem)',
-            fontWeight: 800,
-            lineHeight: 1.1,
+            fontSize: 'clamp(2.1rem, 4.6vw, 3.6rem)',
+            fontWeight: 700,
+            lineHeight: 1.12,
             color: 'var(--slate-900)',
-            letterSpacing: '-0.03em',
+            letterSpacing: '-0.025em',
           }}>
-            Mechanical Elite GCC Thermal &
+            Elite GCC Industrial Thermal Insulation &amp; Mechanical Supply
           </h1>
 
-          {/* Subtitle */}
           <p style={{
-            fontSize: '1.05rem',
+            fontSize: '1rem',
             color: 'var(--slate-600)',
-            maxWidth: '580px',
+            maxWidth: '560px',
             lineHeight: 1.6,
           }}>
-            Anchoring a regional supply network backed by over 18 years of specialized Middle East EPC expertise.
+            Founded in 2014. Anchoring an elite regional supply network backed by leadership with over 18 years of specialized Middle East expertise.
           </p>
 
-          {/* Action Buttons (Matches Mobile Screenshot 1: Stacked Pill Buttons) */}
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.85rem',
-            marginTop: '0.5rem',
-          }} className="hero-button-group">
-            {/* Primary Navy Pill Button */}
-            <Link
-              href="#inventory-section"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.5rem',
-                padding: '0.95rem 1.75rem',
-                borderRadius: 'var(--radius-full)',
-                backgroundColor: 'var(--navy-dark)',
-                color: '#FFFFFF',
-                fontWeight: 800,
-                fontSize: '0.95rem',
-                textDecoration: 'none',
-                boxShadow: '0 10px 25px -5px rgba(11, 19, 43, 0.4)',
-                textAlign: 'center',
-              }}
+          {/* Actions + live warehousing stat */}
+          <div className="hero-actions">
+            <a
+              href={WHATSAPP_PROCUREMENT_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hero-btn hero-btn--dark"
             >
-              <span>Access Live Inventory</span>
-            </Link>
+              <WhatsAppIcon size={18} color="#25D366" />
+              Direct Procurement via WhatsApp
+            </a>
 
-            {/* Outline Pill Button */}
-            <button
-              onClick={onOpenProfile}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.5rem',
-                padding: '0.95rem 1.75rem',
-                borderRadius: 'var(--radius-full)',
-                backgroundColor: '#FFFFFF',
-                color: 'var(--slate-800)',
-                border: '1.5px solid var(--slate-300)',
-                fontWeight: 800,
-                fontSize: '0.95rem',
-                cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
-                textAlign: 'center',
-              }}
-            >
-              <span>Download Profile PDF</span>
+            <button onClick={onOpenProfile} className="hero-btn hero-btn--outline">
+              Open Corporate Profile
             </button>
-          </div>
 
-          {/* Live Warehousing Info Box (Matches Mobile Screenshot 2) */}
-          <div style={{
-            backgroundColor: '#FFFFFF',
-            borderRadius: '20px',
-            border: '1px solid var(--slate-200)',
-            padding: '1.25rem 1.5rem',
-            marginTop: '1rem',
-            boxShadow: '0 4px 14px rgba(0,0,0,0.02)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}>
-            <div>
-              <div style={{ fontSize: '0.675rem', fontWeight: 800, color: 'var(--primary-red)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '2px' }}>
-                LIVE WAREHOUSING
+            <div className="hero-stat">
+              <div style={{ fontSize: '0.6rem', fontWeight: 700, color: 'var(--primary-red)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Live Warehousing
               </div>
-              <div style={{ fontSize: '1.35rem', fontWeight: 900, color: 'var(--slate-900)' }}>
-                9 Regional Offices
+              <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--slate-900)', lineHeight: 1.2 }}>
+                9 Offices
               </div>
-            </div>
-            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--slate-500)' }}>
-              6 Countries
+              <div style={{ fontSize: '0.65rem', color: 'var(--slate-500)', fontWeight: 500 }}>
+                Active Supply in 6 Countries
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Right Hero Column: Interactive Vector GCC Map */}
-        <div style={{ position: 'relative' }}>
+        {/* Right Hero Column: GCC hub map */}
+        <div style={{ position: 'relative', minWidth: 0 }}>
           <GccLogisticsMap />
         </div>
       </div>
 
       <style jsx>{`
+        .hero-actions {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+          margin-top: 0.4rem;
+        }
+        .hero-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          text-align: center;
+          padding: 0.85rem 1.5rem;
+          border-radius: 12px;
+          font-weight: 700;
+          font-size: 0.875rem;
+          line-height: 1.25;
+          text-decoration: none;
+          cursor: pointer;
+        }
+        .hero-btn--dark {
+          background-color: var(--slate-900);
+          color: #ffffff;
+          border: 1.5px solid var(--slate-900);
+        }
+        .hero-btn--dark:hover {
+          background-color: #1e293b;
+        }
+        .hero-btn--outline {
+          background-color: #ffffff;
+          color: var(--slate-900);
+          border: 1.5px solid var(--slate-300);
+        }
+        .hero-btn--outline:hover {
+          border-color: var(--slate-900);
+        }
+        .hero-stat {
+          background: #ffffff;
+          border: 1.5px solid var(--slate-200);
+          border-radius: 12px;
+          padding: 0.55rem 0.9rem;
+        }
         @media (min-width: 768px) {
-          :global(.hero-button-group) {
-            flex-direction: row !important;
+          .hero-actions {
+            flex-direction: row;
+            align-items: stretch;
+          }
+          .hero-btn {
+            max-width: 220px;
           }
         }
         @media (min-width: 1024px) {
           :global(.hero-responsive-grid) {
-            grid-template-columns: 1fr 1fr !important;
+            grid-template-columns: 1.1fr 1fr !important;
           }
         }
       `}</style>

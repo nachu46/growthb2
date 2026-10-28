@@ -7,26 +7,24 @@ import { Footer } from '@/components/Footer';
 import { RfqQueueDrawer } from '@/components/RfqQueueDrawer';
 import { CorporateProfileModal } from '@/components/CorporateProfileModal';
 import { FloatingWhatsApp } from '@/components/FloatingWhatsApp';
-import { ProductItem, PRODUCTS_CATALOG } from '@/data/mockData';
+import { ProductItem } from '@/data/mockData';
+import { useRfqQueue } from '@/hooks/useRfqQueue';
 
 export default function CertificationsPage() {
-  const [rfqItems, setRfqItems] = useState<ProductItem[]>([
-    PRODUCTS_CATALOG[0],
-    PRODUCTS_CATALOG[2],
-  ]);
+  const { items: rfqItems, addItem, removeItem, clear } = useRfqQueue();
   const [isRfqDrawerOpen, setIsRfqDrawerOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   const handleRemoveRfqItem = (id: string) => {
-    setRfqItems(prev => prev.filter(item => item.id !== id));
+    removeItem(id);
   };
 
   const handleClearQueue = () => {
-    setRfqItems([]);
+    clear();
   };
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#F8FAFC', color: 'var(--slate-900)' }}>
+    <div style={{ minHeight: '100vh', color: 'var(--slate-900)' }}>
       {/* Navbar Header */}
       <Navbar
         rfqCount={rfqItems.length}

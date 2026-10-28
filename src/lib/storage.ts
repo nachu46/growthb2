@@ -2,12 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 
-const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads');
-
-// Ensure upload directory exists
-if (!fs.existsSync(UPLOAD_DIR)) {
-  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-}
+// Stored outside public/ because `next start` only serves files that existed at build time;
+// src/app/uploads/[...path]/route.ts serves these at /uploads/...
+export const UPLOAD_DIR = path.join(process.cwd(), 'data', 'uploads');
 
 // Allowed MIME types and extensions
 const ALLOWED_MIME_TYPES = [
@@ -35,7 +32,7 @@ export interface StorageUploadResult {
 }
 
 export const storage = {
-  async upload(file: File, folder = ''): Promise<StorageUploadResult> {
+  async upload(file: File, folder = '', allowedExtensions: string[] = ALLOWED_EXTENSIONS): Promise<StorageUploadResult> {
     const ext = path.extname(file.name).toLowerCase();
     const mimeType = file.type;
 
@@ -45,7 +42,7 @@ export const storage = {
     }
 
     // Validate extension
-    if (!ALLOWED_EXTENSIONS.includes(ext)) {
+    if (!allowedExtensions.includes(ext)) {
       throw new Error(`File extension ${ext} is not allowed`);
     }
 
@@ -54,22 +51,24 @@ export const storage = {
     const safeBaseName = path.basename(file.name, ext).replace(/[^a-zA-Z0-9_-]/g, '_');
     const filename = `${safeBaseName}_${Date.now()}_${hash}${ext}`;
 
-    const targetDir = folder ? path.join(UPLOAD_DIR, folder) : UPLOAD_DIR;
-    if (!fs.existsSync(targetDir)) {
-      fs.mkdirSync(targetDir, { recursive: true });
-    }
-
-    const filePath = path.join(targetDir, filename);
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    await fs.promises.writeFile(filePath, buffer);
-
-    const relativeUrl = folder ? `/uploads/${folder}/${filename}` : `/uploads/${filename}`;
+    let url: string;
+    try {
+      const targetDir = folder ? path.join(UPLOAD_DIR, folder) : UPLOAD_DIR;
+      await fs.promises.mkdir(targetDir, { recursive: true });
+      await fs.promises.writeFile(path.join(targetDir, filename), buffer);
+      url = folder ? `/uploads/${folder}/${filename}` : `/uploads/${filename}`;
+    } catch (err) {
+      // Read-only filesystem (Vercel Serverless): embed the file as a data URL instead
+      console.warn('Upload directory not writable, storing file inline as data URL.');
+      url = `data:${mimeType || 'application/octet-stream'};base64,${buffer.toString('base64')}`;
+    }
 
     return {
       filename,
-      url: relativeUrl,
+      url,
       size: file.size,
       mimeType: mimeType || 'application/octet-stream',
       originalName: file.name,
@@ -80,7 +79,8 @@ export const storage = {
     try {
       if (!fileUrl || !fileUrl.startsWith('/uploads/')) return false;
       const relativePath = fileUrl.replace('/uploads/', '');
-      const filePath = path.join(UPLOAD_DIR, relativePath);
+      const filePath = path.resolve(UPLOAD_DIR, relativePath);
+      if (!filePath.startsWith(UPLOAD_DIR + path.sep)) return false;
       if (fs.existsSync(filePath)) {
         await fs.promises.unlink(filePath);
         return true;

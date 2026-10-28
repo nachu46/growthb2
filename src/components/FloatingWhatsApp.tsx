@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { MessageSquare } from 'lucide-react';
+
+import { WhatsAppIcon } from '@/components/WhatsAppIcon';
 
 export const FloatingWhatsApp: React.FC = () => {
   const handleClick = () => {
@@ -19,20 +20,21 @@ export const FloatingWhatsApp: React.FC = () => {
         width: '56px',
         height: '56px',
         borderRadius: '50%',
-        backgroundColor: 'var(--primary-red)',
+        backgroundColor: '#25D366',
         color: '#FFFFFF',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        boxShadow: '0 8px 24px rgba(225, 29, 72, 0.4)',
+        boxShadow: '0 8px 24px rgba(37, 211, 102, 0.35)',
         zIndex: 90,
         cursor: 'pointer',
         border: '2px solid #FFFFFF',
         transition: 'transform 0.2s ease, box-shadow 0.2s ease',
       }}
       title="Chat with Regional Sales Desk on WhatsApp"
+      aria-label="Chat with us on WhatsApp"
     >
-      <MessageSquare size={24} fill="#FFFFFF" color="var(--primary-red)" />
+      <WhatsAppIcon size={28} color="#FFFFFF" />
     </button>
   );
 };

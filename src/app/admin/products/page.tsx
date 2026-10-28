@@ -12,7 +12,8 @@ export default function AdminProductsPage() {
 
   // Form state
   const [name, setName] = useState('');
-  const [pillar, setPillar] = useState('Insulation');
+  const [pillar, setPillar] = useState('insulation');
+  const [categories, setCategories] = useState<any[]>([]);
   const [industry, setIndustry] = useState('Oil & Gas');
   const [tempRange, setTempRange] = useState('-268°C to +430°C');
   const [density, setDensity] = useState('115 kg/m³');
@@ -24,7 +25,35 @@ export default function AdminProductsPage() {
   const [priceEstimate, setPriceEstimate] = useState(42.50);
   const [aramcoApproved, setAramcoApproved] = useState(true);
   const [displayOrder, setDisplayOrder] = useState(1);
+  const [manufacturer, setManufacturer] = useState('');
+  const [stockLevel, setStockLevel] = useState('High');
+  const [stockHub, setStockHub] = useState('UAE Hub (Ajman)');
+  const [imageUrl, setImageUrl] = useState('');
+  const [complianceBadges, setComplianceBadges] = useState('');
+  const [fabricationForms, setFabricationForms] = useState('');
+  const [thicknesses, setThicknesses] = useState('');
+  const [physicalProperties, setPhysicalProperties] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  // JSON columns <-> simple text inputs
+  const jsonListToText = (value: string | null) => {
+    try {
+      const list = value ? JSON.parse(value) : [];
+      return Array.isArray(list) ? list.join(', ') : '';
+    } catch {
+      return '';
+    }
+  };
+  const jsonPropsToText = (value: string | null) => {
+    try {
+      const rows = value ? JSON.parse(value) : [];
+      return Array.isArray(rows)
+        ? rows.map((r: any) => `${r.property} | ${r.testMethod} | ${r.isRedHighlight ? '!' : ''}${r.performanceValue}`).join('\n')
+        : '';
+    } catch {
+      return '';
+    }
+  };
 
   const fetchProducts = async () => {
     try {
@@ -41,13 +70,17 @@ export default function AdminProductsPage() {
   };
 
   useEffect(() => {
+    fetch('/api/admin/categories')
+      .then(res => res.json())
+      .then(data => data.success && setCategories(data.data || []))
+      .catch(() => {});
     fetchProducts();
   }, []);
 
   const handleOpenAddModal = () => {
     setEditingId(null);
     setName('');
-    setPillar('Insulation');
+    setPillar(categories[0]?.slug || 'insulation');
     setIndustry('Oil & Gas');
     setTempRange('-268°C to +430°C');
     setDensity('115 kg/m³');
@@ -59,13 +92,21 @@ export default function AdminProductsPage() {
     setPriceEstimate(42.50);
     setAramcoApproved(true);
     setDisplayOrder(products.length + 1);
+    setManufacturer('');
+    setStockLevel('High');
+    setStockHub('UAE Hub (Ajman)');
+    setImageUrl('');
+    setComplianceBadges('');
+    setFabricationForms('');
+    setThicknesses('');
+    setPhysicalProperties('');
     setIsModalOpen(true);
   };
 
   const handleOpenEditModal = (item: any) => {
     setEditingId(item.id);
     setName(item.name);
-    setPillar(item.pillar);
+    setPillar(String(item.pillar || '').toLowerCase());
     setIndustry(item.industry);
     setTempRange(item.temp_range);
     setDensity(item.density);
@@ -77,8 +118,22 @@ export default function AdminProductsPage() {
     setPriceEstimate(item.price_estimate || 0);
     setAramcoApproved(Boolean(item.aramco_approved));
     setDisplayOrder(item.display_order || 1);
+    setManufacturer(item.manufacturer || '');
+    setStockLevel(item.stock_level || 'High');
+    setStockHub(item.stock_hub || '');
+    setImageUrl(item.image_url || '');
+    setComplianceBadges(jsonListToText(item.compliance_badges));
+    setFabricationForms(jsonListToText(item.fabrication_forms));
+    setThicknesses(jsonListToText(item.thicknesses));
+    setPhysicalProperties(jsonPropsToText(item.physical_properties));
     setIsModalOpen(true);
   };
+
+  // Category dropdown comes from Admin → Categories (value = category key stored on the product)
+  const categoryOptions = categories.length
+    ? categories.map(c => ({ value: c.slug, label: c.is_active ? c.name : `${c.name} (hidden)` }))
+    : [{ value: pillar, label: pillar }];
+  const categoryLabel = (key: string) => categories.find(c => c.slug.toLowerCase() === String(key).toLowerCase())?.name || key;
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,6 +154,14 @@ export default function AdminProductsPage() {
         priceEstimate,
         aramcoApproved,
         displayOrder,
+        manufacturer,
+        stockLevel,
+        stockHub,
+        imageUrl,
+        complianceBadges,
+        fabricationForms,
+        thicknesses,
+        physicalProperties,
       };
 
       const url = editingId ? `/api/admin/products/${editingId}` : '/api/admin/products';
@@ -211,7 +274,7 @@ export default function AdminProductsPage() {
                   </td>
                   <td style={{ padding: '0.85rem 1rem' }}>
                     <span style={{ fontSize: '0.725rem', fontWeight: 800, color: '#0EA5E9', backgroundColor: '#E0F2FE', padding: '0.2rem 0.5rem', borderRadius: 'var(--radius-full)' }}>
-                      {item.pillar}
+                      {categoryLabel(item.pillar)}
                     </span>
                   </td>
                   <td style={{ padding: '0.85rem 1rem', color: 'var(--slate-700)', fontWeight: 600 }}>
@@ -318,17 +381,11 @@ export default function AdminProductsPage() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: 'var(--slate-600)', textTransform: 'uppercase', marginBottom: '4px' }}>
-                    Material Pillar *
+                    Category *
                   </label>
                   <CustomSelect
                     variant="standard"
-                    options={[
-                      { value: 'Insulation', label: 'Insulation' },
-                      { value: 'Jacketing', label: 'Jacketing' },
-                      { value: 'Accessories', label: 'Accessories' },
-                      { value: 'Acoustic', label: 'Acoustic & Vapor' },
-                      { value: 'Valves', label: 'Valves & Refractory' },
-                    ]}
+                    options={categoryOptions}
                     value={pillar}
                     onChange={(val) => setPillar(val)}
                   />
@@ -401,6 +458,62 @@ export default function AdminProductsPage() {
                   onChange={(e) => setDescription(e.target.value)}
                   style={{ width: '100%', padding: '0.75rem', borderRadius: '10px', border: '1px solid var(--slate-300)', fontSize: '0.9rem' }}
                 />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: 'var(--slate-600)', textTransform: 'uppercase', marginBottom: '4px' }}>Manufacturer</label>
+                  <input type="text" value={manufacturer} onChange={(e) => setManufacturer(e.target.value)} placeholder="e.g. FOAMGLAS" style={{ width: '100%', padding: '0.75rem', borderRadius: '10px', border: '1px solid var(--slate-300)', fontSize: '0.9rem' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: 'var(--slate-600)', textTransform: 'uppercase', marginBottom: '4px' }}>Stock Level</label>
+                  <CustomSelect
+                    variant="standard"
+                    options={['High', 'Medium', 'Low', 'On Order']}
+                    value={stockLevel}
+                    onChange={(val) => setStockLevel(val)}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: 'var(--slate-600)', textTransform: 'uppercase', marginBottom: '4px' }}>Stock Hub</label>
+                  <input type="text" value={stockHub} onChange={(e) => setStockHub(e.target.value)} placeholder="e.g. UAE Hub (Ajman)" style={{ width: '100%', padding: '0.75rem', borderRadius: '10px', border: '1px solid var(--slate-300)', fontSize: '0.9rem' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: 'var(--slate-600)', textTransform: 'uppercase', marginBottom: '4px' }}>Product Image URL</label>
+                  <input type="text" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="/uploads/... or https://..." style={{ width: '100%', padding: '0.75rem', borderRadius: '10px', border: '1px solid var(--slate-300)', fontSize: '0.9rem' }} />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: 'var(--slate-600)', textTransform: 'uppercase', marginBottom: '4px' }}>Compliance Badges</label>
+                <input type="text" value={complianceBadges} onChange={(e) => setComplianceBadges(e.target.value)} placeholder="ASTM C552, Non-Combustible (A1), Zero Vapor Perm." style={{ width: '100%', padding: '0.75rem', borderRadius: '10px', border: '1px solid var(--slate-300)', fontSize: '0.9rem' }} />
+                <p style={{ fontSize: '0.75rem', color: 'var(--slate-500)', marginTop: '4px' }}>Separate with commas.</p>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: 'var(--slate-600)', textTransform: 'uppercase', marginBottom: '4px' }}>Fabrication Forms</label>
+                  <input type="text" value={fabricationForms} onChange={(e) => setFabricationForms(e.target.value)} placeholder="Rigid Block, Pipe Shell (Fit)" style={{ width: '100%', padding: '0.75rem', borderRadius: '10px', border: '1px solid var(--slate-300)', fontSize: '0.9rem' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: 'var(--slate-600)', textTransform: 'uppercase', marginBottom: '4px' }}>Thicknesses</label>
+                  <input type="text" value={thicknesses} onChange={(e) => setThicknesses(e.target.value)} placeholder="25 mm, 50 mm, + Custom (CNC)" style={{ width: '100%', padding: '0.75rem', borderRadius: '10px', border: '1px solid var(--slate-300)', fontSize: '0.9rem' }} />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: 'var(--slate-600)', textTransform: 'uppercase', marginBottom: '4px' }}>Physical &amp; Thermal Properties</label>
+                <textarea
+                  rows={5}
+                  value={physicalProperties}
+                  onChange={(e) => setPhysicalProperties(e.target.value)}
+                  placeholder={'Apparent Density | ASTM C303 | 115 kg/m³\nReaction to Fire | EN 13501-1 | !Euroclass A1'}
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: '10px', border: '1px solid var(--slate-300)', fontFamily: 'monospace', fontSize: '0.8rem' }}
+                />
+                <p style={{ fontSize: '0.75rem', color: 'var(--slate-500)', marginTop: '4px' }}>One per line: Property | Test method | Value. Start the value with ! to show it in red.</p>
               </div>
 
               <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>

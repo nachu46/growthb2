@@ -11,6 +11,8 @@ export interface TechnicalDoc {
   revision: string;
   fileSize: string;
   downloadUrl: string;
+  fileName?: string;
+  docType?: string;
 }
 
 export interface ProductItem {
@@ -33,6 +35,10 @@ export interface ProductItem {
   thicknesses?: string[];
   physicalProperties?: PhysicalProperty[];
   technicalDocs?: TechnicalDoc[];
+  manufacturer?: string;
+  stockLevel?: string;
+  stockHub?: string;
+  imageUrl?: string;
 }
 
 export interface HubLocation {
@@ -255,7 +261,7 @@ export const RESOURCE_DOCUMENTS: ResourceDocument[] = [
     id: 'astm-b209',
     title: 'ASTM Compliance Sheets',
     category: 'ASTM Compliance Sheets',
-    subtitle: 'Download B209 / C533 PDFs →',
+    subtitle: 'Download B209 / C533 PDFs',
     fileSize: '2.4 MB PDF',
     downloadUrl: '/docs/ASTM-B209-C533-Growth-International.pdf',
     pdfCode: 'B209 / C533',
@@ -264,7 +270,7 @@ export const RESOURCE_DOCUMENTS: ResourceDocument[] = [
     id: 'install-metal-jacketing',
     title: 'Installation Guides',
     category: 'Installation Guides',
-    subtitle: 'Metal Jacketing application specs →',
+    subtitle: 'Metal Jacketing application specs',
     fileSize: '4.8 MB PDF',
     downloadUrl: '/docs/Metal-Jacketing-Installation-Spec-Growth.pdf',
     pdfCode: 'PSMB-SPEC-2026',
@@ -273,7 +279,7 @@ export const RESOURCE_DOCUMENTS: ResourceDocument[] = [
     id: 'company-profile',
     title: 'Company Profile (About Us)',
     category: 'Company Profile',
-    subtitle: 'Read our 18-Year History →',
+    subtitle: 'Read our 18-Year History',
     fileSize: '8.1 MB Corporate Dossier',
     downloadUrl: '/docs/Growth-International-Corporate-Profile-2026.pdf',
     pdfCode: 'GI-CORP-2026',

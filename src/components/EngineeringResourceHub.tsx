@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { RESOURCE_DOCUMENTS, ResourceDocument } from '@/data/mockData';
 import { Download, FileText, CheckCircle2, ArrowRight } from 'lucide-react';
 
@@ -9,48 +10,31 @@ interface EngineeringResourceHubProps {
 }
 
 export const EngineeringResourceHub: React.FC<EngineeringResourceHubProps> = ({ onOpenProfile }) => {
+  const router = useRouter();
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
-  const handleDownload = async (doc: ResourceDocument) => {
+  // Opens the real document library (Tech Resources) on the matching folder
+  const handleDownload = (doc: ResourceDocument) => {
     if (doc.category === 'Company Profile') {
       onOpenProfile();
       return;
     }
-
     setDownloadingId(doc.id);
-    try {
-      const res = await fetch(`/api/resources?id=${doc.id}`);
-      const data = await res.json();
-      if (data.success) {
-        // Trigger simulated blob download
-        const dummyBlob = new Blob([`Growth International Document: ${doc.title}\nCode: ${doc.pdfCode}\nCategory: ${doc.category}`], { type: 'application/pdf' });
-        const url = window.URL.createObjectURL(dummyBlob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${doc.id}-Growth-International.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-      }
-    } catch (e) {
-      console.error('Download error', e);
-    } finally {
-      setTimeout(() => setDownloadingId(null), 1000);
-    }
+    router.push(`/resources?category=${encodeURIComponent(doc.category)}`);
   };
 
   return (
     <section id="resources-section" style={{
-      padding: '3rem 1.5rem',
-      maxWidth: '1280px',
+      padding: '2rem 1.5rem',
+      maxWidth: 'var(--container-max)',
       margin: '0 auto',
     }}>
       <div style={{ marginBottom: '2rem' }}>
         <h2 style={{
-          fontSize: 'clamp(1.75rem, 3vw, 2.5rem)',
-          fontWeight: 800,
+          fontSize: 'clamp(1.4rem, 3vw, 1.75rem)',
+          fontWeight: 700,
           color: 'var(--slate-900)',
-          marginBottom: '0.5rem',
+          marginBottom: '0.4rem',
         }}>
           Engineering Resource Hub
         </h2>
@@ -61,7 +45,7 @@ export const EngineeringResourceHub: React.FC<EngineeringResourceHubProps> = ({ 
 
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
         gap: '1.5rem',
       }}>
         {RESOURCE_DOCUMENTS.map((doc, idx) => (
@@ -96,11 +80,12 @@ export const EngineeringResourceHub: React.FC<EngineeringResourceHubProps> = ({ 
             </div>
 
             <div>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--slate-900)', marginBottom: '0.25rem' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--slate-900)', marginBottom: '0.25rem' }}>
                 {doc.title}
               </h3>
               <p style={{ fontSize: '0.875rem', color: 'var(--slate-500)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span>{downloadingId === doc.id ? 'Downloading PDF...' : doc.subtitle}</span>
+                <span>{downloadingId === doc.id ? 'Opening library…' : doc.subtitle}</span>
+                {downloadingId !== doc.id && <ArrowRight size={14} aria-hidden style={{ flexShrink: 0 }} />}
               </p>
             </div>
           </div>

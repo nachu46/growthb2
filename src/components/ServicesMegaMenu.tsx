@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, ArrowRight } from 'lucide-react';
 
 interface ServicesMegaMenuProps {
   onClose?: () => void;
@@ -24,7 +24,7 @@ export const ServicesMegaMenu: React.FC<ServicesMegaMenuProps> = ({ onClose, onO
         </svg>
       ),
       items: ['Pipe Shells & Halves', 'Curved Vessel Segments', 'Domed Tank Heads', 'Beveled Lags & Strips'],
-      linkText: 'View Specs & Tolerances →',
+      linkText: 'View Specs & Tolerances',
     },
     {
       id: 'lamination',
@@ -38,7 +38,7 @@ export const ServicesMegaMenu: React.FC<ServicesMegaMenuProps> = ({ onClose, onO
         </svg>
       ),
       items: ['PSMB Factory Bonding', 'ASJ Jacketing Adhesion', 'Kraft Paper Facing', 'Heat-Pressed FSK'],
-      linkText: 'View Adhesion Tests →',
+      linkText: 'View Adhesion Tests',
     },
     {
       id: 'embossing',
@@ -52,7 +52,7 @@ export const ServicesMegaMenu: React.FC<ServicesMegaMenuProps> = ({ onClose, onO
         </svg>
       ),
       items: ['3/16" Corrugated Profiles', '1-1/4" Structural Profiles', 'Stucco Embossing (Alu)', 'Smooth Flat Processing'],
-      linkText: 'View Metal Gauges →',
+      linkText: 'View Metal Gauges',
     },
     {
       id: 'pipe-fitting',
@@ -65,7 +65,7 @@ export const ServicesMegaMenu: React.FC<ServicesMegaMenuProps> = ({ onClose, onO
         </svg>
       ),
       items: ['90° & 45° Elbows', 'Tee Covers & Junctions', 'Industrial Valve Boxes', 'Flange & Flange Guards'],
-      linkText: 'View Assembly Gallery →',
+      linkText: 'View Assembly Gallery',
     },
     {
       id: 'acoustic-panels',
@@ -78,46 +78,35 @@ export const ServicesMegaMenu: React.FC<ServicesMegaMenuProps> = ({ onClose, onO
         </svg>
       ),
       items: ['Multi-Layer Bonding', 'ISO 15665 Compliance', 'Compressor Mitigation', 'Custom Acoustic Enclosures'],
-      linkText: 'View Decibel Testing →',
+      linkText: 'View Decibel Testing',
     },
   ];
 
   return (
     <>
-      {/* Dimmed Soft Overlay Behind Popup */}
-      <div
-        onClick={onClose}
-        style={{
-          position: 'fixed',
-          top: '72px',
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(15, 23, 42, 0.25)',
-          backdropFilter: 'blur(3px)',
-          zIndex: 80,
-        }}
-      />
-
       {/* Main Full-Container Mega Menu Card */}
       <div
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         style={{
           position: 'absolute',
-          top: '100%',
+          top: 'calc(100% + 12px)',
           left: '50%',
           transform: 'translateX(-50%)',
-        width: 'min(1280px, 98vw)',
+        width: 'min(var(--container-max), 98vw)',
         backgroundColor: '#FFFFFF',
         borderRadius: '24px',
-        boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(226, 232, 240, 0.95)',
+        boxShadow: '0 24px 48px -16px rgba(15, 23, 42, 0.18)',
+        border: '1px solid var(--slate-200)',
         padding: '2.5rem 3rem 1.75rem 3rem',
         zIndex: 90,
         color: 'var(--slate-900)',
         cursor: 'default',
-        animation: 'fadeInMenu 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+        animation: 'fadeInMenu 0.22s cubic-bezier(0.16, 1, 0.3, 1)',
       }}>
+        {/* Invisible bridge over the 12px gap so moving the mouse down to the panel keeps it open */}
+        <div aria-hidden style={{ position: 'absolute', top: '-14px', left: 0, right: 0, height: '14px' }} />
+
         {/* Top Header Bar inside Mega-Menu */}
         <div style={{
           display: 'flex',
@@ -130,7 +119,7 @@ export const ServicesMegaMenu: React.FC<ServicesMegaMenuProps> = ({ onClose, onO
           gap: '1rem',
         }}>
           <div>
-            <h2 style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--slate-900)', letterSpacing: '-0.02em', marginBottom: '4px' }}>
+            <h2 style={{ fontSize: '1.65rem', fontWeight: 700, color: 'var(--slate-900)', letterSpacing: '-0.02em', marginBottom: '4px' }}>
               Precision In-House Fabrication
             </h2>
             <p style={{ fontSize: '0.925rem', color: 'var(--slate-500)', fontWeight: 500 }}>
@@ -149,7 +138,7 @@ export const ServicesMegaMenu: React.FC<ServicesMegaMenuProps> = ({ onClose, onO
               backgroundColor: '#D1FAE5',
               color: '#10B981',
               fontSize: '0.8rem',
-              fontWeight: 800,
+              fontWeight: 700,
             }}>
               <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#10B981' }} />
               <span>ISO 9001 Facility</span>
@@ -169,11 +158,11 @@ export const ServicesMegaMenu: React.FC<ServicesMegaMenuProps> = ({ onClose, onO
                 borderRadius: 'var(--radius-md)',
                 backgroundColor: 'var(--primary-red)',
                 color: '#FFFFFF',
-                fontWeight: 800,
+                fontWeight: 700,
                 fontSize: '0.9rem',
                 border: 'none',
                 cursor: 'pointer',
-                boxShadow: '0 4px 14px rgba(225, 29, 72, 0.3)',
+                boxShadow: '0 4px 14px rgba(217, 11, 42, 0.3)',
               }}
             >
               <span>Upload AutoCAD</span>
@@ -206,7 +195,7 @@ export const ServicesMegaMenu: React.FC<ServicesMegaMenuProps> = ({ onClose, onO
                   }}>
                     {col.icon}
                   </div>
-                  <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--slate-900)' }}>
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--slate-900)' }}>
                     {col.title}
                   </h3>
                 </div>
@@ -216,7 +205,7 @@ export const ServicesMegaMenu: React.FC<ServicesMegaMenuProps> = ({ onClose, onO
                   {col.items.map((item, idx) => (
                     <li key={idx}>
                       <Link
-                        href="/products/foamglas-cellular-glass"
+                        href="/services"
                         onClick={onClose}
                         style={{
                           fontSize: '0.85rem',
@@ -238,11 +227,11 @@ export const ServicesMegaMenu: React.FC<ServicesMegaMenuProps> = ({ onClose, onO
 
               {/* Action Link at Bottom */}
               <Link
-                href="/#fabrication-section"
+                href="/services"
                 onClick={onClose}
                 style={{
                   fontSize: '0.825rem',
-                  fontWeight: 800,
+                  fontWeight: 700,
                   color: 'var(--primary-red)',
                   textDecoration: 'none',
                   display: 'inline-flex',
@@ -250,7 +239,7 @@ export const ServicesMegaMenu: React.FC<ServicesMegaMenuProps> = ({ onClose, onO
                   gap: '4px',
                 }}
               >
-                <span>{col.linkText}</span>
+                <span>{col.linkText} <ArrowRight size={14} aria-hidden style={{ verticalAlign: '-3px', flexShrink: 0 }} /></span>
               </Link>
             </div>
           ))}
@@ -262,7 +251,7 @@ export const ServicesMegaMenu: React.FC<ServicesMegaMenuProps> = ({ onClose, onO
           paddingTop: '1.25rem',
           borderTop: '1px solid var(--slate-100)',
           fontSize: '0.7rem',
-          fontWeight: 800,
+          fontWeight: 700,
           color: 'var(--slate-400)',
           letterSpacing: '0.08em',
           textTransform: 'uppercase',
@@ -273,7 +262,7 @@ export const ServicesMegaMenu: React.FC<ServicesMegaMenuProps> = ({ onClose, onO
 
       <style jsx>{`
         @keyframes fadeInMenu {
-          from { opacity: 0; transform: translate(-50%, 8px); }
+          from { opacity: 0; transform: translate(-50%, -10px); }
           to { opacity: 1; transform: translate(-50%, 0); }
         }
         :global(.services-link-item:hover) {

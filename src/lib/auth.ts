@@ -2,9 +2,26 @@ import { NextRequest, NextResponse } from 'next/server';
 import db from './db';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
 
 const SESSION_COOKIE_NAME = 'growth_admin_session';
-const SECRET_KEY = process.env.ADMIN_JWT_SECRET || 'growth-international-admin-secret-key-2026-secure';
+const SECRET_KEY = process.env.ADMIN_JWT_SECRET || loadOrCreateSecret();
+
+// Without ADMIN_JWT_SECRET, generate a random secret once and persist it in data/ so sessions survive restarts
+function loadOrCreateSecret(): string {
+  const secretFile = path.join(process.cwd(), 'data', '.session-secret');
+  try {
+    if (fs.existsSync(secretFile)) return fs.readFileSync(secretFile, 'utf8').trim();
+    const secret = crypto.randomBytes(32).toString('hex');
+    fs.mkdirSync(path.dirname(secretFile), { recursive: true });
+    fs.writeFileSync(secretFile, secret, { mode: 0o600 });
+    return secret;
+  } catch {
+    // Read-only filesystem: fall back to a per-process secret (sessions reset on restart)
+    return crypto.randomBytes(32).toString('hex');
+  }
+}
 
 export interface AdminUserSession {
   userId: string;
@@ -28,7 +45,11 @@ export function verifySessionToken(token: string): AdminUserSession | null {
     const payloadStr = Buffer.from(base64Payload, 'base64').toString('utf8');
     const expectedSignature = crypto.createHmac('sha256', SECRET_KEY).update(payloadStr).digest('hex');
 
-    if (signature !== expectedSignature) return null;
+    if (
+      !signature ||
+      signature.length !== expectedSignature.length ||
+      !crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature))
+    ) return null;
 
     const payload = JSON.parse(payloadStr);
     if (payload.exp && payload.exp < Date.now()) return null;

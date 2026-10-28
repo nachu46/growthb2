@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect, useCallback, useId } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronDown, Check } from 'lucide-react';
 
 export interface SelectOption {
@@ -23,7 +24,11 @@ export interface CustomSelectProps {
   style?: React.CSSProperties;
   className?: string;
   disabled?: boolean;
+  id?: string;
+  ariaLabel?: string;
 }
+
+const LIST_MAX_HEIGHT = 280;
 
 export const CustomSelect: React.FC<CustomSelectProps> = ({
   options,
@@ -35,261 +40,252 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   borderColor,
   style,
   disabled = false,
+  id,
+  ariaLabel,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const [pos, setPos] = useState<{ left: number; top: number; width: number; up: boolean } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const listId = useId();
 
-  // Normalize options array into SelectOption format
-  const normalizedOptions: SelectOption[] = options.map((opt) => {
-    if (typeof opt === 'string') {
-      return { value: opt, label: opt };
-    }
-    return opt;
-  });
+  const normalizedOptions: SelectOption[] = options.map((opt) => (typeof opt === 'string' ? { value: opt, label: opt } : opt));
+  const selectedIndex = normalizedOptions.findIndex((opt) => opt.value === value);
+  const selectedOption = normalizedOptions[selectedIndex];
+  const isBadge = variant === 'badge';
+  const isHero = variant === 'hero';
 
-  const selectedOption = normalizedOptions.find((opt) => opt.value === value);
+  // The list is rendered in a portal with fixed positioning so scrolling modals/cards never clip it
+  const place = useCallback(() => {
+    const el = triggerRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - r.bottom;
+    const up = spaceBelow < Math.min(LIST_MAX_HEIGHT, normalizedOptions.length * 44 + 16) && r.top > spaceBelow;
+    const width = isBadge ? Math.max(170, r.width) : r.width;
+    const left = Math.min(isBadge ? r.right - width : r.left, window.innerWidth - width - 8);
+    setPos({ left: Math.max(8, left), top: up ? r.top - 8 : r.bottom + 8, width, up });
+  }, [isBadge, normalizedOptions.length]);
 
-  // Close dropdown on click outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
+  useLayoutEffect(() => {
+    if (!isOpen) return;
+    place();
+    window.addEventListener('scroll', place, true);
+    window.addEventListener('resize', place);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('scroll', place, true);
+      window.removeEventListener('resize', place);
     };
-  }, []);
+  }, [isOpen, place]);
 
-  // Keyboard navigation handler
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (disabled) return;
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      setIsOpen((prev) => !prev);
-    } else if (e.key === 'Escape') {
+  // Close on outside click (the list lives in a portal, so check both elements)
+  useEffect(() => {
+    if (!isOpen) return;
+    const handle = (event: MouseEvent) => {
+      const t = event.target as Node;
+      if (containerRef.current?.contains(t) || listRef.current?.contains(t)) return;
       setIsOpen(false);
-    } else if (e.key === 'ArrowDown' && isOpen) {
-      e.preventDefault();
-      const currentIndex = normalizedOptions.findIndex((opt) => opt.value === value);
-      const nextIndex = (currentIndex + 1) % normalizedOptions.length;
-      onChange(normalizedOptions[nextIndex].value);
-    } else if (e.key === 'ArrowUp' && isOpen) {
-      e.preventDefault();
-      const currentIndex = normalizedOptions.findIndex((opt) => opt.value === value);
-      const prevIndex = (currentIndex - 1 + normalizedOptions.length) % normalizedOptions.length;
-      onChange(normalizedOptions[prevIndex].value);
-    }
+    };
+    document.addEventListener('mousedown', handle);
+    return () => document.removeEventListener('mousedown', handle);
+  }, [isOpen]);
+
+  // Keep the highlighted option visible while using the keyboard
+  useEffect(() => {
+    if (!isOpen || activeIndex < 0) return;
+    listRef.current?.querySelector<HTMLElement>(`[data-index="${activeIndex}"]`)?.scrollIntoView({ block: 'nearest' });
+  }, [activeIndex, isOpen]);
+
+  const open = () => {
+    if (disabled) return;
+    setActiveIndex(selectedIndex >= 0 ? selectedIndex : 0);
+    setIsOpen(true);
   };
 
   const handleSelect = (optionValue: string) => {
     onChange(optionValue);
     setIsOpen(false);
+    triggerRef.current?.focus();
   };
 
-  // Render variant-specific trigger styles
-  if (variant === 'badge') {
-    const activeColor = selectedOption?.color || 'var(--slate-800)';
-    const activeBg = selectedOption?.bg || '#FFFFFF';
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (disabled) return;
+    if (!isOpen) {
+      if (['Enter', ' ', 'ArrowDown', 'ArrowUp'].includes(e.key)) {
+        e.preventDefault();
+        open();
+      }
+      return;
+    }
+    if (e.key === 'Escape' || e.key === 'Tab') {
+      setIsOpen(false);
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setActiveIndex((i) => (i + 1) % normalizedOptions.length);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setActiveIndex((i) => (i - 1 + normalizedOptions.length) % normalizedOptions.length);
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      if (normalizedOptions[activeIndex]) handleSelect(normalizedOptions[activeIndex].value);
+    }
+  };
 
-    return (
-      <div ref={containerRef} style={{ position: 'relative', display: 'inline-block', ...style }}>
-        <button
-          type="button"
-          disabled={disabled}
-          onClick={() => setIsOpen(!isOpen)}
-          onKeyDown={handleKeyDown}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            padding: '0.35rem 0.75rem',
-            borderRadius: '9999px',
-            border: `1.5px solid ${isOpen ? accentColor : borderColor || 'var(--slate-300)'}`,
-            backgroundColor: activeBg,
-            color: activeColor,
-            fontWeight: 800,
-            fontSize: '0.8rem',
-            cursor: disabled ? 'not-allowed' : 'pointer',
-            transition: 'all 0.2s ease',
-            boxShadow: 'none',
-          }}
-        >
-          <span>{selectedOption ? selectedOption.label : placeholder}</span>
-          <ChevronDown
-            size={14}
-            style={{
-              transition: 'transform 0.2s ease',
-              transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-              color: activeColor,
-            }}
-          />
-        </button>
+  const trigger = isBadge ? (
+    <button
+      ref={triggerRef}
+      id={id}
+      type="button"
+      disabled={disabled}
+      onClick={() => (isOpen ? setIsOpen(false) : open())}
+      onKeyDown={handleKeyDown}
+      aria-haspopup="listbox"
+      aria-expanded={isOpen}
+      aria-controls={listId}
+      aria-label={ariaLabel}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '0.4rem',
+        padding: '0.35rem 0.75rem',
+        borderRadius: '9999px',
+        border: `1.5px solid ${isOpen ? accentColor : borderColor || 'var(--slate-300)'}`,
+        backgroundColor: selectedOption?.bg || '#FFFFFF',
+        color: selectedOption?.color || 'var(--slate-800)',
+        fontWeight: 700,
+        fontSize: '0.8rem',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        transition: 'border-color 0.2s ease',
+      }}
+    >
+      <span>{selectedOption ? selectedOption.label : placeholder}</span>
+      <ChevronDown size={14} style={{ transition: 'transform 0.2s ease', transform: isOpen ? 'rotate(180deg)' : 'none' }} />
+    </button>
+  ) : (
+    <button
+      ref={triggerRef}
+      id={id}
+      type="button"
+      disabled={disabled}
+      onClick={() => (isOpen ? setIsOpen(false) : open())}
+      onKeyDown={handleKeyDown}
+      aria-haspopup="listbox"
+      aria-expanded={isOpen}
+      aria-controls={listId}
+      aria-label={ariaLabel}
+      style={{
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: isHero ? '0.2rem 0' : '0.7rem 0.9rem',
+        backgroundColor: isHero ? 'transparent' : disabled ? 'var(--slate-50)' : '#FFFFFF',
+        border: isHero ? 'none' : `1.5px solid ${isOpen ? accentColor : borderColor || 'var(--slate-300)'}`,
+        borderRadius: isHero ? '0' : '10px',
+        fontSize: isHero ? '0.95rem' : '0.875rem',
+        fontWeight: isHero ? 700 : 600,
+        fontFamily: 'inherit',
+        color: selectedOption ? 'var(--slate-900)' : 'var(--slate-400)',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        outline: 'none',
+        textAlign: 'left',
+        transition: 'border-color 0.2s ease',
+      }}
+    >
+      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        {selectedOption ? selectedOption.label : placeholder}
+      </span>
+      <ChevronDown
+        size={isHero ? 18 : 16}
+        style={{
+          transition: 'transform 0.2s ease',
+          transform: isOpen ? 'rotate(180deg)' : 'none',
+          color: isOpen || isHero ? accentColor : 'var(--slate-400)',
+          flexShrink: 0,
+          marginLeft: '0.5rem',
+        }}
+      />
+    </button>
+  );
 
-        {isOpen && (
+  const list =
+    isOpen && pos && typeof document !== 'undefined'
+      ? createPortal(
           <div
+            ref={listRef}
+            id={listId}
+            role="listbox"
+            className="cs-list"
             style={{
-              position: 'absolute',
-              top: 'calc(100% + 6px)',
-              right: 0,
-              minWidth: '160px',
+              position: 'fixed',
+              left: pos.left,
+              width: pos.width,
+              ...(pos.up ? { bottom: window.innerHeight - pos.top } : { top: pos.top }),
+              maxHeight: LIST_MAX_HEIGHT,
+              overflowY: 'auto',
               backgroundColor: '#FFFFFF',
               borderRadius: '12px',
               border: '1px solid var(--slate-200)',
-              boxShadow: 'none',
+              outline: '4px solid rgba(15, 23, 42, 0.04)',
               padding: '0.35rem',
-              zIndex: 100,
+              zIndex: 2000,
+              transformOrigin: pos.up ? 'bottom' : 'top',
+              animation: 'csIn 0.14s ease-out',
             }}
           >
-            {normalizedOptions.map((opt) => {
+            {normalizedOptions.length === 0 && (
+              <div style={{ padding: '0.65rem 0.85rem', fontSize: '0.85rem', color: 'var(--slate-500)' }}>No options</div>
+            )}
+            {normalizedOptions.map((opt, index) => {
               const isSelected = opt.value === value;
+              const isActive = index === activeIndex;
               return (
                 <div
                   key={opt.value}
+                  data-index={index}
+                  role="option"
+                  aria-selected={isSelected}
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => handleSelect(opt.value)}
+                  onMouseEnter={() => setActiveIndex(index)}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    padding: '0.5rem 0.75rem',
+                    gap: '0.75rem',
+                    padding: isBadge ? '0.5rem 0.75rem' : '0.6rem 0.8rem',
                     borderRadius: '8px',
-                    fontSize: '0.8rem',
-                    fontWeight: 700,
-                    color: opt.color || 'var(--slate-800)',
-                    backgroundColor: isSelected ? 'var(--slate-100)' : 'transparent',
+                    fontSize: isBadge ? '0.8rem' : '0.875rem',
+                    fontWeight: isSelected ? 700 : 500,
+                    color: isSelected ? accentColor : opt.color || 'var(--slate-800)',
+                    backgroundColor: isActive ? 'var(--slate-100)' : isSelected ? 'var(--primary-red-badge)' : 'transparent',
                     cursor: 'pointer',
-                    transition: 'background-color 0.15s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--slate-50)';
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent';
+                    marginBottom: '1px',
                   }}
                 >
-                  <span>{opt.label}</span>
-                  {isSelected && <Check size={14} color={accentColor} />}
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0 }}>
+                    {opt.icon && <span>{opt.icon}</span>}
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{opt.label}</span>
+                  </span>
+                  {isSelected && <Check size={15} color={accentColor} style={{ flexShrink: 0 }} />}
                 </div>
               );
             })}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // Standard and Hero variants
-  const isHero = variant === 'hero';
+            <style>{`@keyframes csIn { from { opacity: 0; transform: scaleY(0.96); } to { opacity: 1; transform: scaleY(1); } }`}</style>
+          </div>,
+          document.body
+        )
+      : null;
 
   return (
     <div
       ref={containerRef}
-      style={{
-        position: 'relative',
-        width: '100%',
-        ...style,
-      }}
+      style={isBadge ? { position: 'relative', display: 'inline-block', ...style } : { position: 'relative', width: '100%', ...style }}
     >
-      <button
-        type="button"
-        disabled={disabled}
-        onClick={() => setIsOpen(!isOpen)}
-        onKeyDown={handleKeyDown}
-        style={{
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: isHero ? '0.2rem 0' : '0.65rem 0.9rem',
-          backgroundColor: 'transparent',
-          border: isHero ? 'none' : `1.5px solid ${isOpen ? accentColor : borderColor || 'var(--slate-300)'}`,
-          borderRadius: isHero ? '0' : '10px',
-          fontSize: isHero ? '0.95rem' : '0.875rem',
-          fontWeight: isHero ? 800 : 600,
-          color: 'var(--slate-900)',
-          cursor: disabled ? 'not-allowed' : 'pointer',
-          outline: 'none',
-          textAlign: 'left',
-          transition: 'all 0.2s ease',
-          boxShadow: 'none',
-        }}
-      >
-        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {selectedOption ? selectedOption.label : placeholder}
-        </span>
-        <ChevronDown
-          size={isHero ? 18 : 16}
-          style={{
-            transition: 'transform 0.2s ease',
-            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-            color: isOpen ? accentColor : isHero ? accentColor : 'var(--slate-400)',
-            flexShrink: 0,
-            marginLeft: '0.5rem',
-          }}
-        />
-      </button>
-
-      {isOpen && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 'calc(100% + 8px)',
-            left: 0,
-            right: 0,
-            maxHeight: '260px',
-            overflowY: 'auto',
-            backgroundColor: '#FFFFFF',
-            borderRadius: '14px',
-            border: '1px solid var(--slate-200)',
-            boxShadow: 'none',
-            padding: '0.4rem',
-            zIndex: 999,
-          }}
-        >
-          {normalizedOptions.map((opt) => {
-            const isSelected = opt.value === value;
-            return (
-              <div
-                key={opt.value}
-                onClick={() => handleSelect(opt.value)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '0.65rem 0.85rem',
-                  borderRadius: '10px',
-                  fontSize: '0.875rem',
-                  fontWeight: isSelected ? 800 : 600,
-                  color: isSelected ? accentColor : 'var(--slate-800)',
-                  backgroundColor: isSelected ? 'var(--primary-red-badge)' : 'transparent',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease',
-                  marginBottom: '2px',
-                }}
-                onMouseEnter={(e) => {
-                  if (!isSelected) {
-                    e.currentTarget.style.backgroundColor = 'var(--slate-100)';
-                    e.currentTarget.style.color = 'var(--slate-900)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isSelected) {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                    e.currentTarget.style.color = 'var(--slate-800)';
-                  }
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  {opt.icon && <span>{opt.icon}</span>}
-                  <span>{opt.label}</span>
-                </div>
-                {isSelected && <Check size={16} color={accentColor} />}
-              </div>
-            );
-          })}
-        </div>
-      )}
+      {trigger}
+      {list}
     </div>
   );
 };

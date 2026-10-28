@@ -1,141 +1,152 @@
 # Growth International L.L.C. — GCC B2B Industrial Supply Platform
 
-![Growth International B2B Platform](public/next.svg)
+Website and admin panel for **Growth International L.L.C.**, a supplier of industrial thermal insulation, metal jacketing, acoustic and refractory materials across the GCC (UAE, Saudi Arabia, Kuwait, Qatar, Bahrain, Oman).
 
-An elite, full-stack B2B Industrial Supply platform engineered for **Growth International L.L.C.**, specializing in thermal insulation, metal jacketing, cryogenic barriers, and mechanical equipment supply across the GCC region (UAE, Saudi Arabia, Kuwait, Qatar, Bahrain, Oman).
-
----
-
-## 🌟 Key Features
-
-### 🏢 Public B2B Storefront
-- **Dynamic Product Catalog**: Search and filter products by Material Pillar (*Insulation*, *Jacketing*, *Accessories*, *Acoustic & Vapor*, *Valves & Refractory*) and EPC Industry Approvals (*Oil & Gas*, *HVAC*, *Chemical*, *Electro-Mechanical*, *Industrial Commercial*).
-- **Interactive GCC Logistics Vector Map**: Dynamic regional warehousing map tracking live stock dispatches across UAE HQ, KSA Dammam, Kuwait, Qatar, Bahrain, and Oman hubs.
-- **Official Corporate Brand Logos**: Verified vendor registration presentation for Saudi Aramco, SABIC, ADNOC, Sadara, KNPC, TotalEnergies, and MA'ADEN.
-- **Featured Supply Partners**: Tier-1 manufacturer showcase featuring Owens Corning, Johns Manville, Armacell, FOAMGLAS, and Aspen Aerogels.
-- **Bulk RFQ Calculator & Drawer**: Dynamic bulk estimator widget allowing instant volume pricing inquiries with automated WhatsApp quotation dispatch.
-- **AutoCAD / Excel BOM Submission System**: Drag-and-drop Bill of Materials file upload for instant engineering review.
-- **Technical Resource Hub**: Direct downloads for ASTM Compliance Sheets, Installation Manuals, and Corporate Profiles.
+It runs as a single Node.js app with a local SQLite database: no external services or environment variables are required.
 
 ---
 
-### 🛡️ Administrative Control System (Shopify-Style Admin CMS)
-- **Role-Based Security**: Strict **`ADMIN`** authorization enforcing server-side session checks (`401 Unauthorized` / `403 Forbidden`).
-- **Dashboard Overview (`/admin`)**: Real-time database metrics tracking Total Products, Active RFQs, Pending BOMs, Company Logos, Supply Partners, Certifications, Locations, and Resources.
-- **Company & Vendor Logo Manager (`/admin/company-logos`)**: CRUD management with image upload/replacement (SVG, PNG, WEBP, JPG), website URL configuration, display reordering, and status toggles.
-- **Products Catalog Manager (`/admin/products`)**: Add and edit products, operating temperature ranges, density, compliance standards, and Saudi Aramco approval flags.
-- **Supply Partners Manager (`/admin/partners`)**: Add and update manufacturer brand partner profiles.
-- **Certifications & Approvals (`/admin/certifications`)**: Manage vendor qualification numbers, issue/expiry dates, and certificates.
-- **GCC Locations Manager (`/admin/locations`)**: Real-time management of regional warehousing stock counts and dispatch logs.
-- **Customer RFQs Manager (`/admin/rfq`)**: View incoming B2B volume pricing requests, filter by status (`New`, `Pending`, `Quoted`, `Processing`, `Completed`, `Rejected`), and generate instant WhatsApp quotes.
-- **BOM Submissions Manager (`/admin/bom`)**: Direct download of uploaded project Excel and AutoCAD Bill of Materials files.
-- **Audit Logging (`/admin/audit-logs`)**: Immutable logging of all administrative actions, uploads, and data edits.
+## Features
+
+### Public website
+
+| Page | What it does |
+| :--- | :--- |
+| **Home** (`/`) | Hero, live GCC hub map, category filters, bulk quote widget, moving vendor-logo and supply-partner carousels, resource hub. |
+| **Products** (`/products`) | Category cards and a filterable **Master Industrial Catalog** (category, industry, EPC approval, manufacturer, search). Filters collapse into dropdowns on phones. |
+| **Product detail** (`/products/[slug]`) | Specs, fabrication forms, thicknesses, stock level and hub, test properties, linked documents, add to RFQ. |
+| **Industries** (`/industries`) | Pre-vetted material assemblies per industry. |
+| **Services** (`/services`) | In-house fabrication capabilities. |
+| **Tech Resources** (`/resources`) | Document library with folders, search, multi-select download and paging. |
+| **Certifications** (`/certifications`) | Vendor registrations, ISO / ICV and project history. |
+
+- **RFQ basket**: shared across pages and kept after refresh. Requests go to WhatsApp and are also saved for the admin.
+- **BOM upload**: customers upload `.xlsx/.xls/.csv/.pdf/.dwg` files with email and delivery quarter. The files are private to admins.
+- **SEO**: location-focused titles and descriptions, schema.org Organization + LocalBusiness for each GCC hub, Product data on product pages, `sitemap.xml` and `robots.txt`.
+- **Responsive** from 375px phones to wide desktops.
+
+### Admin panel (`/admin`)
+
+| Section | Purpose |
+| :--- | :--- |
+| **Dashboard** | Website traffic (visitors, page views, daily chart, top pages, sources, devices; 7/30/90 days), enquiries and content counts. |
+| **Company Logos / Supply Partners** | Logos and partner chips shown in the home carousels. |
+| **Products Catalog** | Products with manufacturer, stock level and hub, badges, forms, thicknesses, test properties, image. |
+| **Categories** | Material categories with items and card image. They drive the website's category cards, filters and Products menu. |
+| **Certifications / Project History** | Content of the Certifications page. |
+| **Technical Resources** | Upload documents into library folders. Link a document to a product to show it on that product's page. |
+| **GCC Locations** | Hub status, phone, stock and dispatch text on the map. |
+| **Customer RFQs / BOM Submissions** | Incoming enquiries and uploaded BOM files. |
+| **Audit Logs** | Every admin change. |
+
+Visitor analytics run on your own server. They use no cookies and store no IP addresses (visitors are an anonymous daily hash), and they ignore bots and admin pages.
 
 ---
 
-## 🛠️ Technology Stack
+## Technology
 
 | Layer | Technology |
 | :--- | :--- |
-| **Framework** | **Next.js 16 (App Router)** |
-| **Language** | **TypeScript 5** |
-| **UI Library** | **React 19** |
-| **Styling** | **Vanilla CSS & CSS Variables** (`src/app/globals.css`) |
-| **Database** | **SQLite (`better-sqlite3`)** with Write-Ahead Logging (WAL mode) |
-| **Database Abstraction** | Service Layer (`src/lib/db.ts`) for seamless migration to PostgreSQL/Supabase |
-| **File Storage** | Storage Abstraction Layer (`src/lib/storage.ts`) saving to `public/uploads/` |
-| **Authentication** | `bcryptjs` password hashing + Signed HTTP-Only Session Cookies |
-| **Icons** | Lucide React |
+| Framework | Next.js 16 (App Router), React 19, TypeScript 5 |
+| Styling | CSS variables + inline styles / styled-jsx (`src/app/globals.css`), Inter font (self-hosted) |
+| Database | SQLite via `better-sqlite3` (WAL mode), file `data/growth_b2b.db` |
+| Uploads | `data/uploads/`, served by `src/app/uploads/[...path]/route.ts` |
+| Auth | `bcryptjs` password hash + signed HTTP-only session cookie |
+| Icons | Lucide React |
 
 ---
 
-## 📁 Project Directory Structure
+## Project structure
 
 ```
 growth-international-b2b/
-├── data/                       # SQLite Database Storage
-│   └── growth_b2b.db           # Pre-seeded SQLite relational database
-├── public/                     # Static assets & file uploads
-│   └── uploads/                # User uploaded company logos and BOM files
+├── data/                      # Created on first start (not in Git)
+│   ├── growth_b2b.db          # SQLite database
+│   ├── uploads/               # Uploaded logos, documents, category images, BOM files
+│   ├── admin-credentials.txt  # Generated admin login (first start only)
+│   └── .session-secret        # Generated session signing key
+├── public/                    # Static assets (logos, emblem, favicon)
 ├── src/
 │   ├── app/
-│   │   ├── admin/              # Admin CMS UI Pages
-│   │   │   ├── audit-logs/     # Audit Logs Viewer
-│   │   │   ├── bom/            # BOM Submissions Manager
-│   │   │   ├── certifications/ # Certifications Manager
-│   │   │   ├── company-logos/  # Vendor Logo Manager (CRUD + File Upload)
-│   │   │   ├── locations/      # GCC Logistics Hub Manager
-│   │   │   ├── login/          # Secure Admin Login Portal
-│   │   │   ├── partners/       # Supply Partners Manager
-│   │   │   ├── products/       # Products Catalog Manager
-│   │   │   ├── project-history/# Project History References
-│   │   │   ├── resources/      # Technical Resources PDF Manager
-│   │   │   ├── rfq/            # Customer RFQ Inquiry Manager
-│   │   │   ├── layout.tsx      # Clean White Shopify Admin Layout
-│   │   │   └── page.tsx        # Admin Dashboard
-│   │   ├── api/                # Next.js Server-Side REST API Routes
-│   │   │   ├── admin/          # Protected Admin REST API Endpoints
-│   │   │   └── ...             # Public REST API Endpoints
-│   │   ├── globals.css         # Global CSS Design Tokens & Themes
-│   │   ├── layout.tsx          # Root Public Website Layout
-│   │   └── page.tsx            # Homepage View
-│   ├── components/             # Reusable UI Components
-│   └── lib/                    # Core Backend Services
-│       ├── audit.ts            # Audit Logger Service
-│       ├── auth.ts             # Admin Session Authentication Helper
-│       ├── db.ts               # Database Engine & Schema Initializer
-│       └── storage.ts          # Storage Abstraction Service
-├── package.json
-└── README.md
+│   │   ├── admin/             # Admin pages (dashboard, products, categories, resources, ...)
+│   │   ├── api/               # REST API (public routes + /api/admin/* protected routes)
+│   │   ├── products/ industries/ certifications/ services/ resources/
+│   │   ├── uploads/[...path]/ # Serves uploaded files (BOM files admin-only)
+│   │   ├── sitemap.ts robots.ts
+│   │   └── layout.tsx         # Root layout, SEO metadata, analytics tracker
+│   ├── components/            # UI components (Navbar, catalog, carousels, modals, ...)
+│   ├── data/                  # Default content and shared types
+│   ├── hooks/                 # useCatalogProducts, useCategories, useRfqQueue
+│   └── lib/                   # db, auth, storage, rate limiting, products, seo
+├── DEPLOY.md                  # Server deployment guide (Contabo / Ubuntu)
+├── ecosystem.config.js        # PM2 process file
+└── package.json
 ```
 
 ---
 
-## ⚡ Quick Start & Local Setup
+## Local setup
 
-### 1. Prerequisites
-Ensure you have **Node.js (v18+)** installed.
+Requires **Node.js 20+**.
 
-### 2. Installation
-Clone the repository and install dependencies:
 ```bash
-git clone https://github.com/nachu46/growthb2b.git
-cd growthb2b
+git clone https://github.com/nachu46/growthb2.git
+cd growthb2
 npm install
-```
-
-### 3. Running the Development Server
-Start the Next.js development server:
-```bash
 npm run dev
 ```
-- Open **Public Storefront**: [http://localhost:3000](http://localhost:3000)
-- Open **Admin CMS Panel**: [http://localhost:3000/admin](http://localhost:3000/admin)
+
+- Website: http://localhost:3000
+- Admin: http://localhost:3000/admin
+
+On first start the database is created and filled with starter content. An admin account is created with a **random password**, saved in:
+
+```bash
+cat data/admin-credentials.txt
+```
+
+Production build:
+
+```bash
+npm run build
+npm start
+```
 
 ---
 
-## 🔑 Default Admin Credentials
+## Deployment
 
-- **Admin Login URL**: [http://localhost:3000/admin/login](http://localhost:3000/admin/login)
-- **Email**: `admin@growthme.com`
-- **Password**: `Admin@Growth2026`
+Use a VPS (e.g. Contabo) with a persistent disk. Full steps are in **[DEPLOY.md](DEPLOY.md)**: Node + PM2, Nginx + HTTPS, updates, backups and Google setup.
+
+Updating a live server:
+
+```bash
+git pull
+npm ci
+npm run build
+pm2 restart growth-b2b
+```
+
+Serverless hosts such as Vercel are **not** suitable: the SQLite database and uploads need a disk that persists.
+
+### Optional environment variables
+
+None are required.
+
+| Variable | Purpose |
+| :--- | :--- |
+| `NEXT_PUBLIC_SITE_URL` | Live domain used for SEO links and the sitemap (default `https://www.growthme.com`). Set before building. |
+| `ADMIN_EMAIL` / `ADMIN_PASSWORD` | First admin account (only used when the database is created). |
+| `ADMIN_JWT_SECRET` | Session signing key (default: generated in `data/.session-secret`). |
 
 ---
 
-## 🚀 Deployment
+## Backups
 
-### Option A: Vercel (Recommended)
-1. Push your repository to GitHub.
-2. Import your project into [Vercel](https://vercel.com).
-3. Connect a cloud database (e.g. Supabase or Neon PostgreSQL) by setting database connection variables.
-4. Deploy!
-
-### Option B: VPS / Docker / Railway (All-In-One Monolith)
-1. Deploy directly to Railway, Render, or a DigitalOcean VPS running Node.js.
-2. The SQLite database and local uploads directory will run natively with zero external cloud dependencies.
+Everything that changes lives in `data/`: back up that folder (see DEPLOY.md for a nightly cron example).
 
 ---
 
-## 📄 License
+## License
 
 Copyright © 2026 Growth International L.L.C. All rights reserved.

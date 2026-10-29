@@ -3,6 +3,64 @@
 The app runs as a normal Node.js server with a local SQLite database. No environment
 variables are required.
 
+There are two ways to run it. Pick **one**:
+
+- **Option A: Docker** (recommended). Nothing to install except Docker; updates are one command.
+- **Option B: Node.js + PM2**. Sections 1–6 below.
+
+## Option A: Docker
+
+### One-time setup
+
+```bash
+# Install Docker + the compose plugin
+curl -fsSL https://get.docker.com | sudo sh
+sudo usermod -aG docker $USER   # then log out and back in
+
+# Get the code and start the site
+cd /var/www
+git clone https://github.com/nachu46/growthb2.git growth-b2b
+cd growth-b2b
+SITE_URL=https://www.your-domain.com docker compose up -d --build
+```
+
+The site listens on `127.0.0.1:3000` (only reachable from the server). Put Nginx in front for
+your domain and HTTPS: follow **section 4** below, it works the same for Docker.
+To test on `http://SERVER_IP:3000` first, change the port line in `docker-compose.yml` to `"3000:3000"`.
+
+### Admin password
+
+```bash
+docker compose exec web cat /app/data/admin-credentials.txt
+```
+
+### Update the site
+
+```bash
+cd /var/www/growth-b2b
+git pull
+SITE_URL=https://www.your-domain.com docker compose up -d --build
+```
+
+Your database and uploads are in the Docker volume `growth-b2b_growth-data` and are kept across updates.
+
+### Useful commands
+
+| Task | Command |
+| --- | --- |
+| Status / health | `docker compose ps` |
+| Live logs | `docker compose logs -f web` |
+| Restart | `docker compose restart web` |
+| Stop | `docker compose down` (data is kept) |
+| Backup data | `docker run --rm -v growth-b2b_growth-data:/data -v $PWD:/backup alpine tar czf /backup/backup-$(date +%F).tar.gz -C /data .` |
+| Restore data | `docker compose down && docker run --rm -v growth-b2b_growth-data:/data -v $PWD:/backup alpine sh -c "rm -rf /data/* && tar xzf /backup/BACKUP-FILE.tar.gz -C /data" && docker compose up -d` |
+
+Never run `docker compose down -v`: the `-v` deletes the data volume.
+
+---
+
+## Option B: Node.js + PM2
+
 ## 1. One-time server setup (Ubuntu 22.04/24.04)
 
 ```bash

@@ -1,0 +1,30 @@
+# Growth International website — run with:  docker compose up -d --build
+services:
+  web:
+    build:
+      context: .
+      args:
+        # Your live domain (used for SEO links and sitemap.xml)
+        NEXT_PUBLIC_SITE_URL: ${SITE_URL:-https://www.growthme.com}
+    image: growth-b2b:latest
+    container_name: growth-b2b
+    restart: unless-stopped
+    ports:
+      # Only reachable from the server itself; Nginx in front handles the public domain + HTTPS.
+      # Change to "3000:3000" to open it directly on http://SERVER_IP:3000
+      - "127.0.0.1:3000:3000"
+    volumes:
+      # Database, uploads, admin-credentials.txt and session secret — survives rebuilds
+      - growth-data:/app/data
+    environment:
+      # Optional — only used when the database is created for the first time
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  growth-data:

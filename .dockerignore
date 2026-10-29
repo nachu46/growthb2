@@ -1,0 +1,19 @@
+# Never send local data, secrets or build output into the image
+node_modules
+.next
+out
+data
+data.*
+.git
+.gitignore
+.env*
+*.log
+npm-debug.log*
+.vercel
+.vscode
+.idea
+Dockerfile
+docker-compose*.yml
+.dockerignore
+public/uploads/*
+!public/uploads/.gitkeep

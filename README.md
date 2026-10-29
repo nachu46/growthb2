@@ -79,6 +79,8 @@ growth-international-b2b/
 │   ├── hooks/                 # useCatalogProducts, useCategories, useRfqQueue
 │   └── lib/                   # db, auth, storage, rate limiting, products, seo
 ├── DEPLOY.md                  # Server deployment guide (Contabo / Ubuntu)
+├── Dockerfile                 # Production image (standalone Next.js, non-root)
+├── docker-compose.yml         # One-command deploy with persistent data volume
 ├── ecosystem.config.js        # PM2 process file
 └── package.json
 ```
@@ -116,9 +118,18 @@ npm start
 
 ## Deployment
 
-Use a VPS (e.g. Contabo) with a persistent disk. Full steps are in **[DEPLOY.md](DEPLOY.md)**: Node + PM2, Nginx + HTTPS, updates, backups and Google setup.
+Use a VPS (e.g. Contabo) with a persistent disk. Full steps are in **[DEPLOY.md](DEPLOY.md)**: Docker or Node + PM2, Nginx + HTTPS, updates, backups and Google setup.
 
-Updating a live server:
+With Docker (recommended):
+
+```bash
+SITE_URL=https://www.your-domain.com docker compose up -d --build
+docker compose exec web cat /app/data/admin-credentials.txt   # admin password
+```
+
+The database and uploads live in the `growth-data` volume and survive rebuilds. The image runs as a non-root user and never contains the database or secrets.
+
+Updating a server that uses Node + PM2:
 
 ```bash
 git pull
